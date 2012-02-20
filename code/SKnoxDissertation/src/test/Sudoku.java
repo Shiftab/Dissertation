@@ -6,29 +6,129 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Library class for solving sudoku
+ * 
+ * @author shiftab
+ * 
+ */
 public class Sudoku {
 
-	List<Zone> rowList = new ArrayList<Zone>();
-	List<Zone> columList = new ArrayList<Zone>();
-	List<Zone> gridList = new ArrayList<Zone>();
-	List<ArrayList<Integer>> gridChecks = new ArrayList<ArrayList<Integer>>();
+	@SuppressWarnings("unchecked")
+	private final List<ArrayList<Integer>> CHECK_LISTS = Arrays.asList(
+			new ArrayList<Integer>(Arrays.asList(0, 1, 2)),
+			new ArrayList<Integer>(Arrays.asList(3, 4, 5)),
+			new ArrayList<Integer>(Arrays.asList(6, 7, 8)),
+			new ArrayList<Integer>(Arrays.asList(0, 3, 6)),
+			new ArrayList<Integer>(Arrays.asList(1, 4, 7)),
+			new ArrayList<Integer>(Arrays.asList(2, 5, 8)));
+	private List<Zone> rowList = new ArrayList<Zone>();
+	private List<Zone> columList = new ArrayList<Zone>();
+	private List<Zone> gridList = new ArrayList<Zone>();
+	private List<ArrayList<Integer>> gridChecks = new ArrayList<ArrayList<Integer>>(
+			CHECK_LISTS);
 
 	public Sudoku(int[][] problem) {
-		initChecks();
-		long time = System.currentTimeMillis();
 		populateZones(problem);
+	}
+
+	public void refresh(int[][] problem) {
+		populateZones(problem);
+	}
+
+	public void print() {
 		for (Zone z : rowList)
 			System.out.println(z);
-				
+	}
+
+	/**
+	 * basic method for solving a whole sudoku problem
+	 * 
+	 * @param problem
+	 * @return problem
+	 */
+	public int[][] solveSudoku(int[][] problem) {
+
+		long time = System.currentTimeMillis();
+		for (Zone z : rowList)
+			System.out.println(z);
+
 		System.out.println("\n\n");
 
 		solve(problem);
 		for (Zone z : rowList)
 			System.out.println(z);
-		
-		System.out.println("\n"+(System.currentTimeMillis()-time)/1000.0+" Seconds");
+
+		System.out.println("\n" + (System.currentTimeMillis() - time) / 1000.0
+				+ " Seconds");
+		for (int y = 0; y < problem.length; y++)
+			for (int x = 0; x < problem.length; x++)
+				problem[x][y] = rowList.get(y).get(x);
+
+		return problem;
 	}
 
+	/**
+	 * method for returning the next number solved in a problem
+	 * 
+	 * @param problem
+	 * @return coordinate for solved number
+	 */
+	public Coordinate nextNumber(List<Coordinate> ignore) {
+		Coordinate ans = null;
+		int count = 0;
+		for (Zone z : gridList) {
+			ans = grid(z, count);
+			count++;
+			if (ans != null && !ignore.contains(ans))
+				break;
+		}
+		if (ans == null)
+			for (Zone z : rowList) {
+				ans = row(z);
+				if (ans != null && !ignore.contains(ans))
+					break;
+			}
+		if (ans == null)
+			for (Zone z : columList) {
+				ans = colum(z);
+				if (ans != null && !ignore.contains(ans))
+					break;
+			}
+
+		return ans;
+	}
+
+	/**
+	 * method for checking a number
+	 * 
+	 */
+	public boolean check(Coordinate c) {
+		// find zones
+		int pos = 0;
+		Coordinate checker = new Coordinate(c.getX(), c.getY(), 0);
+		for (Zone z : gridList) {
+			if (z.contains(checker)) {
+				if (checkGrid(z, pos, c))
+					return true;
+			}
+			pos++;
+		}
+		if(checkRow(rowList.get(c.getY()), c))
+			return true;
+		if(checkColum(columList.get(c.getX()), c))
+			return true;
+
+		return false;
+	}
+
+	/**
+	 * method used in an iterative implementation to solve a whole sudoku
+	 * problem
+	 * 
+	 * @param problem
+	 * @return problem
+	 */
 	private int[][] solve(int[][] p) {
 		populateZones(p);
 		workOutGrid(p);
@@ -37,89 +137,183 @@ public class Sudoku {
 		return p;
 	}
 
+	/**
+	 * method used to solve a grid zone
+	 * 
+	 * @param problem
+	 * @return problem
+	 */
 	private int[][] workOutGrid(int[][] problem) {
 		int pos = 0;
-		boolean vertical;
-		for (Zone z : gridList) {
-			List<ArrayList<Integer>> check = new ArrayList<ArrayList<Integer>>();
-			for (ArrayList<Integer> l : gridChecks) {
-				if (l.contains(pos))
-					check.add(l);
+		for (Zone z : gridList) { // for every grid zone
+			Coordinate c = grid(z, pos);
+			if (c != null) {
+				problem[c.getX()][c.getY()] = c.getVal();
+				solve(problem);
 			}
-
-			for (int search : z.getMissing()) {
-				for (List<Integer> l : check) {
-					int count = 0;
-					vertical = false;
-					for (int i : l) {
-						if (i != pos) {
-
-							if (gridList.get(i).isMissing(search))
-								count++;
-							else
-								continue;
-
-							if (i < pos - 2 || i > pos + 2) {
-								vertical = true;
-							}
-						}
-					}
-					
-					if (count==0) {
-						List<Coordinate> excludePoints = new ArrayList<Coordinate>();
-						for (int i : l) {
-							if (i != pos) {
-								excludePoints.add(gridList.get(i).findVal(
-										search));
-							}
-						}
-
-						Set<Integer> axisPoints;
-						Set<Integer> removePoints = new HashSet<Integer>();
-						if (vertical) { // look at x's
-							for (Coordinate point : excludePoints)
-								removePoints.add(point.getX());
-							axisPoints = new HashSet<Integer>(z.getXAxis());
-							axisPoints.removeAll(removePoints);
-						} else { // look at y's
-							for (Coordinate point : excludePoints)
-								removePoints.add(point.getY());
-							axisPoints = new HashSet<Integer>(z.getYAxis());
-							axisPoints.removeAll(removePoints);
-						}
-
-						// check each blank along the axis for one missing val
-						count = 0;
-						Coordinate found = null;
-						for (Coordinate c : z.getBlanks()) {
-							if (vertical && axisPoints.contains(c.getX())
-									&& rowList.get(c.getY()).isMissing(search)) { //SEARCH!!
-								found = c;
-								count++;
-							} else if (!vertical
-									&& axisPoints.contains(c.getY())
-									&& columList.get(c.getX())
-											.isMissing(search)) {
-								found = c;
-								count++;
-							}
-
-						}
-						if(count==1){
-							problem[found.getX()][found.getY()] = search;
-							solve(problem);
-							return problem;
-						}
-					}
-				}
-			}
-			pos++;
+			pos++; // increment the zones
 		}
 
 		return problem;
 	}
 
-	private Coordinate row(Zone z) {
+	private boolean checkGrid(Zone z, int pos, Coordinate c) {
+		Coordinate checker = new Coordinate(c.getX(), c.getY(), 0);
+		if (z.isMissing(c.getVal()) && z.getBlanks().contains(checker)) {
+			boolean vertical = false;
+			List<ArrayList<Integer>> check = new ArrayList<ArrayList<Integer>>();
+			for (ArrayList<Integer> l : gridChecks) {
+				// find what zones to check
+				if (l.contains(pos))
+					check.add(l);
+			}
+
+			// make sure they arn't missing it
+			checks: for (List<Integer> l : check) {
+				for (int i : l) {
+					if (i != pos) {
+						if (gridList.get(i).isMissing(c.getVal())) {
+							continue checks;
+						}
+						if (i < pos - 2 || i > pos + 2) { // list is vertical
+							vertical = true;
+							// check the lines are right
+							if (c.getX() == gridList.get(i).findVal(c.getVal())
+									.getX()){
+								continue checks;
+							}
+						} else if (c.getY() == gridList.get(i)
+								.findVal(c.getVal()).getY()){
+							continue checks;
+						}
+					}
+				}
+				int count = 0;
+				for (Coordinate blank : z.getBlanks()) {
+					if (vertical && c.getX() == blank.getX()
+							&& rowList.get(blank.getY()).isMissing(c.getVal())) {
+						count++;
+					} else if (!vertical
+							&& c.getY() == blank.getY()
+							&& columList.get(blank.getX())
+									.isMissing(c.getVal())) {
+						count++;
+					}
+				}
+				// check the other axis blanks can't be it
+				if (count == 1)
+					return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * method for solving a single grid zone
+	 * 
+	 * @param z
+	 * @param pos
+	 * @return
+	 */
+	private Coordinate grid(Zone z, int pos) {
+		boolean vertical;
+		List<ArrayList<Integer>> check = new ArrayList<ArrayList<Integer>>();
+		for (ArrayList<Integer> l : gridChecks) { // find what zones to check
+			if (l.contains(pos))
+				check.add(l);
+		}
+		for (int search : z.getMissing()) { // for every number looking for
+			for (List<Integer> l : check) { // for every check list
+				int count = 0;
+				vertical = false;
+				for (int i : l) { // for every zone in a check list
+					if (i != pos) {
+						if (gridList.get(i).isMissing(search))
+							count++;
+						else
+							continue;
+						if (i < pos - 2 || i > pos + 2) { // list is vertical
+							vertical = true;
+						}
+					}
+				}
+				if (count == 0) { // if no other zone is looking
+					List<Coordinate> excludePoints = new ArrayList<Coordinate>();
+					for (int i : l) {
+						if (i != pos) {
+							// find the loc of the search point in other zones
+							excludePoints.add(gridList.get(i).findVal(search));
+						}
+					}
+					Set<Integer> axisPoints;
+					Set<Integer> removePoints = new HashSet<Integer>();
+					if (vertical) { // look at x's
+						for (Coordinate point : excludePoints)
+							removePoints.add(point.getX());
+						axisPoints = new HashSet<Integer>(z.getXAxis());
+						axisPoints.removeAll(removePoints); // find the row to
+															// look at
+					} else { // look at y's
+						for (Coordinate point : excludePoints)
+							removePoints.add(point.getY());
+						axisPoints = new HashSet<Integer>(z.getYAxis());
+						axisPoints.removeAll(removePoints); // find the colum
+					}
+					// check each blank along the axis for one missing val
+					count = 0;
+					Coordinate found = null;
+					for (Coordinate c : z.getBlanks()) {
+						if (vertical && axisPoints.contains(c.getX())
+								&& rowList.get(c.getY()).isMissing(search)) {
+							found = c;
+							count++;
+						} else if (!vertical && axisPoints.contains(c.getY())
+								&& columList.get(c.getX()).isMissing(search)) {
+							found = c;
+							count++;
+						}
+					}
+					if (count == 1) { // only one possibility
+						return new Coordinate(found.getX(), found.getY(),
+								search);
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * method for checking to see if a colum coordinate is correct
+	 * 
+	 * @param z
+	 * @param c
+	 * @return
+	 */
+	private boolean checkColum(Zone z, Coordinate c) {
+		Coordinate checker = new Coordinate(c.getX(), c.getY(), 0);
+		if (z.isMissing(c.getVal()) && z.getBlanks().contains(checker)
+				&& columList.get(c.getX()).isMissing(c.getVal())) {
+			int count = 0;
+			for (Coordinate blank : z.getBlanks()) {
+				if (columList.get(blank.getX()).isMissing(c.getVal())) {
+					count++;
+				}
+			}
+			if (count == 1) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * method for solving a colum zone
+	 * 
+	 * @param zone
+	 * @return solved coordinate
+	 */
+	private Coordinate colum(Zone z) {
 		Set<Integer> miss = z.getMissing();
 		for (Integer x : miss) {
 			int count = 0;
@@ -137,7 +331,37 @@ public class Sudoku {
 		return null;
 	}
 
-	private Coordinate colum(Zone z) {
+	/**
+	 * method for checking to see if a row coordinate is correct
+	 * 
+	 * @param z
+	 * @param c
+	 * @return
+	 */
+	private boolean checkRow(Zone z, Coordinate c) {
+		Coordinate checker = new Coordinate(c.getX(), c.getY(), 0);
+		if (z.isMissing(c.getVal()) && z.getBlanks().contains(checker)
+				&& rowList.get(c.getY()).isMissing(c.getVal())) {
+			int count = 0;
+			for (Coordinate blank : z.getBlanks()) {
+				if (rowList.get(blank.getY()).isMissing(c.getVal())) {
+					count++;
+				}
+			}
+			if (count == 1) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * method for solving a row zone
+	 * 
+	 * @param zone
+	 * @return solved coordinate
+	 */
+	private Coordinate row(Zone z) {
 		Set<Integer> miss = z.getMissing();
 		for (Integer x : miss) {
 			int count = 0;
@@ -155,6 +379,12 @@ public class Sudoku {
 		return null;
 	}
 
+	/**
+	 * method for solving all of the row zones
+	 * 
+	 * @param problem
+	 * @return problem
+	 */
 	private int[][] workOutRows(int[][] problem) {
 		boolean changed = false;
 		for (Zone z : rowList) {
@@ -171,7 +401,13 @@ public class Sudoku {
 		return problem;
 	}
 
-	public int[][] workOutColums(int[][] problem) {
+	/**
+	 * method for solving all of the colum zones
+	 * 
+	 * @param problem
+	 * @return problem
+	 */
+	private int[][] workOutColums(int[][] problem) {
 		boolean changed = false;
 		for (Zone z : columList) {
 			Coordinate colum = colum(z);
@@ -187,6 +423,11 @@ public class Sudoku {
 		return problem;
 	}
 
+	/**
+	 * method for setting up all of the search zones
+	 * 
+	 * @param problem
+	 */
 	private void populateZones(int[][] problem) {
 		List<Coordinate> colum = new ArrayList<Coordinate>();
 		rowList.clear();
@@ -261,14 +502,5 @@ public class Sudoku {
 		for (Zone z : gridList) {
 			z.populateWatch();
 		}
-	}
-
-	private void initChecks() {
-		gridChecks.add(new ArrayList<Integer>(Arrays.asList(0, 1, 2)));
-		gridChecks.add(new ArrayList<Integer>(Arrays.asList(3, 4, 5)));
-		gridChecks.add(new ArrayList<Integer>(Arrays.asList(6, 7, 8)));
-		gridChecks.add(new ArrayList<Integer>(Arrays.asList(0, 3, 6)));
-		gridChecks.add(new ArrayList<Integer>(Arrays.asList(1, 4, 7)));
-		gridChecks.add(new ArrayList<Integer>(Arrays.asList(2, 5, 8)));
 	}
 }

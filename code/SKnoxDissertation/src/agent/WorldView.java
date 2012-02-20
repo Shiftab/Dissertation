@@ -1,10 +1,38 @@
 package agent;
 
+import jade.core.AID;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import test.Coordinate;
+
 public class WorldView {
 	int problem[][]; //current problem to be solved
-	List<Integer> Agents = new ArrayList<Integer>(); //list of agents within the groups
-	//TODO: personality variables
+	List<AID> Agents = new ArrayList<AID>(); //list of agents within the group
+	
+	public WorldView(int[][] p, List<AID> l){
+		problem = p;
+		Agents = l;
+	}
+	
+	public int[][] getProblem(){
+		return problem;
+	}
+	
+	public void edditProblem(Coordinate x){
+		problem[x.getX()][x.getY()] = x.getVal();
+	}
+	
+	public void setProblem(int[][] p){
+		problem = p;
+	}
+	
+	public List<AID> getPeers(){
+		return Agents;
+	}
+	
+	public boolean check(Coordinate c){
+		return problem[c.getX()][c.getY()]==c.getVal();
+	}
 }

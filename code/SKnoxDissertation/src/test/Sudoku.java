@@ -80,20 +80,26 @@ public class Sudoku {
 		for (Zone z : gridList) {
 			ans = grid(z, count);
 			count++;
-			if (ans != null && !ignore.contains(ans))
+			if (ans != null){
 				break;
+			}else
+				ans=null;
 		}
 		if (ans == null)
 			for (Zone z : rowList) {
 				ans = row(z);
-				if (ans != null && !ignore.contains(ans))
+				if (ans != null){
 					break;
+				}else
+					ans=null;
 			}
 		if (ans == null)
 			for (Zone z : columList) {
 				ans = colum(z);
-				if (ans != null && !ignore.contains(ans))
+				if (ans != null){
 					break;
+				}else
+					ans=null;
 			}
 
 		return ans;
@@ -216,7 +222,7 @@ public class Sudoku {
 	 * @return
 	 */
 	private Coordinate grid(Zone z, int pos) {
-		boolean vertical;
+		boolean vertical=false;
 		List<ArrayList<Integer>> check = new ArrayList<ArrayList<Integer>>();
 		for (ArrayList<Integer> l : gridChecks) { // find what zones to check
 			if (l.contains(pos))
@@ -225,15 +231,15 @@ public class Sudoku {
 		for (int search : z.getMissing()) { // for every number looking for
 			for (List<Integer> l : check) { // for every check list
 				int count = 0;
-				vertical = false;
 				for (int i : l) { // for every zone in a check list
 					if (i != pos) {
 						if (gridList.get(i).isMissing(search))
 							count++;
-						else
-							continue;
+						
 						if (i < pos - 2 || i > pos + 2) { // list is vertical
 							vertical = true;
+						}else{
+							vertical = false;
 						}
 					}
 				}
@@ -290,7 +296,7 @@ public class Sudoku {
 	 * @param c
 	 * @return
 	 */
-	private boolean checkColum(Zone z, Coordinate c) {
+	private boolean checkRow(Zone z, Coordinate c) {
 		Coordinate checker = new Coordinate(c.getX(), c.getY(), 0);
 		if (z.isMissing(c.getVal()) && z.getBlanks().contains(checker)
 				&& columList.get(c.getX()).isMissing(c.getVal())) {
@@ -313,7 +319,7 @@ public class Sudoku {
 	 * @param zone
 	 * @return solved coordinate
 	 */
-	private Coordinate colum(Zone z) {
+	private Coordinate row(Zone z) {
 		Set<Integer> miss = z.getMissing();
 		for (Integer x : miss) {
 			int count = 0;
@@ -338,7 +344,7 @@ public class Sudoku {
 	 * @param c
 	 * @return
 	 */
-	private boolean checkRow(Zone z, Coordinate c) {
+	private boolean checkColum(Zone z, Coordinate c) {
 		Coordinate checker = new Coordinate(c.getX(), c.getY(), 0);
 		if (z.isMissing(c.getVal()) && z.getBlanks().contains(checker)
 				&& rowList.get(c.getY()).isMissing(c.getVal())) {
@@ -361,7 +367,7 @@ public class Sudoku {
 	 * @param zone
 	 * @return solved coordinate
 	 */
-	private Coordinate row(Zone z) {
+	private Coordinate colum(Zone z) {
 		Set<Integer> miss = z.getMissing();
 		for (Integer x : miss) {
 			int count = 0;

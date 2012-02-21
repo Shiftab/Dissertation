@@ -22,7 +22,6 @@ public class Pupil extends Agent {
 	private int crashCount = 0;
 	private final int MAX_WAIT = 3;
 	private Problem paperProblem;
-	private boolean asking = false;
 	private Sudoku brain;
 	private List<Coordinate> asked = new ArrayList<Coordinate>();
 	private List<Coordinate> responded = new ArrayList<Coordinate>();
@@ -38,38 +37,14 @@ public class Pupil extends Agent {
 		List<String> temp = (List<String>) args[1];
 		for (String s : temp)
 			peers.add(new AID(s, AID.ISLOCALNAME));
-
-		world = new WorldView((int[][]) args[0], peers); // persons
-															// understanding of
-															// the world
+				
+		// persons understanding of the world
+		world = new WorldView((int[][]) args[0], peers); 
+				
 		paperProblem = (Problem) args[2]; // problem as is on paper
 
 		brain = new Sudoku(world.getProblem());
 		search();
-
-		/**
-		 * taken out atm as the loop doesn't realy work, atempting a one-shot
-		 * solution addBehaviour(new CyclicBehaviour(this) {
-		 * 
-		 * @Override public void action() {
-		 *           world.setProblem(paperProblem.getProblem());
-		 * 
-		 *           Coordinate nextNum = Sudoku.nextNumber(world.getProblem());
-		 *           ACLMessage msg = new ACLMessage(ACLMessage.QUERY_IF);
-		 *           List<AID> peers = world.getPeers(); for (AID a : peers) {
-		 *           if(!a.equals(this.myAgent.getAID())) msg.addReceiver(a); }
-		 *           msg.setContent("Would the number at (" + nextNum.getX() +
-		 *           "," + nextNum.getY() + ") be " + nextNum.getVal() + "?");
-		 *           System.out.println(this.myAgent.getLocalName()+": "+msg.
-		 *           getContent()); send(msg);
-		 * 
-		 *           // TODO: fix this garbage confirmed = false; sucess =
-		 *           false; while (!confirmed) block(); if (sucess) {
-		 *           world.edditProblem(nextNum);
-		 *           paperProblem.edditProblem(nextNum); } }
-		 * 
-		 *           });
-		 **/
 
 		/**
 		 * respond behavior
@@ -83,55 +58,41 @@ public class Pupil extends Agent {
 				if (res != null)
 					switch (res.getPerformative()) {
 					case ACLMessage.INFORM:
-						if (asking) {
-							String ans = res.getContent();
-							Iterator<AID> i = res.getAllReplyTo();
-							while (i.hasNext()) {
-								if (i.next().equals(this.myAgent.getAID())) {
-									if(ans.contains("already")){
-										System.out.println(this.myAgent.getLocalName()+": woops");
-									}else if (ans.startsWith("Yes")) {
-										String ears = res.getContent();
-										Coordinate check = new Coordinate(
-												Integer.valueOf(String
-														.valueOf(ears
-																.charAt(28))),
-												Integer.valueOf(String
-														.valueOf(ears
-																.charAt(30))),
-												Integer.valueOf(String
-														.valueOf(ears
-																.charAt(13))));
-										try {
+						String ans = res.getContent();
+						if (ans.contains("already")) {
+							System.out.println(this.myAgent.getLocalName()
+									+ ": woops");
+						} else if (ans.startsWith("Yes")) {
+							String ears = res.getContent();
+							Coordinate check = new Coordinate(
+									Integer.valueOf(String.valueOf(ears
+											.charAt(28))),
+									Integer.valueOf(String.valueOf(ears
+											.charAt(30))),
+									Integer.valueOf(String.valueOf(ears
+											.charAt(13))));
+							if (asked.contains(check)) {
+								try {
+									if (paperProblem.edditProblem(check)) {
+										System.out.println(this.myAgent
+												.getLocalName()
+												+ ": Changing ("
+												+ check.getX()
+												+ ","
+												+ check.getY()
+												+ ") to "
+												+ check.getVal());
+										world.edditProblem(check);
+										brain.print();
+									}
+									brain.refresh(world.getProblem());
 
-											if (paperProblem
-													.edditProblem(check)) {
-												System.out.println(this.myAgent
-														.getLocalName()
-														+ ": Changing ("
-														+ check.getX()
-														+ ","
-														+ check.getY()
-														+ ") to "
-														+ check.getVal());
-												world.edditProblem(check);
-												brain.print();
-											}
-											brain.refresh(world.getProblem());
-										} catch (ConcurrentModificationException cme) {
-											System.out.println("this");
-										}
-									} else
-										;
-									// TODO: somthing for when it doesn't
-									// work
-
-									asking = false;
-
-									search();
+								} catch (ConcurrentModificationException cme) {
+									System.out.println("this");
 								}
 							}
 						}
+						search();
 
 						break;
 					case ACLMessage.QUERY_IF:
@@ -144,18 +105,17 @@ public class Pupil extends Agent {
 							responded.add(check);
 							asked.add(check);
 							ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-							msg.addReplyTo(res.getSender());
 							for (AID a : world.getPeers()) {
 								if (!a.equals(this.myAgent.getAID())) {
 									msg.addReceiver(a);
 								}
 							}
 
-							if(world.check(check)){
+							if (world.check(check)) {
 								msg.setContent("Yes, " + check.getVal()
-										+ " is already at (" + check.getX() + ","
-										+ check.getY() + ").");
-							}else if (brain.check(check)) {
+										+ " is already at (" + check.getX()
+										+ "," + check.getY() + ").");
+							} else if (brain.check(check)) {
 								msg.setContent("Yes, I think " + check.getVal()
 										+ " would be at (" + check.getX() + ","
 										+ check.getY() + ").");
@@ -175,11 +135,10 @@ public class Pupil extends Agent {
 
 		});
 
-		addBehaviour(new TickerBehaviour(this, 60000) {
+		addBehaviour(new TickerBehaviour(this, 6000) {
 			@Override
 			public void onTick() {
-				if (!asking || crashCount == MAX_WAIT) {
-					asking = false;
+				if (crashCount == MAX_WAIT) {
 					crashCount = 0;
 					search();
 				} else {
@@ -196,8 +155,9 @@ public class Pupil extends Agent {
 		brain.refresh(world.getProblem());
 		Coordinate nextNum = brain.nextNumber(asked);
 		if (nextNum == null) {
-			System.out.println("Finnished!");
-			this.takeDown();
+			System.out.println(this.getAID().getLocalName()
+					+ ": can't find anymore");
+			this.blockingReceive();
 		} else if (!asked.contains(nextNum)) {
 			asked.add(nextNum);
 			ACLMessage msg = new ACLMessage(ACLMessage.QUERY_IF);
@@ -210,7 +170,6 @@ public class Pupil extends Agent {
 					+ nextNum.getY() + ") be " + nextNum.getVal() + "?");
 			System.out.println(this.getLocalName() + ": " + msg.getContent());
 			send(msg);
-			asking = true;
 		}
 	}
 

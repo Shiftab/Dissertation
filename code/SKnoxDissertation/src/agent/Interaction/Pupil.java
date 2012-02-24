@@ -1,12 +1,14 @@
-package agent;
+package agent.Interaction;
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
 
-import test.Coordinate;
-import test.Sudoku;
+import agent.Knowledge.WorldView;
+
+import sudoku.Coordinate;
+import sudoku.Sudoku;
 
 import control.Problem;
 
@@ -37,10 +39,10 @@ public class Pupil extends Agent {
 		List<String> temp = (List<String>) args[1];
 		for (String s : temp)
 			peers.add(new AID(s, AID.ISLOCALNAME));
-				
+
 		// persons understanding of the world
-		world = new WorldView((int[][]) args[0], peers); 
-				
+		world = new WorldView((int[][]) args[0], peers);
+
 		paperProblem = (Problem) args[2]; // problem as is on paper
 
 		brain = new Sudoku(world.getProblem());
@@ -60,8 +62,13 @@ public class Pupil extends Agent {
 					case ACLMessage.INFORM:
 						String ans = res.getContent();
 						if (ans.contains("already")) {
-							System.out.println(this.myAgent.getLocalName()
-									+ ": woops");
+							ArrayList<AID> send = new ArrayList<AID>();
+							for (AID a : world.getPeers()) {
+								if (!a.equals(this.myAgent.getAID())) {
+									send.add(a);
+								}
+							}
+							Messages.acknowledge(send, this.myAgent);
 						} else if (ans.startsWith("Yes")) {
 							String ears = res.getContent();
 							Coordinate check = new Coordinate(
@@ -74,14 +81,14 @@ public class Pupil extends Agent {
 							if (asked.contains(check)) {
 								try {
 									if (paperProblem.edditProblem(check)) {
-										System.out.println(this.myAgent
-												.getLocalName()
-												+ ": Changing ("
-												+ check.getX()
-												+ ","
-												+ check.getY()
-												+ ") to "
-												+ check.getVal());
+										ArrayList<AID> send = new ArrayList<AID>();
+										for (AID a : world.getPeers()) {
+											if (!a.equals(this.myAgent.getAID())) {
+												send.add(a);
+											}
+										}
+										Messages.change(check, send,
+												this.myAgent);
 										world.edditProblem(check);
 										brain.print();
 									}
@@ -104,30 +111,21 @@ public class Pupil extends Agent {
 						if (!responded.contains(check)) {
 							responded.add(check);
 							asked.add(check);
-							ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+
+							ArrayList<AID> send = new ArrayList<AID>();
 							for (AID a : world.getPeers()) {
 								if (!a.equals(this.myAgent.getAID())) {
-									msg.addReceiver(a);
+									send.add(a);
 								}
 							}
 
 							if (world.check(check)) {
-								msg.setContent("Yes, " + check.getVal()
-										+ " is already at (" + check.getX()
-										+ "," + check.getY() + ").");
+								Messages.already(check, send, this.myAgent);
 							} else if (brain.check(check)) {
-								msg.setContent("Yes, I think " + check.getVal()
-										+ " would be at (" + check.getX() + ","
-										+ check.getY() + ").");
+								Messages.agree(check, send, this.myAgent);
 							} else {
-								msg.setContent("No, I don't think "
-										+ check.getVal() + " would be at ("
-										+ check.getX() + "," + check.getY()
-										+ ").");
+								Messages.disagree(check, send, this.myAgent);
 							}
-							System.out.println(this.myAgent.getLocalName()
-									+ ": " + msg.getContent());
-							send(msg);
 						}
 						break;
 					}
@@ -155,21 +153,19 @@ public class Pupil extends Agent {
 		brain.refresh(world.getProblem());
 		Coordinate nextNum = brain.nextNumber(asked);
 		if (nextNum == null) {
+			// TODO: make this an official message and create a stuck and a
+			// finish system
 			System.out.println(this.getAID().getLocalName()
 					+ ": can't find anymore");
 			this.blockingReceive();
 		} else if (!asked.contains(nextNum)) {
 			asked.add(nextNum);
-			ACLMessage msg = new ACLMessage(ACLMessage.QUERY_IF);
-			List<AID> peers = world.getPeers();
-			for (AID a : peers) {
+			ArrayList<AID> send = new ArrayList<AID>();
+			for (AID a : world.getPeers()) {
 				if (!a.equals(this.getAID()))
-					msg.addReceiver(a);
+					send.add(a);
 			}
-			msg.setContent("Would the number at (" + nextNum.getX() + ","
-					+ nextNum.getY() + ") be " + nextNum.getVal() + "?");
-			System.out.println(this.getLocalName() + ": " + msg.getContent());
-			send(msg);
+			Messages.query(nextNum, send, this);
 		}
 	}
 

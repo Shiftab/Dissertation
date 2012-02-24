@@ -1,11 +1,11 @@
-package test;
+package sudoku;
 
 import control.BasicStart;
 
 public class test {
 
 	/**
-	 * test test
+	 * sudoku sudoku
 	 * 
 	 * @param args
 	 */

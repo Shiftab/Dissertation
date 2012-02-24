@@ -1,12 +1,17 @@
-package agent;
+package agent.Knowledge;
 
 import jade.core.AID;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import test.Coordinate;
+import sudoku.Coordinate;
 
+/**
+ * how the agent sees the problem
+ * @author shiftab
+ *
+ */
 public class WorldView {
 	int problem[][]; // current problem to be solved
 	List<AID> Agents = new ArrayList<AID>(); // list of agents within the group

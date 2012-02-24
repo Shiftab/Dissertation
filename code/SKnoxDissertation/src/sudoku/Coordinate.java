@@ -1,4 +1,4 @@
-package test;
+package sudoku;
 
 /**
  * class for coordinates of points in a sudoku problem

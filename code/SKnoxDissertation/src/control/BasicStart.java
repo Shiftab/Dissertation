@@ -2,7 +2,6 @@ package control;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import jade.core.Agent;
 import jade.core.AID;
 import jade.wrapper.AgentController;
@@ -20,11 +19,6 @@ public class BasicStart extends Agent {
 				{ 0, 4, 1, 0, 6, 8, 3, 0, 0 }, { 9, 5, 0, 0, 0, 0, 0, 3, 8 },
 				{ 0, 0, 2, 9, 0, 6, 4, 5, 0 }, { 0, 0, 0, 0, 0, 2, 0, 0, 0 } };
 
-		for (int y = 0; y < 9; y++){
-			for (int x = 0; x < 9; x++)
-				System.out.print(problem[x][y]);
-			System.out.print("\n");
-		}
 		List<String> agents = new ArrayList<String>();
 		agents.add("Bob");
 		agents.add("Alice");
@@ -38,7 +32,7 @@ public class BasicStart extends Agent {
 		try {
 			for (String a : agents)
 				((AgentController) getContainerController().createNewAgent(a,
-						"agent.Pupil", args)).start();
+						"agent.Interaction.Pupil", args)).start();
 		} catch (StaleProxyException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -2,7 +2,6 @@ package agent.Interaction;
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
-import java.util.Iterator;
 import java.util.List;
 
 import agent.Knowledge.WorldView;
@@ -153,8 +152,6 @@ public class Pupil extends Agent {
 		brain.refresh(world.getProblem());
 		Coordinate nextNum = brain.nextNumber(asked);
 		if (nextNum == null) {
-			// TODO: make this an official message and create a stuck and a
-			// finish system
 			System.out.println(this.getAID().getLocalName()
 					+ ": can't find anymore");
 			this.blockingReceive();

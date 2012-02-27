@@ -6,6 +6,8 @@ import jade.lang.acl.ACLMessage;
 
 import java.util.List;
 
+import control.Message;
+
 import sudoku.Coordinate;
 
 public class Messages {
@@ -18,12 +20,13 @@ public class Messages {
 	 * @param sender
 	 */
 	public static void query(Coordinate coordinate, List<AID> send, Agent sender) {
-		ACLMessage msg = new ACLMessage(ACLMessage.QUERY_IF);
+		Message msg = new Message(Message.QUERY_IF);
 		for (AID a : send) {
 			msg.addReceiver(a);
 		}
 		msg.setContent("Would the number at (" + coordinate.getX() + ","
 				+ coordinate.getY() + ") be " + coordinate.getVal() + "?");
+		msg.setCoordinate(coordinate);
 		System.out.println(sender.getAID().getLocalName() + ": "
 				+ msg.getContent());
 		sender.send(msg);
@@ -37,12 +40,13 @@ public class Messages {
 	 * @param sender
 	 */
 	public static void agree(Coordinate coordinate, List<AID> send, Agent sender) {
-		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+		Message msg = new Message(Message.INFORM);
 		for (AID a : send) {
 			msg.addReceiver(a);
 		}
 		msg.setContent("Yes, I think " + coordinate.getVal() + " would be at ("
 				+ coordinate.getX() + "," + coordinate.getY() + ").");
+		msg.setCoordinate(coordinate);
 		System.out.println(sender.getAID().getLocalName() + ": "
 				+ msg.getContent());
 		sender.send(msg);
@@ -57,7 +61,7 @@ public class Messages {
 	 */
 	public static void already(Coordinate coordinate, List<AID> send,
 			Agent sender) {
-		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+		Message msg = new Message(Message.INFORM);
 		for (AID a : send) {
 			msg.addReceiver(a);
 		}
@@ -77,13 +81,14 @@ public class Messages {
 	 */
 	public static void disagree(Coordinate coordinate, List<AID> send,
 			Agent sender) {
-		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+		Message msg = new Message(Message.INFORM);
 		for (AID a : send) {
 			msg.addReceiver(a);
 		}
 		msg.setContent("No, I don't think " + coordinate.getVal()
 				+ " would be at (" + coordinate.getX() + ","
 				+ coordinate.getY() + ").");
+		msg.setCoordinate(coordinate);
 		sender.send(msg);
 	}
 
@@ -96,12 +101,13 @@ public class Messages {
 	 */
 	public static void change(Coordinate coordinate, List<AID> send,
 			Agent sender) {
-		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+		Message msg = new Message(Message.INFORM);
 		for (AID a : send) {
 			msg.addReceiver(a);
 		}
 		msg.setContent("Changing value to " + coordinate.getVal() + " at ("
 				+ coordinate.getX() + "," + coordinate.getY() + ").");
+		msg.setCoordinate(coordinate);
 		System.out.println(sender.getAID().getLocalName() + ": "
 				+ msg.getContent());
 		sender.send(msg);
@@ -115,12 +121,13 @@ public class Messages {
 	 * @param sender
 	 */
 	public static void argue(Coordinate coordinate, List<AID> send, Agent sender) {
-		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+		Message msg = new Message(Message.ARGUE);
 		for (AID a : send) {
 			msg.addReceiver(a);
 		}
 		msg.setContent("Well I think " + coordinate.getVal() + " would be at ("
 				+ coordinate.getX() + "," + coordinate.getY() + ")!");
+		msg.setCoordinate(coordinate);
 		System.out.println(sender.getAID().getLocalName() + ": "
 				+ msg.getContent());
 		sender.send(msg);
@@ -134,7 +141,7 @@ public class Messages {
 	 * @param sender
 	 */
 	public static void acknowledge(List<AID> send, Agent sender) {
-		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+		Message msg = new Message(Message.INFORM);
 		for (AID a : send) {
 			msg.addReceiver(a);
 		}
@@ -152,7 +159,7 @@ public class Messages {
 	 * @param sender
 	 */
 	public static void distract(List<AID> send, AID focus, Agent sender) {
-		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+		Message msg = new Message(Message.DISTRACT);
 		for (AID a : send) {
 			msg.addReceiver(a);
 		}
@@ -171,7 +178,7 @@ public class Messages {
 	 * @param sender
 	 */
 	public static void wasteTime(List<AID> send, AID focus, Agent sender) {
-		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+		Message msg = new Message(Message.DISTRACT);
 		for (AID a : send) {
 			msg.addReceiver(a);
 		}
@@ -190,7 +197,7 @@ public class Messages {
 	 * @param sender
 	 */
 	public static void reprisal(List<AID> send, AID focus, Agent sender) {
-		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+		Message msg = new Message(Message.REPRISAL);
 		for (AID a : send) {
 			msg.addReceiver(a);
 		}
@@ -209,7 +216,7 @@ public class Messages {
 	 * @param sender
 	 */
 	public static void angryReprisal(List<AID> send, AID focus, Agent sender) {
-		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+		Message msg = new Message(Message.REPRISAL);
 		for (AID a : send) {
 			msg.addReceiver(a);
 		}
@@ -228,7 +235,7 @@ public class Messages {
 	 * @param sender
 	 */
 	public static void retaliate(List<AID> send, AID focus, Agent sender) {
-		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+		Message msg = new Message(Message.ARGUE);
 		for (AID a : send) {
 			msg.addReceiver(a);
 		}
@@ -247,7 +254,7 @@ public class Messages {
 	 * @param sender
 	 */
 	public static void advise(List<AID> send, AID focus, Agent sender) {
-		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+		Message msg = new Message(Message.FOCUS);
 		for (AID a : send) {
 			msg.addReceiver(a);
 		}

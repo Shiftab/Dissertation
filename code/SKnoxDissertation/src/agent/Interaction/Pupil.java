@@ -150,7 +150,7 @@ public class Pupil extends Agent {
 
 		world.setProblem(paperProblem.getProblem());
 		brain.refresh(world.getProblem());
-		Coordinate nextNum = brain.nextNumber(asked);
+		Coordinate nextNum = brain.nextNumber();
 		if (nextNum == null) {
 			System.out.println(this.getAID().getLocalName()
 					+ ": can't find anymore");

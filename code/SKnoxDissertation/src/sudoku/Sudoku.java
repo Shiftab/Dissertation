@@ -74,7 +74,7 @@ public class Sudoku {
 	 * @param problem
 	 * @return coordinate for solved number
 	 */
-	public Coordinate nextNumber(List<Coordinate> ignore) {
+	public Coordinate nextNumber() {
 		Coordinate ans = null;
 		int count = 0;
 		for (Zone z : gridList) {

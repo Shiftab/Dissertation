@@ -13,8 +13,8 @@ public class DecisionMaking {
 	private static Random generator = new Random();
 
 	// Multiplier grid
-	private static final double[] WAIT_PROB = { -0.1, -0.1, -0.5, 0.3, 0.1 };
-	private static final double[] DISTRACT_PROB = { 0.1, -0.5, 0.3, -0.3, 0.5 };
+	private static final double[] WAIT_PROB = { -0.1, -0.1, -0.3, 0.2, 0.1 };
+	private static final double[] DISTRACT_PROB = { 0, -0.3, 0.2, -0.2, 0.3 };
 	private static final double[] AGRESIVE_PROB = { 0, 0.3, 0.1, -0.5, 0.5 };
 	private static final double[] TENTITIVE_PROB = { 0, 0.3, 0.1, 0.3, -0.1 };
 	private static final double[] IGNORE_PROB = { 0, 0.5, -0.3, -0.1, 0.1 };
@@ -22,7 +22,7 @@ public class DecisionMaking {
 	private static final double[] DISAGREE_PROB = { 0.1, 0.3, 0.1, -0.5, 0.5 };
 	private static final double[] ARGUE_PROB = { 0, -0.1, 0.1, -0.5, 0.5 };
 	private static final double[] PLACATE_PROB = { 0, 0.3, 0.3, 0.5, -0.1 };
-	private static final double[] CHATTER_PROB = { 0.1, -0.5, 0.3, 0.3, 0.5 };
+	private static final double[] CHATTER_PROB = { 0, -0.3, 0.2, 0.2, 0.3 };
 
 	//e-nums for decision case statement
 	public static final int WAIT = 1;

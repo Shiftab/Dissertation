@@ -24,7 +24,7 @@ public class DecisionMaking {
 	private static final double[] PLACATE_PROB = { 0, 0.3, 0.3, 0.5, -0.1 };
 	private static final double[] CHATTER_PROB = { 0, -0.3, 0.2, 0.2, 0.3 };
 
-	//e-nums for decision case statement
+	// e-nums for decision case statement
 	public static final int WAIT = 1;
 	public static final int DISTRACT = 2;
 	public static final int AGRESIVE = 3;
@@ -45,40 +45,51 @@ public class DecisionMaking {
 	 * @param ocean
 	 * @return
 	 */
-	public static boolean decide(int decision, double probability, double[] ocean) {
+	public static boolean decide(int decision, double probability,
+			double[] ocean) {
 
 		double[] question = null;
 		switch (decision) {
 		case (WAIT):
 			question = WAIT_PROB;
-			break;
+			return false;// temporary override
+			// break;
 		case (DISTRACT):
 			question = DISTRACT_PROB;
-			break;
+			return false;// temporary override
+			// break;
 		case (AGRESIVE):
 			question = AGRESIVE_PROB;
-			break;
+			return false;// temporary override
+			// break;
 		case (TENTITIVE):
 			question = TENTITIVE_PROB;
-			break;
+			return false;// temporary override
+			// break;
 		case (IGNORE):
 			question = IGNORE_PROB;
-			break;
+			return false;// temporary override
+			// break;
 		case (AGREE):
 			question = AGREE_PROB;
-			break;
+			return true;// temporary override
+			// break;
 		case (DISAGREE):
 			question = DISAGREE_PROB;
-			break;
+			return true;// temporary override
+			// break;
 		case (ARGUE):
 			question = ARGUE_PROB;
-			break;
+			return false;// temporary override
+			// break;
 		case (PLACATE):
 			question = PLACATE_PROB;
-			break;
+			return false;// temporary override
+			// break;
 		case (CHATTER):
 			question = CHATTER_PROB;
-			break;
+			return false;// temporary override
+			// break;
 		}
 
 		double ans = probability;

@@ -87,6 +87,8 @@ public class Messages {
 		msg.setContent("No, I don't think " + coordinate.getVal()
 				+ " would be at (" + coordinate.getX() + ","
 				+ coordinate.getY() + ").");
+		System.out.println(sender.getAID().getLocalName() + ": "
+				+ msg.getContent());
 		msg.setCoordinate(coordinate);
 		sender.send(msg);
 	}

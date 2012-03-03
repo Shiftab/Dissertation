@@ -5,6 +5,8 @@ import jade.core.AID;
 import java.util.ArrayList;
 import java.util.List;
 
+import control.Problem;
+
 import sudoku.Coordinate;
 
 /**
@@ -25,6 +27,10 @@ public class WorldView {
 		return problem;
 	}
 
+	public void refresh(){
+		problem = Problem.getProblem();
+	}
+	
 	public void edditProblem(Coordinate x) {
 		problem[x.getX()][x.getY()] = x.getVal();
 	}

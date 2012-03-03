@@ -21,18 +21,18 @@ public class BasicStart extends Agent {
 
 		List<String> agents = new ArrayList<String>();
 		agents.add("Bob");
-		agents.add("Alice");
+		agents.add("Steve");
 		agents.add("Alicia");
 
-		Problem prob = new Problem(problem);
+		Problem.setProblem(problem);
 
 		args[0] = problem;
 		args[1] = agents;
-		args[2] = prob;
 		try {
-			for (String a : agents)
+			for (String a : agents){
 				((AgentController) getContainerController().createNewAgent(a,
 						"agent.Interaction.Pupil2", args)).start();
+			}
 		} catch (StaleProxyException e) {
 			e.printStackTrace();
 		}

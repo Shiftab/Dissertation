@@ -117,11 +117,11 @@ public class Stats {
 	}
 
 	public void print() {
-		System.out.println(name + ": asked=" + asked + " answered=" + answered
+		/*System.out.println(name + ": asked=" + asked + " answered=" + answered
 				+ "\nmyAnswers=" + myAnswer + " lastWait="
 				+ getWait(System.currentTimeMillis()) + " avgWiat="
 				+ getAvgWait() + "\n");
-
+*/
 		output = asked + "," + answered + "," + myAnswer + ","
 				+ getWait(System.currentTimeMillis()) + "," + getAvgWait();
 	}

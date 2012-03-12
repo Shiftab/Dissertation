@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import agent.Knowledge.OthersModel;
 import agent.Knowledge.Personality;
 import agent.Knowledge.WorldView;
 import agent.Reasoning.DecisionMaking;
@@ -25,7 +26,9 @@ import jade.core.behaviours.Behaviour;
 public class Pupil2 extends Agent {
 
 	boolean testing = false;
-	boolean testingDisability = false;
+	boolean testingDisability = true;
+
+	private static final int NORM = 1, DYSLEX = 2, DYSCAL = 3;
 
 	Random r = new Random();
 	private int waits = 0;
@@ -57,6 +60,7 @@ public class Pupil2 extends Agent {
 	private WorldView world;
 	private Sudoku brain;
 	private Personality personality;
+	private OthersModel others;
 	private List<Coordinate> asking = new ArrayList<Coordinate>();
 	private List<Coordinate> asked = new ArrayList<Coordinate>();
 	private List<Coordinate> responded = new ArrayList<Coordinate>();
@@ -74,10 +78,14 @@ public class Pupil2 extends Agent {
 		List<AID> peers = new ArrayList<AID>();
 		List<String> temp = (List<String>) args[1];
 		for (String s : temp) {
-			peers.add(new AID(s, AID.ISLOCALNAME));
-			peerData.put(new AID(s, AID.ISLOCALNAME), new Stats(new AID(s,
-					AID.ISLOCALNAME), this.getAID()));
+			if (!s.equals(this.getLocalName())) {
+				peers.add(new AID(s, AID.ISLOCALNAME));
+				peerData.put(new AID(s, AID.ISLOCALNAME), new Stats(new AID(s,
+						AID.ISLOCALNAME), this.getAID()));
+			}
 		}
+		
+		others = new OthersModel(peers);
 
 		// persons understanding of the world
 		world = new WorldView((int[][]) args[0], peers);
@@ -88,13 +96,13 @@ public class Pupil2 extends Agent {
 			personality = new Personality(0);
 		} else if (this.getAID().getLocalName().equals("Alicia")) {
 			// dyscalculic
-			personality = new Personality(1);
+			personality = new Personality(NORM);
 		} else if (this.getAID().getLocalName().equals("Steve")) {
 			// dyslexic
-			personality = new Personality(1);
+			personality = new Personality(DYSLEX);
 		} else if (this.getAID().getLocalName().equals("Bob")) {
 			// "normal"
-			personality = new Personality(1);
+			personality = new Personality(NORM);
 		}
 
 		brain = new Sudoku(world.getProblem());
@@ -107,19 +115,19 @@ public class Pupil2 extends Agent {
 
 	public void waits(Behaviour b) {
 		if (personality.isDyslexic() && !testing) {
-			int wait = r.nextInt(1000) + 2000;
+			int wait = r.nextInt(150) + 200;
 			waits += wait;
 			times++;
 			doWait(wait);
 			// b.block(wait);
 		} else if (personality.isDyscalculic() && !testing) {
-			int wait = r.nextInt(1500) + 4000;
+			int wait = r.nextInt(150) + 400;
 			waits += wait;
 			times++;
 			doWait(wait);
 			// b.block(wait);
 		} else {
-			int wait = r.nextInt(500) + 1000;
+			int wait = r.nextInt(150) + 100;
 			waits += wait;
 			times++;
 			doWait(wait);
@@ -132,7 +140,7 @@ public class Pupil2 extends Agent {
 			prevState = this.state;
 			this.state = state;
 			if (!testing)
-				doWait(r.nextInt(2000));
+				doWait(r.nextInt(200));
 		}
 	}
 
@@ -172,8 +180,11 @@ public class Pupil2 extends Agent {
 				endStats();
 				this.blockingReceive();
 			} else if (!asked.contains(nextNum)) {
-				for(AID s: peerData.keySet()){
+				for (AID s : peerData.keySet()) {
 					peerData.get(s).print();
+				}
+				if(others.focus()!=null){
+					System.out.println("**********Focus on "+others.focus().getLocalName());
 				}
 				asked.add(nextNum);
 				asking.add(nextNum);
@@ -192,15 +203,17 @@ public class Pupil2 extends Agent {
 
 	}
 
-	private void write(AID answer){
-		for(AID a: peerData.keySet()){
-			if(!a.equals(this.getAID())&&!a.equals(answer))
+	private void write(AID answer) {
+		for (AID a : peerData.keySet()) {
+			if (!a.equals(this.getAID()) && !a.equals(answer))
 				peerData.get(a).write(false);
 		}
-		
-		peerData.get(answer).write(true);	
+
+		peerData.get(answer).write(true);
+		others.incQuestionAnswered(answer);
+		others.incQuestion();
 	}
-	
+
 	public void messageHandel(Message res, Behaviour b) {
 		peerData.get(res.getSender()).setLastCom(System.currentTimeMillis());
 		ArrayList<AID> send = new ArrayList<AID>();
@@ -410,10 +423,10 @@ public class Pupil2 extends Agent {
 				+ waits + " Num:" + times + "\nNumasked: " + qAsked
 				+ "\nNumanswer: " + qAnswer + "\nUsefull answers: Bob=" + bob
 				+ " Alicia=" + alic + " Steve=" + steve);
-		
-		for(AID a: peerData.keySet()){
-			if(!a.equals(this.getAID()))
-			peerData.get(a).close();
+
+		for (AID a : peerData.keySet()) {
+			if (!a.equals(this.getAID()))
+				peerData.get(a).close();
 		}
 	}
 }

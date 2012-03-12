@@ -28,20 +28,20 @@ public class Personality {
 		neuroticism = -0.3;
 
 		if (test == 1) { // "normal"
-			operational = 0.8;
-			numberConceptual = 0.7;
-			numberComparative = 0.6;
-			abstractSymbolic = 0.9;
-			graphical = 0.7;
-			spatialTemporal = 0.5;
+			operational = 1;
+			numberConceptual = 0.9;
+			numberComparative = 0.8;
+			abstractSymbolic = 0.7;
+			graphical = 0.85;
+			spatialTemporal = 0.9;
 
 		} else if (test == 2) { // dyslexic
-			operational = 0.5;
-			numberConceptual = 0.3;
-			numberComparative = 0.6;
-			abstractSymbolic = 0.5;
-			graphical = 0.4;
-			spatialTemporal = 0.5;
+			operational = 0.6;
+			numberConceptual = 0.7;
+			numberComparative = 0.7;
+			abstractSymbolic = 0.6;
+			graphical = 0.8;
+			spatialTemporal = 0.6;
 		} else if (test == 3) {// dyscalculic
 			operational = 0.1;
 			numberConceptual = 0.2;
@@ -61,9 +61,9 @@ public class Personality {
 		tempAvg = (operational + numberConceptual + numberComparative
 				+ abstractSymbolic + graphical + spatialTemporal) / 6;
 
-		if (tempAvg <= 0.3)
+		if (tempAvg <= 0.62)
 			dyscalculic = true;
-		else if (tempAvg <= 0.5)
+		else if (tempAvg <= 0.78)
 			dyslexic = true;
 
 		System.out.print("**" + tempAvg + "**");

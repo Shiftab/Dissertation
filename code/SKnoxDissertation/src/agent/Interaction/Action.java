@@ -5,9 +5,9 @@ import jade.core.behaviours.CyclicBehaviour;
 
 public class Action extends CyclicBehaviour {
 
-	private Pupil2 parent;
+	private Pupil parent;
 	
-	public Action(Pupil2 parent){
+	public Action(Pupil parent){
 		super(parent);
 		this.parent = parent;
 	}
@@ -15,19 +15,19 @@ public class Action extends CyclicBehaviour {
 	@Override
 	public void action() {
 		switch (parent.getBehaviourState()) {
-		case Pupil2.ASKING: // if asking probably shouldn't be doing two things
+		case Pupil.ASKING: // if asking probably shouldn't be doing two things
 						// at once
 			break;
-		case Pupil2.ANSWERING: // same as asking
+		case Pupil.ANSWERING: // same as asking
 			break;
-		case Pupil2.ARGUING: // continue arguing or switch to wait?
+		case Pupil.ARGUING: // continue arguing or switch to wait?
 			parent.pickAFight();
 			break;
-		case Pupil2.WAITING:
+		case Pupil.WAITING:
 			// will continue waiting?
 			parent.waiting(this);
 			break;
-		case Pupil2.DISTRACTED:
+		case Pupil.DISTRACTED:
 			// continue being distracted?
 			parent.stopDistraction();
 			break;

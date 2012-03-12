@@ -18,11 +18,14 @@ public class Messages {
 	 * @param send
 	 * @param sender
 	 */
-	public static void query(Coordinate coordinate, List<AID> send, Agent sender) {
+	public static void query(Coordinate coordinate, List<AID> send, Agent sender, AID focus) {
 		Message msg = new Message(Message.QUERY_IF);
 		for (AID a : send) {
 			msg.addReceiver(a);
 		}
+		if(focus!=null)
+			msg.setFocus(focus);
+		
 		msg.setContent("Would the number at (" + coordinate.getX() + ","
 				+ coordinate.getY() + ") be " + coordinate.getVal() + "?");
 		msg.setCoordinate(coordinate);

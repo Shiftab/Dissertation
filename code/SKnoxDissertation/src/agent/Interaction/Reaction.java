@@ -8,9 +8,9 @@ import jade.core.behaviours.CyclicBehaviour;
 
 public class Reaction extends CyclicBehaviour {
 
-	private Pupil2 parent;
+	private Pupil parent;
 
-	public Reaction(Pupil2 parent) {
+	public Reaction(Pupil parent) {
 		super(parent);
 		this.parent = parent;
 	}

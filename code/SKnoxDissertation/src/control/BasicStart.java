@@ -31,7 +31,7 @@ public class BasicStart extends Agent {
 		try {
 			for (String a : agents){
 				((AgentController) getContainerController().createNewAgent(a,
-						"agent.Interaction.Pupil2", args)).start();
+						"agent.Interaction.Pupil", args)).start();
 			}
 		} catch (StaleProxyException e) {
 			e.printStackTrace();

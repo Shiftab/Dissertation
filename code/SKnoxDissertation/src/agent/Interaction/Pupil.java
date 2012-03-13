@@ -84,11 +84,8 @@ public class Pupil extends Agent {
 						AID.ISLOCALNAME), this.getAID()));
 			}
 		}
-		
-		others = new OthersModel(peers);
 
-		// persons understanding of the world
-		world = new WorldView((int[][]) args[0], peers);
+		others = new OthersModel(peers);
 
 		System.out.print(this.getAID().getLocalName() + ": ");
 
@@ -104,6 +101,10 @@ public class Pupil extends Agent {
 			// "normal"
 			personality = new Personality(NORM);
 		}
+
+		// persons understanding of the world
+		world = new WorldView((int[][]) args[0], peers,
+				personality.isDyslexic());
 
 		brain = new Sudoku(world.getProblem());
 
@@ -177,8 +178,21 @@ public class Pupil extends Agent {
 			if (nextNum == null) {
 				// TODO: make this an official message and create a stuck and a
 				// finish system
-				endStats();
-				this.blockingReceive();
+				if (brain.done()) {
+					endStats();
+					this.blockingReceive();
+				}else{
+					Coordinate err = brain.searchErr();
+					if(!err.equals(null)){
+						ArrayList<AID> send = new ArrayList<AID>();
+						for (AID a : world.getPeers()) {
+							if (!a.equals(this.getAID()))
+								send.add(a);
+						}
+						Messages.errorQuery(err, send, this);
+					
+					}
+				}
 			} else if (!asked.contains(nextNum)) {
 				for (AID s : peerData.keySet()) {
 					peerData.get(s).print();
@@ -259,7 +273,7 @@ public class Pupil extends Agent {
 				responded.add(res.getCoordinate());
 			}
 			break;
-		case Message.QUERY_IF:
+		case Message.QUERY_IF: //add stuff for querry of an error
 			if (state != ARGUING || state != DISTRACTED) {
 				Coordinate check = res.getCoordinate();
 				if (check != null)

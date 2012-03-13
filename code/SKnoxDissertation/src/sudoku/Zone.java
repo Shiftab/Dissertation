@@ -17,6 +17,7 @@ public class Zone {
 	private List<Coordinate> zone = new ArrayList<Coordinate>();
 	private List<Coordinate> blanks = new ArrayList<Coordinate>();
 	private Set<Integer> missing = new HashSet<Integer>();
+	private List<Coordinate> wasMissing = new ArrayList<Coordinate>();
 	private Set<Integer> Xaxis = new HashSet<Integer>();
 	private Set<Integer> Yaxis = new HashSet<Integer>();
 	private final Set<Integer> NUMS = new HashSet<Integer>(Arrays.asList(1, 2,
@@ -49,6 +50,49 @@ public class Zone {
 	}
 
 	/**
+	 * method for finding errors in zones
+	 * 
+	 * @return
+	 */
+	public Coordinate getError() {
+		Set<Integer> test = new HashSet<Integer>();
+		int val = 0;
+		for (Coordinate c : zone)
+			if (c.getVal() != 0)
+				if (!test.add(c.getVal())) {
+					val = c.getVal();
+					break;
+				}
+
+		if (val != 0) {
+			for (Coordinate c : wasMissing)
+				if (c.getVal() == val)
+					return c;
+		}
+
+		return null;
+	}
+
+	/**
+	 * method for checking a zone error
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public boolean isError(Coordinate c) {
+		if (wasMissing.contains(c)) {
+			Set<Integer> test = new HashSet<Integer>();
+			for (Coordinate cord : zone)
+				if (cord.getVal() != 0)
+					if (!test.add(cord.getVal()))
+						if (cord.getVal() == c.getVal())
+							return true;
+
+		}
+		return false;
+	}
+
+	/**
 	 * method for returning the missing numbers for a zone
 	 * 
 	 * @return
@@ -73,6 +117,7 @@ public class Zone {
 
 	/**
 	 * method for checking if a coordinatae is in a zone
+	 * 
 	 * @param c
 	 * @return
 	 */

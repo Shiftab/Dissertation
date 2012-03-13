@@ -69,6 +69,73 @@ public class Sudoku {
 	}
 
 	/**
+	 * method to see if the problem has been compleated
+	 * 
+	 * @return
+	 */
+	public boolean done() {
+		for (Zone z : columList)
+			if (!z.getMissing().isEmpty())
+				return false;
+
+		for (Zone z : rowList)
+			if (!z.getMissing().isEmpty())
+				return false;
+
+		for (Zone z : gridList)
+			if (!z.getMissing().isEmpty())
+				return false;
+
+		return true;
+	}
+
+	/**
+	 * method for finding errors
+	 * 
+	 * @return
+	 */
+	public Coordinate searchErr() {
+		Coordinate err = null;
+		for (Zone z : columList)
+			err = z.getError();
+
+		if (!err.equals(null))
+			for (Zone z : rowList)
+				err = z.getError();
+
+		if (!err.equals(null))
+			for (Zone z : gridList)
+				err = z.getError();
+
+		return err;
+	}
+
+	/**
+	 * method for checking error
+	 * 
+	 * @param cord
+	 * @return
+	 */
+	public boolean checkErr(Coordinate cord) {
+		boolean err = false;
+		for (Zone z : columList)
+			if (z.contains(cord))
+				err = z.isError(cord);
+
+		if (!err)
+			for (Zone z : rowList)
+				if (z.contains(cord))
+					err = z.isError(cord);
+
+		if (!err)
+			for (Zone z : gridList)
+				if (z.contains(cord))
+					err = z.isError(cord);
+
+		return err;
+	}
+
+	/**
 	 * method for returning the next number solved in a problem
 	 * 
 	 * @param problem
@@ -80,26 +147,26 @@ public class Sudoku {
 		for (Zone z : gridList) {
 			ans = grid(z, count);
 			count++;
-			if (ans != null){
+			if (ans != null) {
 				break;
-			}else
-				ans=null;
+			} else
+				ans = null;
 		}
 		if (ans == null)
 			for (Zone z : rowList) {
 				ans = row(z);
-				if (ans != null){
+				if (ans != null) {
 					break;
-				}else
-					ans=null;
+				} else
+					ans = null;
 			}
 		if (ans == null)
 			for (Zone z : columList) {
 				ans = colum(z);
-				if (ans != null){
+				if (ans != null) {
 					break;
-				}else
-					ans=null;
+				} else
+					ans = null;
 			}
 
 		return ans;
@@ -120,9 +187,9 @@ public class Sudoku {
 			}
 			pos++;
 		}
-		if(checkRow(rowList.get(c.getY()), c))
+		if (checkRow(rowList.get(c.getY()), c))
 			return true;
-		if(checkColum(columList.get(c.getX()), c))
+		if (checkColum(columList.get(c.getX()), c))
 			return true;
 
 		return false;
@@ -185,11 +252,11 @@ public class Sudoku {
 							vertical = true;
 							// check the lines are right
 							if (c.getX() == gridList.get(i).findVal(c.getVal())
-									.getX()){
+									.getX()) {
 								continue checks;
 							}
 						} else if (c.getY() == gridList.get(i)
-								.findVal(c.getVal()).getY()){
+								.findVal(c.getVal()).getY()) {
 							continue checks;
 						}
 					}
@@ -222,7 +289,7 @@ public class Sudoku {
 	 * @return
 	 */
 	private Coordinate grid(Zone z, int pos) {
-		boolean vertical=false;
+		boolean vertical = false;
 		List<ArrayList<Integer>> check = new ArrayList<ArrayList<Integer>>();
 		for (ArrayList<Integer> l : gridChecks) { // find what zones to check
 			if (l.contains(pos))
@@ -235,10 +302,10 @@ public class Sudoku {
 					if (i != pos) {
 						if (gridList.get(i).isMissing(search))
 							count++;
-						
+
 						if (i < pos - 2 || i > pos + 2) { // list is vertical
 							vertical = true;
-						}else{
+						} else {
 							vertical = false;
 						}
 					}
@@ -360,7 +427,7 @@ public class Sudoku {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * method for solving a row zone
 	 * 

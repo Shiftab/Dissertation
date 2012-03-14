@@ -99,11 +99,11 @@ public class Sudoku {
 		for (Zone z : columList)
 			err = z.getError();
 
-		if (!err.equals(null))
+		if (err!=null)
 			for (Zone z : rowList)
 				err = z.getError();
 
-		if (!err.equals(null))
+		if (err!=null)
 			for (Zone z : gridList)
 				err = z.getError();
 

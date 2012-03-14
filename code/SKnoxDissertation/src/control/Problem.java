@@ -22,4 +22,13 @@ public final class Problem {
 			return true;
 		}
 	}
+	
+	public static void print(){
+		for(int y=0;y<problem.length;y++){
+			for(int x=0;x<problem.length;x++){
+				System.out.print(problem[x][y]+" ");
+			}
+			System.out.print("\n");
+		}
+	}
 }

@@ -93,7 +93,7 @@ public class Pupil extends Agent {
 			personality = new Personality(0);
 		} else if (this.getAID().getLocalName().equals("Alicia")) {
 			// dyscalculic
-			personality = new Personality(NORM);
+			personality = new Personality(DYSCAL);
 		} else if (this.getAID().getLocalName().equals("Steve")) {
 			// dyslexic
 			personality = new Personality(DYSLEX);
@@ -103,7 +103,7 @@ public class Pupil extends Agent {
 		}
 
 		// persons understanding of the world
-		world = new WorldView((int[][]) args[0], peers,
+		world = new WorldView(peers,
 				personality.isDyslexic());
 
 		brain = new Sudoku(world.getProblem());
@@ -183,7 +183,7 @@ public class Pupil extends Agent {
 					this.blockingReceive();
 				}else{
 					Coordinate err = brain.searchErr();
-					if(!err.equals(null)){
+					if(err!=null){
 						ArrayList<AID> send = new ArrayList<AID>();
 						for (AID a : world.getPeers()) {
 							if (!a.equals(this.getAID()))
@@ -273,7 +273,7 @@ public class Pupil extends Agent {
 				responded.add(res.getCoordinate());
 			}
 			break;
-		case Message.QUERY_IF: //add stuff for querry of an error
+		case Message.QUERY_IF: 
 			if (state != ARGUING || state != DISTRACTED) {
 				Coordinate check = res.getCoordinate();
 				if (check != null)
@@ -360,9 +360,46 @@ public class Pupil extends Agent {
 				changeState(WAITING);
 			}
 			break;
+		case Message.ERROR:
+			if(res.getContent().contains("agree")){ //response
+				world.refresh();
+				brain.refresh(world.getProblem());
+				removeCoord(res.getCoordinate());
+			}else{									//query
+				brain.refresh(world.getProblem());
+				if(brain.checkErr(res.getCoordinate())){
+					Messages.agreeError(res.getCoordinate(), send, this);
+					world.edditProblem(new Coordinate(res.getCoordinate().getX(), res.getCoordinate().getY(), 0));
+					world.refresh();
+					brain.refresh(world.getProblem());
+					removeCoord(res.getCoordinate());
+				}
+			}
+			break;
 		}
 	}
 
+	private void removeCoord(Coordinate err){
+		for(Coordinate c: asked){
+			if(c.getX()==err.getX()&&c.getY()==err.getY()){
+				asked.remove(c);
+				break;
+			}
+		}
+		for(Coordinate c: responded){
+			if(c.getX()==err.getX()&&c.getY()==err.getY()){
+				responded.remove(c);
+				break;
+			}
+		}
+		for(Coordinate c: asking){
+			if(c.getX()==err.getX()&&c.getY()==err.getY()){
+				asking.remove(c);
+				break;
+			}
+		}
+	}
+	
 	private void distract() {
 		// TODO: method for distracting a peer
 		// add somthing for finding who you're most likly to talk to

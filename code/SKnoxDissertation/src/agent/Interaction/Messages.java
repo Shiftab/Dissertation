@@ -34,14 +34,34 @@ public class Messages {
 		sender.send(msg);
 	}
 	
+	/**
+	 * method used to send a query about a posible error
+	 * @param coordinate
+	 * @param send
+	 * @param sender
+	 */
 	public static void errorQuery(Coordinate coordinate, List<AID> send, Agent sender){
-		Message msg = new Message(Message.QUERY_IF);
+		Message msg = new Message(Message.ERROR);
 		for (AID a : send) {
 			msg.addReceiver(a);
 		}
 		
 		msg.setContent("I don't think the number at (" + coordinate.getX() + ","
 				+ coordinate.getY() + ") should be " + coordinate.getVal());
+		msg.setCoordinate(coordinate);
+		System.out.println(sender.getAID().getLocalName() + ": "
+				+ msg.getContent());
+		sender.send(msg);
+	}
+	
+	public static void agreeError(Coordinate coordinate, List<AID> send, Agent sender){
+		Message msg = new Message(Message.ERROR);
+		for (AID a : send) {
+			msg.addReceiver(a);
+		}
+		
+		msg.setContent("I agree,the number at (" + coordinate.getX() + ","
+				+ coordinate.getY() + ") shouldn't be " + coordinate.getVal());
 		msg.setCoordinate(coordinate);
 		System.out.println(sender.getAID().getLocalName() + ": "
 				+ msg.getContent());

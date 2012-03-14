@@ -17,40 +17,67 @@ import sudoku.Coordinate;
  * 
  */
 public class WorldView {
-	int problem[][]; // current problem to be solved
+	int problem[][] = new int[9][9]; // current problem to be solved
 	List<AID> Agents = new ArrayList<AID>(); // list of agents within the group
 	Random r = new Random();
 	private boolean dyslexic = false;
 
-	public WorldView(int[][] p, List<AID> l, boolean dys) {
-		problem = p;
+	public WorldView(List<AID> l, boolean dys) {
+		int[][] prob = Problem.getProblem();
+		passByVALUE(prob);
 		Agents = l;
 		this.dyslexic = dys;
 		readErr();
 	}
-	
-	private void readErr() {
-		for (int x = 0; x < problem.length; x++) {
-			for (int y = 0; y < problem[0].length; y++) {
-				if(dyslexic)
-					if(r.nextDouble()<=0.3)
-						problem[x][y]=swopNum(problem[x][y]);
-				else
-				if (r.nextDouble() <= 0.01) {
-					problem[x][y]=swopNum(problem[x][y]);
-				}
+
+	private void passByVALUE(int[][] prob) {
+		for (int x = 0; x < prob.length; x++) {
+			for (int y = 0; y < prob[0].length; y++) {
+				if (dyslexic)
+					if (r.nextDouble() <= 0.001) {
+						problem[x][y] = swopNum(prob[x][y]);
+						System.out.println("**************(" + x + "," + y
+								+ ")=" + prob[x][y]);
+					} else
+						problem[x][y] = prob[x][y];
+				else if (r.nextDouble() <= 0.00001) {
+					problem[x][y] = swopNum(prob[x][y]);
+					System.out.println("**************(" + x + "," + y + ")="
+							+ prob[x][y]);
+				} else
+					problem[x][y] = prob[x][y];
 			}
 		}
 	}
-	
-	private int writeErr(int x){
-		if(dyslexic){
-			if(r.nextDouble()<=0.01)
-					return swopNum(x);
-		}else
-			if(r.nextDouble()<=0.001)
+
+	private void readErr() {
+		for (int x = 0; x < problem.length; x++) {
+			for (int y = 0; y < problem[0].length; y++) {
+				if (dyslexic)
+					if (r.nextDouble() <= 0.001) {
+						problem[x][y] = swopNum(problem[x][y]);
+						System.out.println("**************(" + x + "," + y
+								+ ")=" + problem[x][y]);
+					} else if (r.nextDouble() <= 0.00001) {
+						problem[x][y] = swopNum(problem[x][y]);
+						System.out.println("**************(" + x + "," + y
+								+ ")=" + problem[x][y]);
+					}
+			}
+		}
+	}
+
+	private int writeErr(int x) {
+		if (dyslexic) {
+			if (r.nextDouble() <= 0.0001) {
+				System.out.println("**************write err");
 				return swopNum(x);
-		
+			}
+		} else if (r.nextDouble() <= 0.00001) {
+			System.out.println("**************write err");
+			return swopNum(x);
+		}
+
 		return x;
 	}
 
@@ -108,18 +135,17 @@ public class WorldView {
 	}
 
 	public void refresh() {
-		problem = Problem.getProblem();
-		
+		int[][] prob = Problem.getProblem();
+		passByVALUE(prob);
+
 	}
 
 	public void edditProblem(Coordinate x) {
-		problem[x.getX()][x.getY()] = writeErr(x.getVal());
-	}
-
-	public void setProblem(int[][] p) {
-		problem = null;
-		problem = p;
-		readErr();
+		int ans = writeErr(x.getVal());
+		problem[x.getX()][x.getY()] = ans;
+		// not how it's done atm because it's used to check if somthings already
+		// been writen probably should change this
+		// Problem.edditProblem(new Coordinate(x.getX(), x.getY(), ans));
 	}
 
 	public List<AID> getPeers() {

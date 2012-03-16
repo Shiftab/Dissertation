@@ -20,14 +20,26 @@ public class Personality {
 
 	Random r = new Random();
 
-	public Personality(int test) {
+	/**
+	 * constructor to setup the personality of an agent
+	 * 
+	 * type options:
+	 * 
+	 * Standard = 1
+	 * Dyslexic = 2
+	 * Dyscalculic = 3
+	 * Random(No default) = -1
+	 * 
+	 * @param type
+	 */
+	public Personality(int type) {
 		openness = 0.4;
 		conscientiousness = 0.7;
 		extraversion = 0.2;
 		agreeableness = 0.5;
 		neuroticism = -0.3;
 
-		if (test == 1) { // "normal"
+		if (type == 1) { // "normal"
 			operational = 1;
 			numberConceptual = 0.9;
 			numberComparative = 0.8;
@@ -35,14 +47,14 @@ public class Personality {
 			graphical = 0.85;
 			spatialTemporal = 0.9;
 
-		} else if (test == 2) { // dyslexic
+		} else if (type == 2) { // dyslexic
 			operational = 0.6;
 			numberConceptual = 0.7;
 			numberComparative = 0.7;
 			abstractSymbolic = 0.6;
 			graphical = 0.8;
 			spatialTemporal = 0.6;
-		} else if (test == 3) {// dyscalculic
+		} else if (type == 3) {// dyscalculic
 			operational = 0.1;
 			numberConceptual = 0.2;
 			numberComparative = 0.3;
@@ -69,6 +81,10 @@ public class Personality {
 		System.out.print("**" + tempAvg + "**");
 	}
 
+	/**
+	 * old constructor for personality, implemented OCEAN factors
+	 * @deprecated
+	 */
 	public Personality() {
 		if (r.nextBoolean())
 			openness = -r.nextDouble();
@@ -99,14 +115,32 @@ public class Personality {
 				+ extraversion + " A=" + agreeableness + " N=" + neuroticism);
 	}
 
+	/**
+	 * getter for quering if an agent is dyslexic
+	 * @return
+	 */
 	public boolean isDyslexic() {
 		return dyslexic;
 	}
 
+	/**
+	 * getter for quering if an agent is dyscalculic
+	 * @return
+	 */
 	public boolean isDyscalculic() {
 		return dyscalculic;
 	}
 
+	/**
+	 * getter for ocean values
+	 * array structure:
+	 * 0=openness
+	 * 1=conscientiousness
+	 * 2=extraversion
+	 * 3=agreeableness
+	 * 4=neuroticism
+	 * @return
+	 */
 	public double[] getOCEAN() {
 		double[] ocean = { openness, conscientiousness, extraversion,
 				agreeableness, neuroticism };
@@ -114,90 +148,156 @@ public class Personality {
 		return ocean;
 	}
 
+	/**
+	 * @return the openness
+	 */
 	public double getOpenness() {
 		return openness;
 	}
 
+	/**
+	 * @param openness the openness to set
+	 */
 	public void setOpenness(double openness) {
 		this.openness = openness;
 	}
 
+	/**
+	 * @return the conscientiousness
+	 */
 	public double getConscientiousness() {
 		return conscientiousness;
 	}
 
+	/**
+	 * @param conscientiousness the conscientiousness to set
+	 */
 	public void setConscientiousness(double conscientiousness) {
 		this.conscientiousness = conscientiousness;
 	}
 
+	/**
+	 * @return the extraversion
+	 */
 	public double getExtraversion() {
 		return extraversion;
 	}
 
+	/**
+	 * @param extraversion the extraversion to set
+	 */
 	public void setExtraversion(double extraversion) {
 		this.extraversion = extraversion;
 	}
 
+	/**
+	 * @return the agreeableness
+	 */
 	public double getAgreeableness() {
 		return agreeableness;
 	}
 
+	/**
+	 * @param agreeableness the agreeableness to set
+	 */
 	public void setAgreeableness(double agreeableness) {
 		this.agreeableness = agreeableness;
 	}
 
+	/**
+	 * @return the neuroticism
+	 */
 	public double getNeuroticism() {
 		return neuroticism;
 	}
 
+	/**
+	 * @param neuroticism the neuroticism to set
+	 */
 	public void setNeuroticism(double neuroticism) {
 		this.neuroticism = neuroticism;
 	}
 
+	/**
+	 * @return the operational
+	 */
 	public double getOperational() {
 		return operational;
 	}
 
+	/**
+	 * @param operational the operational to set
+	 */
 	public void setOperational(double operational) {
 		this.operational = operational;
 	}
 
+	/**
+	 * @return the numberConceptual
+	 */
 	public double getNumberConceptual() {
 		return numberConceptual;
 	}
 
+	/**
+	 * @param numberConceptual the numberConceptual to set
+	 */
 	public void setNumberConceptual(double numberConceptual) {
 		this.numberConceptual = numberConceptual;
 	}
 
+	/**
+	 * @return the numberComparative
+	 */
 	public double getNumberComparative() {
 		return numberComparative;
 	}
 
+	/**
+	 * @param numberComparative the numberComparative to set
+	 */
 	public void setNumberComparative(double numberComparative) {
 		this.numberComparative = numberComparative;
 	}
 
+	/**
+	 * @return the abstractSymbolic
+	 */
 	public double getAbstractSymbolic() {
 		return abstractSymbolic;
 	}
 
+	/**
+	 * @param abstractSymbolic the abstractSymbolic to set
+	 */
 	public void setAbstractSymbolic(double abstractSymbolic) {
 		this.abstractSymbolic = abstractSymbolic;
 	}
 
+	/**
+	 * @return the graphical
+	 */
 	public double getGraphical() {
 		return graphical;
 	}
 
+	/**
+	 * @param graphical the graphical to set
+	 */
 	public void setGraphical(double graphical) {
 		this.graphical = graphical;
 	}
 
+	/**
+	 * @return the spatialTemporal
+	 */
 	public double getSpatialTemporal() {
 		return spatialTemporal;
 	}
 
+	/**
+	 * @param spatialTemporal the spatialTemporal to set
+	 */
 	public void setSpatialTemporal(double spatialTemporal) {
 		this.spatialTemporal = spatialTemporal;
 	}

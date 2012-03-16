@@ -42,10 +42,10 @@ public class Zone {
 	/**
 	 * method for adding a new coordinate to the zone
 	 * 
-	 * @param c
+	 * @param coordinate
 	 */
-	public void addCoordinate(Coordinate c) {
-		zone.add(c);
+	public void addCoordinate(Coordinate coordinate) {
+		zone.add(coordinate);
 		populateWatch(zone);
 	}
 
@@ -76,16 +76,16 @@ public class Zone {
 	/**
 	 * method for checking a zone error
 	 * 
-	 * @param c
+	 * @param coordinate
 	 * @return
 	 */
-	public boolean isError(Coordinate c) {
-		if (wasMissing.contains(c)) {
+	public boolean isError(Coordinate coordinate) {
+		if (wasMissing.contains(coordinate)) {
 			Set<Integer> test = new HashSet<Integer>();
 			for (Coordinate cord : zone)
 				if (cord.getVal() != 0)
 					if (!test.add(cord.getVal()))
-						if (cord.getVal() == c.getVal())
+						if (cord.getVal() == coordinate.getVal())
 							return true;
 
 		}
@@ -104,12 +104,12 @@ public class Zone {
 	/**
 	 * method for returning the coordinate of a value in a zone
 	 * 
-	 * @param val
+	 * @param value
 	 * @return coordinate
 	 */
-	public Coordinate findVal(int val) {
+	public Coordinate findVal(int value) {
 		for (Coordinate c : zone)
-			if (c.getVal() == val)
+			if (c.getVal() == value)
 				return c;
 
 		return null;
@@ -118,12 +118,12 @@ public class Zone {
 	/**
 	 * method for checking if a coordinatae is in a zone
 	 * 
-	 * @param c
+	 * @param coordinate
 	 * @return
 	 */
-	public boolean contains(Coordinate c) {
+	public boolean contains(Coordinate coordinate) {
 		for (Coordinate x : zone) {
-			if (x.equals(c))
+			if (x.equals(coordinate))
 				return true;
 		}
 		return false;
@@ -132,11 +132,11 @@ public class Zone {
 	/**
 	 * method to check if a value is missing from a zone
 	 * 
-	 * @param m
+	 * @param missingValue
 	 * @return boolean
 	 */
-	public boolean isMissing(int m) {
-		if (missing.contains(m))
+	public boolean isMissing(int missingValue) {
+		if (missing.contains(missingValue))
 			return true;
 		else
 			return false;
@@ -214,11 +214,11 @@ public class Zone {
 	 * method used to return a particular value in a zone via it's place in the
 	 * list
 	 * 
-	 * @param x
+	 * @param position
 	 * @return
 	 */
-	public int get(int x) {
-		return zone.get(x).getVal();
+	public int get(int position) {
+		return zone.get(position).getVal();
 	}
 
 	@Override

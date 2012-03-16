@@ -3,18 +3,27 @@ package agent.Interaction;
 import java.util.ArrayList;
 
 import control.Message;
-import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 
+/**
+ * class to handel the reactive behaviours of agents
+ * @author shiftab
+ *
+ */
+@SuppressWarnings("serial")
 public class Reaction extends CyclicBehaviour {
 
 	private Pupil parent;
 
+	/**
+	 * constructor to set the parent agent of a behaviour
+	 * @param parent
+	 */
 	public Reaction(Pupil parent) {
 		super(parent);
 		this.parent = parent;
 	}
-
+	
 	@Override
 	public void action() {
 		ArrayList<Message> inform = new ArrayList<Message>();

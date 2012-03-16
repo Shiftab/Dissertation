@@ -17,74 +17,87 @@ import sudoku.Coordinate;
  * 
  */
 public class WorldView {
+	
+	private final double DYSLEX_READ = 0.001;
+	private final double NORM_READ = 0.00001;
+	private final double DYSLEX_WRITE = 0.0001;
+	private final double NORM_WRITE = 0.000001;
+	
 	int problem[][] = new int[9][9]; // current problem to be solved
 	List<AID> Agents = new ArrayList<AID>(); // list of agents within the group
 	Random r = new Random();
 	private boolean dyslexic = false;
 
-	public WorldView(List<AID> l, boolean dys) {
+	/**
+	 * constructor for the world view of an agent
+	 * 
+	 * @param agentList
+	 * @param isDyslexic
+	 */
+	public WorldView(List<AID> agentList, boolean isDyslexic) {
 		int[][] prob = Problem.getProblem();
 		passByVALUE(prob);
-		Agents = l;
-		this.dyslexic = dys;
-		readErr();
+		Agents = agentList;
+		this.dyslexic = isDyslexic;
 	}
 
-	private void passByVALUE(int[][] prob) {
-		for (int x = 0; x < prob.length; x++) {
-			for (int y = 0; y < prob[0].length; y++) {
-				if (dyslexic)
-					if (r.nextDouble() <= 0.001) {
-						problem[x][y] = swopNum(prob[x][y]);
-						System.out.println("**************(" + x + "," + y
-								+ ")=" + prob[x][y]);
-					} else
-						problem[x][y] = prob[x][y];
-				else if (r.nextDouble() <= 0.00001) {
-					problem[x][y] = swopNum(prob[x][y]);
-					System.out.println("**************(" + x + "," + y + ")="
-							+ prob[x][y]);
-				} else
-					problem[x][y] = prob[x][y];
-			}
-		}
-	}
-
-	private void readErr() {
+	/**
+	 * method to copy the value of the volitile paper problem
+	 * to a local copy to allow for and create errors based
+	 * on agent ability
+	 * ability
+	 * @param problem
+	 */
+	private void passByVALUE(int[][] problem) {
 		for (int x = 0; x < problem.length; x++) {
 			for (int y = 0; y < problem[0].length; y++) {
 				if (dyslexic)
-					if (r.nextDouble() <= 0.001) {
-						problem[x][y] = swopNum(problem[x][y]);
+					if (r.nextDouble() <= DYSLEX_READ) {
+						this.problem[x][y] = swopNum(problem[x][y]);
+						//TODO: implement actual focus system
 						System.out.println("**************(" + x + "," + y
 								+ ")=" + problem[x][y]);
-					} else if (r.nextDouble() <= 0.00001) {
-						problem[x][y] = swopNum(problem[x][y]);
-						System.out.println("**************(" + x + "," + y
-								+ ")=" + problem[x][y]);
-					}
+					} else
+						this.problem[x][y] = problem[x][y];
+				else if (r.nextDouble() <= NORM_READ) {
+					this.problem[x][y] = swopNum(problem[x][y]);
+					System.out.println("**************(" + x + "," + y + ")="
+							+ problem[x][y]);
+				} else
+					this.problem[x][y] = problem[x][y];
 			}
 		}
 	}
 
-	private int writeErr(int x) {
+	/**
+	 * method to add writen errors
+	 * @param number
+	 * @return
+	 */
+	private int writeErr(int number) {
 		if (dyslexic) {
-			if (r.nextDouble() <= 0.0001) {
+			if (r.nextDouble() <= DYSLEX_WRITE) {
 				System.out.println("**************write err");
-				return swopNum(x);
+				return swopNum(number);
 			}
-		} else if (r.nextDouble() <= 0.00001) {
+		} else if (r.nextDouble() <= NORM_WRITE) {
 			System.out.println("**************write err");
-			return swopNum(x);
+			return swopNum(number);
 		}
 
-		return x;
+		return number;
 	}
 
-	private int swopNum(int x) {
-		switch (x) {
+	/**
+	 * method to swop numbers to common number errors in 
+	 * dyslexics
+	 * @param number
+	 * @return
+	 */
+	private int swopNum(int number) {
+		switch (number) {
 		case 0:
-			return x;
+			return number;
 		case 1:
 			if (r.nextBoolean())
 				return 7;
@@ -126,33 +139,57 @@ public class WorldView {
 				return 6;
 		default:
 			System.out.println("ERRRRRRROR");
-			return x;
+			return number;
 		}
 	}
 
+	/**
+	 * method to return the current view of the problem
+	 * @return
+	 */
 	public int[][] getProblem() {
 		return problem;
 	}
 
+	/**
+	 * method to refresh the view of the problem by looking at
+	 * the actual paper version
+	 */
 	public void refresh() {
 		int[][] prob = Problem.getProblem();
 		passByVALUE(prob);
 
 	}
 
-	public void edditProblem(Coordinate x) {
-		int ans = writeErr(x.getVal());
-		problem[x.getX()][x.getY()] = ans;
+	/**
+	 * method to eddit the problem in the persons individual interpretation
+	 * @param coordinate
+	 */
+	public void edditProblem(Coordinate coordinate) {
+		int ans = writeErr(coordinate.getVal());
+		problem[coordinate.getX()][coordinate.getY()] = ans;
+		//TODO: fix the writen errors
 		// not how it's done atm because it's used to check if somthings already
 		// been writen probably should change this
 		// Problem.edditProblem(new Coordinate(x.getX(), x.getY(), ans));
 	}
 
+	/**
+	 * method to return the peers a participat has in there
+	 * world view
+	 * @return
+	 */
 	public List<AID> getPeers() {
 		return Agents;
 	}
 
-	public boolean check(Coordinate c) {
-		return problem[c.getX()][c.getY()] == c.getVal();
+	/**
+	 * method to check if a coordinate is in the view of the
+	 * problem
+	 * @param coordinate
+	 * @return
+	 */
+	public boolean check(Coordinate coordinate) {
+		return problem[coordinate.getX()][coordinate.getY()] == coordinate.getVal();
 	}
 }

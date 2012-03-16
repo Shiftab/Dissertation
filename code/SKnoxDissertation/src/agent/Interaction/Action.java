@@ -1,8 +1,13 @@
 package agent.Interaction;
 
-import agent.Reasoning.DecisionMaking;
 import jade.core.behaviours.CyclicBehaviour;
 
+/**
+ * class for handeling the action behaviours of agents
+ * @author shiftab
+ *
+ */
+@SuppressWarnings("serial")
 public class Action extends CyclicBehaviour {
 
 	private Pupil parent;

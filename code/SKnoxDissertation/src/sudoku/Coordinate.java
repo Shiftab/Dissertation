@@ -7,46 +7,46 @@ package sudoku;
  * 
  */
 public class Coordinate {
-	private int x, y, val = 0;
+	private int xPos, yPos, value = 0;
 
 	/**
 	 * setup a coordinate
 	 * 
-	 * @param x
-	 * @param y
-	 * @param val
+	 * @param xPos
+	 * @param yPos
+	 * @param value
 	 */
-	public Coordinate(int x, int y, int val) {
-		this.x = x;
-		this.y = y;
-		this.val = val;
+	public Coordinate(int xPos, int yPos, int value) {
+		this.xPos = xPos;
+		this.yPos = yPos;
+		this.value = value;
 	}
 
 	/**
-	 * return position on the x axis
+	 * return position on the xPos axis
 	 * 
 	 * @return
 	 */
 	public int getX() {
-		return x;
+		return xPos;
 	}
 
 	/**
-	 * return position on the y axis
+	 * return position on the yPos axis
 	 * 
 	 * @return
 	 */
 	public int getY() {
-		return y;
+		return yPos;
 	}
 
 	/**
 	 * set value of the point, 0 if blank
 	 * 
-	 * @param val
+	 * @param value
 	 */
-	public void setVal(int val) {
-		this.val = val;
+	public void setVal(int value) {
+		this.value = value;
 	}
 
 	/**
@@ -55,19 +55,19 @@ public class Coordinate {
 	 * @return
 	 */
 	public int getVal() {
-		return val;
+		return value;
 	}
 
 	@Override
 	public String toString() {
-		return String.valueOf(val);
+		return String.valueOf(value);
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		Coordinate test = (Coordinate) obj;
-		if (this.val == test.getVal() && this.x == test.getX()
-				&& this.y == test.getY())
+	public boolean equals(Object object) {
+		Coordinate test = (Coordinate) object;
+		if (this.value == test.getVal() && this.xPos == test.getX()
+				&& this.yPos == test.getY())
 			return true;
 		else
 			return false;

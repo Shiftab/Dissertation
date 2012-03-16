@@ -3,12 +3,22 @@ package control;
 import java.util.ArrayList;
 import java.util.List;
 import jade.core.Agent;
-import jade.core.AID;
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
 
+/**
+ * basic init class for starting agents
+ * 
+ * @author shiftab
+ *
+ */
+@SuppressWarnings("serial")
 public class BasicStart extends Agent {
 
+	/**
+	 * standard method for seting up an agent
+	 */
+	@Override 
 	protected void setup() {
 
 		Object[] args = new Object[3];

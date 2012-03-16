@@ -45,6 +45,7 @@ public class DecisionMaking {
 	 * @param ocean
 	 * @return
 	 */
+	@SuppressWarnings("null") //remove when reimplementing personalitys
 	public static boolean decide(int decision, double probability,
 			double[] ocean) {
 

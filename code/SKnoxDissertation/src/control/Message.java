@@ -4,6 +4,24 @@ import sudoku.Coordinate;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 
+/**
+ * class for extending ACLMessage to add some new message types 
+ * and parameters
+ * 
+ * Message types:
+ * ARGUE
+ * DISTRACT
+ * REPRISAL
+ * FOCUS
+ * ERROR
+ * 
+ * Parameters:
+ * Coordinate
+ * focus
+ * @author shiftab
+ *
+ */
+@SuppressWarnings("serial")
 public class Message extends ACLMessage {
 
 	public static final int ARGUE = -2;
@@ -19,18 +37,38 @@ public class Message extends ACLMessage {
 		super(preform);
 	}
 	
-	public void setCoordinate(Coordinate c){
-		coordinate = c;
+	/**
+	 * set coordinate refered to in message
+	 * 
+	 * @param coordinate
+	 */
+	public void setCoordinate(Coordinate coordinate){
+		this.coordinate = coordinate;
 	}
 	
+	/**
+	 * get coordinate refered to in message
+	 * 
+	 * @return
+	 * @throws NullPointerException
+	 */
 	public Coordinate getCoordinate() throws NullPointerException{
 		return coordinate;
 	}
 
-	public AID getFocus() {
+	/**
+	 * get AID Focus of the message
+	 * @return
+	 * @throws NullPointerException
+	 */
+	public AID getFocus() throws NullPointerException{
 		return focus;
 	}
 
+	/**
+	 * set AID focus of the message
+	 * @param focus
+	 */
 	public void setFocus(AID focus) {
 		this.focus = focus;
 	}

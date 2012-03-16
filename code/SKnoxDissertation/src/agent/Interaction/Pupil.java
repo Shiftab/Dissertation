@@ -195,7 +195,7 @@ public class Pupil extends Agent {
 				}
 			} else if (!asked.contains(nextNum)) {
 				for (AID s : peerData.keySet()) {
-					peerData.get(s).print();
+					peerData.get(s).update();
 				}
 
 				asked.add(nextNum);

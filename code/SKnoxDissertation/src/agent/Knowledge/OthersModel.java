@@ -20,16 +20,27 @@ public class OthersModel {
 	Map<AID, Integer> answers = new HashMap<AID, Integer>();
 	int questionsAsked = 0;
 
+	/**
+	 * constructor to set the lists and maps of peers up
+	 * @param peers
+	 */
 	public OthersModel(List<AID> peers) {
 		this.peers = peers;
 		for (AID a : peers)
 			answers.put(a, 0);
 	}
 
+	/**
+	 * incremented for questions asked
+	 */
 	public void incQuestion() {
 		questionsAsked++;
 	}
 
+	/**
+	 * incrementer for questions answered
+	 * @param aid
+	 */
 	public void incQuestionAnswered(AID aid) {
 		int x = answers.get(aid) + 1;
 		answers.put(aid, x);

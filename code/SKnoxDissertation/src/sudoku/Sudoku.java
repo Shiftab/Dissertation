@@ -22,20 +22,33 @@ public class Sudoku {
 			new ArrayList<Integer>(Arrays.asList(0, 3, 6)),
 			new ArrayList<Integer>(Arrays.asList(1, 4, 7)),
 			new ArrayList<Integer>(Arrays.asList(2, 5, 8)));
+	
+	private List<ArrayList<Integer>> gridChecks = new ArrayList<ArrayList<Integer>>(
+			CHECK_LISTS);
 	private List<Zone> rowList = new ArrayList<Zone>();
 	private List<Zone> columList = new ArrayList<Zone>();
 	private List<Zone> gridList = new ArrayList<Zone>();
-	private List<ArrayList<Integer>> gridChecks = new ArrayList<ArrayList<Integer>>(
-			CHECK_LISTS);
 
+	/**
+	 * constructor for the sudoku solver
+	 * @param problem
+	 */
 	public Sudoku(int[][] problem) {
 		populateZones(problem);
 	}
 
+	/**
+	 * method to reset the watch zones values
+	 * for a new version of the problem
+	 * @param problem
+	 */
 	public void refresh(int[][] problem) {
 		populateZones(problem);
 	}
 
+	/**
+	 * method to print out this view of the problem
+	 */
 	public void print() {
 		for (Zone z : rowList)
 			System.out.println(z);
@@ -230,46 +243,54 @@ public class Sudoku {
 		return problem;
 	}
 
-	private boolean checkGrid(Zone z, int pos, Coordinate c) {
-		Coordinate checker = new Coordinate(c.getX(), c.getY(), 0);
-		if (z.isMissing(c.getVal()) && z.getBlanks().contains(checker)) {
+	/**
+	 * method to check a zone for the pressence of a posible new
+	 * coordinate
+	 * @param zone
+	 * @param position
+	 * @param coordinate
+	 * @return
+	 */
+	private boolean checkGrid(Zone zone, int position, Coordinate coordinate) {
+		Coordinate checker = new Coordinate(coordinate.getX(), coordinate.getY(), 0);
+		if (zone.isMissing(coordinate.getVal()) && zone.getBlanks().contains(checker)) {
 			boolean vertical = false;
 			List<ArrayList<Integer>> check = new ArrayList<ArrayList<Integer>>();
 			for (ArrayList<Integer> l : gridChecks) {
 				// find what zones to check
-				if (l.contains(pos))
+				if (l.contains(position))
 					check.add(l);
 			}
 
 			// make sure they arn't missing it
 			checks: for (List<Integer> l : check) {
 				for (int i : l) {
-					if (i != pos) {
-						if (gridList.get(i).isMissing(c.getVal())) {
+					if (i != position) {
+						if (gridList.get(i).isMissing(coordinate.getVal())) {
 							continue checks;
 						}
-						if (i < pos - 2 || i > pos + 2) { // list is vertical
+						if (i < position - 2 || i > position + 2) { // list is vertical
 							vertical = true;
 							// check the lines are right
-							if (c.getX() == gridList.get(i).findVal(c.getVal())
+							if (coordinate.getX() == gridList.get(i).findVal(coordinate.getVal())
 									.getX()) {
 								continue checks;
 							}
-						} else if (c.getY() == gridList.get(i)
-								.findVal(c.getVal()).getY()) {
+						} else if (coordinate.getY() == gridList.get(i)
+								.findVal(coordinate.getVal()).getY()) {
 							continue checks;
 						}
 					}
 				}
 				int count = 0;
-				for (Coordinate blank : z.getBlanks()) {
-					if (vertical && c.getX() == blank.getX()
-							&& rowList.get(blank.getY()).isMissing(c.getVal())) {
+				for (Coordinate blank : zone.getBlanks()) {
+					if (vertical && coordinate.getX() == blank.getX()
+							&& rowList.get(blank.getY()).isMissing(coordinate.getVal())) {
 						count++;
 					} else if (!vertical
-							&& c.getY() == blank.getY()
+							&& coordinate.getY() == blank.getY()
 							&& columList.get(blank.getX())
-									.isMissing(c.getVal())) {
+									.isMissing(coordinate.getVal())) {
 						count++;
 					}
 				}
@@ -284,26 +305,26 @@ public class Sudoku {
 	/**
 	 * method for solving a single grid zone
 	 * 
-	 * @param z
-	 * @param pos
+	 * @param zone
+	 * @param position
 	 * @return
 	 */
-	private Coordinate grid(Zone z, int pos) {
+	private Coordinate grid(Zone zone, int position) {
 		boolean vertical = false;
 		List<ArrayList<Integer>> check = new ArrayList<ArrayList<Integer>>();
 		for (ArrayList<Integer> l : gridChecks) { // find what zones to check
-			if (l.contains(pos))
+			if (l.contains(position))
 				check.add(l);
 		}
-		for (int search : z.getMissing()) { // for every number looking for
+		for (int search : zone.getMissing()) { // for every number looking for
 			for (List<Integer> l : check) { // for every check list
 				int count = 0;
 				for (int i : l) { // for every zone in a check list
-					if (i != pos) {
+					if (i != position) {
 						if (gridList.get(i).isMissing(search))
 							count++;
 
-						if (i < pos - 2 || i > pos + 2) { // list is vertical
+						if (i < position - 2 || i > position + 2) { // list is vertical
 							vertical = true;
 						} else {
 							vertical = false;
@@ -313,7 +334,7 @@ public class Sudoku {
 				if (count == 0) { // if no other zone is looking
 					List<Coordinate> excludePoints = new ArrayList<Coordinate>();
 					for (int i : l) {
-						if (i != pos) {
+						if (i != position) {
 							// find the loc of the search point in other zones
 							excludePoints.add(gridList.get(i).findVal(search));
 						}
@@ -323,19 +344,19 @@ public class Sudoku {
 					if (vertical) { // look at x's
 						for (Coordinate point : excludePoints)
 							removePoints.add(point.getX());
-						axisPoints = new HashSet<Integer>(z.getXAxis());
+						axisPoints = new HashSet<Integer>(zone.getXAxis());
 						axisPoints.removeAll(removePoints); // find the row to
 															// look at
 					} else { // look at y's
 						for (Coordinate point : excludePoints)
 							removePoints.add(point.getY());
-						axisPoints = new HashSet<Integer>(z.getYAxis());
+						axisPoints = new HashSet<Integer>(zone.getYAxis());
 						axisPoints.removeAll(removePoints); // find the colum
 					}
 					// check each blank along the axis for one missing val
 					count = 0;
 					Coordinate found = null;
-					for (Coordinate c : z.getBlanks()) {
+					for (Coordinate c : zone.getBlanks()) {
 						if (vertical && axisPoints.contains(c.getX())
 								&& rowList.get(c.getY()).isMissing(search)) {
 							found = c;
@@ -359,17 +380,17 @@ public class Sudoku {
 	/**
 	 * method for checking to see if a colum coordinate is correct
 	 * 
-	 * @param z
-	 * @param c
+	 * @param zone
+	 * @param coordiate
 	 * @return
 	 */
-	private boolean checkRow(Zone z, Coordinate c) {
-		Coordinate checker = new Coordinate(c.getX(), c.getY(), 0);
-		if (z.isMissing(c.getVal()) && z.getBlanks().contains(checker)
-				&& columList.get(c.getX()).isMissing(c.getVal())) {
+	private boolean checkRow(Zone zone, Coordinate coordiate) {
+		Coordinate checker = new Coordinate(coordiate.getX(), coordiate.getY(), 0);
+		if (zone.isMissing(coordiate.getVal()) && zone.getBlanks().contains(checker)
+				&& columList.get(coordiate.getX()).isMissing(coordiate.getVal())) {
 			int count = 0;
-			for (Coordinate blank : z.getBlanks()) {
-				if (columList.get(blank.getX()).isMissing(c.getVal())) {
+			for (Coordinate blank : zone.getBlanks()) {
+				if (columList.get(blank.getX()).isMissing(coordiate.getVal())) {
 					count++;
 				}
 			}
@@ -386,12 +407,12 @@ public class Sudoku {
 	 * @param zone
 	 * @return solved coordinate
 	 */
-	private Coordinate row(Zone z) {
-		Set<Integer> miss = z.getMissing();
+	private Coordinate row(Zone zone) {
+		Set<Integer> miss = zone.getMissing();
 		for (Integer x : miss) {
 			int count = 0;
 			Coordinate found = null;
-			for (Coordinate c : z.getBlanks()) {
+			for (Coordinate c : zone.getBlanks()) {
 				if (columList.get(c.getX()).isMissing(x)) {
 					count++;
 					found = c;
@@ -407,17 +428,17 @@ public class Sudoku {
 	/**
 	 * method for checking to see if a row coordinate is correct
 	 * 
-	 * @param z
-	 * @param c
+	 * @param zone
+	 * @param coordinate
 	 * @return
 	 */
-	private boolean checkColum(Zone z, Coordinate c) {
-		Coordinate checker = new Coordinate(c.getX(), c.getY(), 0);
-		if (z.isMissing(c.getVal()) && z.getBlanks().contains(checker)
-				&& rowList.get(c.getY()).isMissing(c.getVal())) {
+	private boolean checkColum(Zone zone, Coordinate coordinate) {
+		Coordinate checker = new Coordinate(coordinate.getX(), coordinate.getY(), 0);
+		if (zone.isMissing(coordinate.getVal()) && zone.getBlanks().contains(checker)
+				&& rowList.get(coordinate.getY()).isMissing(coordinate.getVal())) {
 			int count = 0;
-			for (Coordinate blank : z.getBlanks()) {
-				if (rowList.get(blank.getY()).isMissing(c.getVal())) {
+			for (Coordinate blank : zone.getBlanks()) {
+				if (rowList.get(blank.getY()).isMissing(coordinate.getVal())) {
 					count++;
 				}
 			}
@@ -434,12 +455,12 @@ public class Sudoku {
 	 * @param zone
 	 * @return solved coordinate
 	 */
-	private Coordinate colum(Zone z) {
-		Set<Integer> miss = z.getMissing();
+	private Coordinate colum(Zone zone) {
+		Set<Integer> miss = zone.getMissing();
 		for (Integer x : miss) {
 			int count = 0;
 			Coordinate found = null;
-			for (Coordinate c : z.getBlanks()) {
+			for (Coordinate c : zone.getBlanks()) {
 				if (rowList.get(c.getY()).isMissing(x)) {
 					count++;
 					found = c;

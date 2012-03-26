@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -78,26 +79,26 @@ public class Sudoku {
 	public int[][] solveSudoku(int[][] problem) {
 
 		long time = System.currentTimeMillis();
-	/*	for (Zone z : rowList)
-			System.out.println(z);
-
-		System.out.println("\n\n");
-*/
+		/*
+		 * for (Zone z : rowList) System.out.println(z);
+		 * 
+		 * System.out.println("\n\n");
+		 */
 		solve(problem);
-/*		for (Zone z : rowList)
-			System.out.println(z);
-
-		System.out.println("\n" + (System.currentTimeMillis() - time) / 1000.0
-				+ " Seconds");
-*/		
+		/*
+		 * for (Zone z : rowList) System.out.println(z);
+		 * 
+		 * System.out.println("\n" + (System.currentTimeMillis() - time) /
+		 * 1000.0 + " Seconds");
+		 */
 		for (int y = 0; y < problem.length; y++)
 			for (int x = 0; x < problem.length; x++)
 				problem[x][y] = rowList.get(y).get(x);
 
 		return problem;
 	}
-	
-	public List<Coordinate> rightAnswers(int[][] problem){
+
+	public List<Coordinate> rightAnswers(int[][] problem) {
 		List<Coordinate> ans = new ArrayList<Coordinate>();
 		while (!done()) {
 			populateZones(problem);
@@ -107,7 +108,7 @@ public class Sudoku {
 			System.out.println(c);
 			problem[c.getX()][c.getY()] = c.getVal();
 			ans.add(c);
-	//		print();
+			// print();
 		}
 		return ans;
 	}
@@ -263,7 +264,7 @@ public class Sudoku {
 				break;
 			System.out.println(c);
 			p[c.getX()][c.getY()] = c.getVal();
-	//		print();
+			// print();
 		}
 		return p;
 	}
@@ -406,19 +407,33 @@ public class Sudoku {
 					}
 					// check each blank along the axis for one missing val
 					count = 0;
+					int checks = 0;
 					Coordinate found = null;
 					for (Coordinate c : zone.getBlanks()) {
-						if (vertical && axisPoints.contains(c.getX())
-								&& rowList.get(c.getY()).isMissing(search)) {
-							found = c;
-							count++;
-						} else if (!vertical && axisPoints.contains(c.getY())
-								&& columList.get(c.getX()).isMissing(search)) {
-							found = c;
-							count++;
+						if (vertical && axisPoints.contains(c.getX())) {
+							checks++;
+							if (rowList.get(c.getY()).isMissing(search)) {
+								found = c;
+								count++;
+							}
+						} else if (!vertical && axisPoints.contains(c.getY())) {
+							checks++;
+							if (columList.get(c.getX()).isMissing(search)) {
+								found = c;
+								count++;
+							}
 						}
 					}
-					if (count == 1) { // only one possibility
+					boolean easy = false;
+					if (checks == 1)
+						easy = true;
+					else if (checks <= 3)
+						if (new Random().nextDouble() < 0.3)
+							easy = true;
+						else if (new Random().nextDouble() < 0.1)
+							easy = true;
+
+					if (count == 1 && easy) { // only one possibility
 						return new Coordinate(found.getX(), found.getY(),
 								search);
 					}

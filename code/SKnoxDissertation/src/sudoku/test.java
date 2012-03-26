@@ -21,18 +21,7 @@ new BasicStart();
 		// Sudoku.solveSudoku(problem);
 		Coordinate ans = null;
 		Sudoku s = new Sudoku(problem);
-		do {
-			ans = s.nextNumber();
-			if (ans != null) {
-				problem[ans.getX()][ans.getY()] = ans.getVal();
-				System.out.println("\n X:" + ans.getX() + " Y:" + ans.getY()
-						+ " val:" + ans.getVal() + "\n\n");
-				s.refresh(problem);
-			} else {
-				s.print();
-				break;
-			}
-		} while (ans != null);
+		s.solveSudoku(problem);
 
 	}
 

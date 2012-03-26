@@ -74,6 +74,24 @@ public class Zone {
 	}
 
 	/**
+	 * method to eddit a zone to add a new coordinate
+	 * 
+	 * @param coordinate
+	 */
+	public void eddit(Coordinate coordinate) {
+		Coordinate blank = new Coordinate(coordinate.getX(), coordinate.getY(),
+				0);
+		for(Coordinate c: zone)
+			if(c.equals(blank)){
+				zone.set(zone.indexOf(c), coordinate);
+				break;
+			}
+		zone.remove(blank);
+		wasMissing.add(coordinate);
+		populateWatch(zone);
+	}
+
+	/**
 	 * method for checking a zone error
 	 * 
 	 * @param coordinate
@@ -193,6 +211,8 @@ public class Zone {
 	private void populateWatch(List<Coordinate> zone) {
 		Set<Integer> got = new HashSet<Integer>();
 		blanks.clear();
+		Xaxis.clear();
+		Yaxis.clear();
 		missing.clear();
 		missing.addAll(NUMS);
 

@@ -33,6 +33,7 @@ public class Pupil extends Agent {
 	Random r = new Random();
 	private int waits = 0;
 	private int times = 0;
+	private int totalQ = 0;
 	private int qAsked = 0;
 	private int qAnswer = 0;
 	private ArrayList<AID> usefullAnswers = new ArrayList<AID>();
@@ -93,7 +94,7 @@ public class Pupil extends Agent {
 			personality = new Personality(0);
 		} else if (this.getAID().getLocalName().equals("Alicia")) {
 			// dyscalculic
-			personality = new Personality(DYSCAL);
+			personality = new Personality(NORM);
 		} else if (this.getAID().getLocalName().equals("Steve")) {
 			// dyslexic
 			personality = new Personality(DYSLEX);
@@ -218,10 +219,10 @@ public class Pupil extends Agent {
 	private void write(AID answer) {
 		for (AID a : peerData.keySet()) {
 			if (!a.equals(this.getAID()) && !a.equals(answer))
-				peerData.get(a).write(false);
+				peerData.get(a).write(false, totalQ);
 		}
 
-		peerData.get(answer).write(true);
+		peerData.get(answer).write(true, totalQ);
 		others.incQuestionAnswered(answer);
 		others.incQuestion();
 	}
@@ -243,6 +244,7 @@ public class Pupil extends Agent {
 				} else if (res.getContent().startsWith("Yes")) {
 					if (asked.contains(res.getCoordinate())) {
 						if (Problem.edditProblem(res.getCoordinate())) {
+							totalQ++;
 							peerData.get(res.getSender()).incMyAnswer();
 							write(res.getSender());
 							Messages.change(res.getCoordinate(), send, this);

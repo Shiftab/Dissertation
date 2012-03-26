@@ -216,11 +216,11 @@ public class Stats {
 	 * method to write a stats event out to the storige file
 	 * @param answered
 	 */
-	public void write(boolean answered) {
+	public void write(boolean answered, int totalAsked) {
 			if(answered) 
-				output+=",1\n";
+				output+=","+totalAsked+",1\n";
 			else
-				output+=",0\n";
+				output+=","+totalAsked+",0\n";
 			
 			try {
 				out.write(output);

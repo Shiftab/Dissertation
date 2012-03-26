@@ -22,7 +22,7 @@ public class Sudoku {
 			new ArrayList<Integer>(Arrays.asList(0, 3, 6)),
 			new ArrayList<Integer>(Arrays.asList(1, 4, 7)),
 			new ArrayList<Integer>(Arrays.asList(2, 5, 8)));
-	
+
 	private List<ArrayList<Integer>> gridChecks = new ArrayList<ArrayList<Integer>>(
 			CHECK_LISTS);
 	private List<Zone> rowList = new ArrayList<Zone>();
@@ -31,15 +31,29 @@ public class Sudoku {
 
 	/**
 	 * constructor for the sudoku solver
+	 * 
 	 * @param problem
 	 */
 	public Sudoku(int[][] problem) {
 		populateZones(problem);
 	}
 
+	public int[][] getProblem() {
+		int[][] problem = new int[9][9];
+		int count = 0;
+		for (Zone z : rowList) {
+			for (int x = 0; x < 9; x++) {
+				problem[x][count] = z.get(x);
+			}
+			count++;
+		}
+
+		return problem;
+	}
+
 	/**
-	 * method to reset the watch zones values
-	 * for a new version of the problem
+	 * method to reset the watch zones values for a new version of the problem
+	 * 
 	 * @param problem
 	 */
 	public void refresh(int[][] problem) {
@@ -50,6 +64,7 @@ public class Sudoku {
 	 * method to print out this view of the problem
 	 */
 	public void print() {
+		System.out.println('\n');
 		for (Zone z : rowList)
 			System.out.println(z);
 	}
@@ -63,22 +78,38 @@ public class Sudoku {
 	public int[][] solveSudoku(int[][] problem) {
 
 		long time = System.currentTimeMillis();
-		for (Zone z : rowList)
+	/*	for (Zone z : rowList)
 			System.out.println(z);
 
 		System.out.println("\n\n");
-
+*/
 		solve(problem);
-		for (Zone z : rowList)
+/*		for (Zone z : rowList)
 			System.out.println(z);
 
 		System.out.println("\n" + (System.currentTimeMillis() - time) / 1000.0
 				+ " Seconds");
+*/		
 		for (int y = 0; y < problem.length; y++)
 			for (int x = 0; x < problem.length; x++)
 				problem[x][y] = rowList.get(y).get(x);
 
 		return problem;
+	}
+	
+	public List<Coordinate> rightAnswers(int[][] problem){
+		List<Coordinate> ans = new ArrayList<Coordinate>();
+		while (!done()) {
+			populateZones(problem);
+			Coordinate c = nextNumber();
+			if (c == null)
+				break;
+			System.out.println(c);
+			problem[c.getX()][c.getY()] = c.getVal();
+			ans.add(c);
+	//		print();
+		}
+		return ans;
 	}
 
 	/**
@@ -109,16 +140,25 @@ public class Sudoku {
 	 */
 	public Coordinate searchErr() {
 		Coordinate err = null;
-		for (Zone z : columList)
+		for (Zone z : columList) {
 			err = z.getError();
+			if (err != null)
+				break;
+		}
 
-		if (err!=null)
-			for (Zone z : rowList)
+		if (err == null)
+			for (Zone z : rowList) {
 				err = z.getError();
+				if (err != null)
+					break;
+			}
 
-		if (err!=null)
-			for (Zone z : gridList)
+		if (err == null)
+			for (Zone z : gridList) {
 				err = z.getError();
+				if (err != null)
+					break;
+			}
 
 		return err;
 	}
@@ -216,10 +256,15 @@ public class Sudoku {
 	 * @return problem
 	 */
 	private int[][] solve(int[][] p) {
-		populateZones(p);
-		workOutGrid(p);
-		workOutRows(p);
-		workOutColums(p);
+		while (!done()) {
+			populateZones(p);
+			Coordinate c = nextNumber();
+			if (c == null)
+				break;
+			System.out.println(c);
+			p[c.getX()][c.getY()] = c.getVal();
+	//		print();
+		}
 		return p;
 	}
 
@@ -235,7 +280,7 @@ public class Sudoku {
 			Coordinate c = grid(z, pos);
 			if (c != null) {
 				problem[c.getX()][c.getY()] = c.getVal();
-				solve(problem);
+				return solve(problem);
 			}
 			pos++; // increment the zones
 		}
@@ -244,16 +289,18 @@ public class Sudoku {
 	}
 
 	/**
-	 * method to check a zone for the pressence of a posible new
-	 * coordinate
+	 * method to check a zone for the pressence of a posible new coordinate
+	 * 
 	 * @param zone
 	 * @param position
 	 * @param coordinate
 	 * @return
 	 */
 	private boolean checkGrid(Zone zone, int position, Coordinate coordinate) {
-		Coordinate checker = new Coordinate(coordinate.getX(), coordinate.getY(), 0);
-		if (zone.isMissing(coordinate.getVal()) && zone.getBlanks().contains(checker)) {
+		Coordinate checker = new Coordinate(coordinate.getX(),
+				coordinate.getY(), 0);
+		if (zone.isMissing(coordinate.getVal())
+				&& zone.getBlanks().contains(checker)) {
 			boolean vertical = false;
 			List<ArrayList<Integer>> check = new ArrayList<ArrayList<Integer>>();
 			for (ArrayList<Integer> l : gridChecks) {
@@ -269,11 +316,12 @@ public class Sudoku {
 						if (gridList.get(i).isMissing(coordinate.getVal())) {
 							continue checks;
 						}
-						if (i < position - 2 || i > position + 2) { // list is vertical
+						if (i < position - 2 || i > position + 2) { // list is
+																	// vertical
 							vertical = true;
 							// check the lines are right
-							if (coordinate.getX() == gridList.get(i).findVal(coordinate.getVal())
-									.getX()) {
+							if (coordinate.getX() == gridList.get(i)
+									.findVal(coordinate.getVal()).getX()) {
 								continue checks;
 							}
 						} else if (coordinate.getY() == gridList.get(i)
@@ -284,13 +332,15 @@ public class Sudoku {
 				}
 				int count = 0;
 				for (Coordinate blank : zone.getBlanks()) {
-					if (vertical && coordinate.getX() == blank.getX()
-							&& rowList.get(blank.getY()).isMissing(coordinate.getVal())) {
+					if (vertical
+							&& coordinate.getX() == blank.getX()
+							&& rowList.get(blank.getY()).isMissing(
+									coordinate.getVal())) {
 						count++;
 					} else if (!vertical
 							&& coordinate.getY() == blank.getY()
-							&& columList.get(blank.getX())
-									.isMissing(coordinate.getVal())) {
+							&& columList.get(blank.getX()).isMissing(
+									coordinate.getVal())) {
 						count++;
 					}
 				}
@@ -324,7 +374,8 @@ public class Sudoku {
 						if (gridList.get(i).isMissing(search))
 							count++;
 
-						if (i < position - 2 || i > position + 2) { // list is vertical
+						if (i < position - 2 || i > position + 2) { // list is
+																	// vertical
 							vertical = true;
 						} else {
 							vertical = false;
@@ -385,9 +436,12 @@ public class Sudoku {
 	 * @return
 	 */
 	private boolean checkRow(Zone zone, Coordinate coordiate) {
-		Coordinate checker = new Coordinate(coordiate.getX(), coordiate.getY(), 0);
-		if (zone.isMissing(coordiate.getVal()) && zone.getBlanks().contains(checker)
-				&& columList.get(coordiate.getX()).isMissing(coordiate.getVal())) {
+		Coordinate checker = new Coordinate(coordiate.getX(), coordiate.getY(),
+				0);
+		if (zone.isMissing(coordiate.getVal())
+				&& zone.getBlanks().contains(checker)
+				&& columList.get(coordiate.getX())
+						.isMissing(coordiate.getVal())) {
 			int count = 0;
 			for (Coordinate blank : zone.getBlanks()) {
 				if (columList.get(blank.getX()).isMissing(coordiate.getVal())) {
@@ -433,9 +487,12 @@ public class Sudoku {
 	 * @return
 	 */
 	private boolean checkColum(Zone zone, Coordinate coordinate) {
-		Coordinate checker = new Coordinate(coordinate.getX(), coordinate.getY(), 0);
-		if (zone.isMissing(coordinate.getVal()) && zone.getBlanks().contains(checker)
-				&& rowList.get(coordinate.getY()).isMissing(coordinate.getVal())) {
+		Coordinate checker = new Coordinate(coordinate.getX(),
+				coordinate.getY(), 0);
+		if (zone.isMissing(coordinate.getVal())
+				&& zone.getBlanks().contains(checker)
+				&& rowList.get(coordinate.getY())
+						.isMissing(coordinate.getVal())) {
 			int count = 0;
 			for (Coordinate blank : zone.getBlanks()) {
 				if (rowList.get(blank.getY()).isMissing(coordinate.getVal())) {
@@ -523,78 +580,137 @@ public class Sudoku {
 	 * @param problem
 	 */
 	private void populateZones(int[][] problem) {
-		List<Coordinate> colum = new ArrayList<Coordinate>();
-		rowList.clear();
-		gridList.clear();
-		columList.clear();
-		for (int z = 0; z < 9; z++) {
-			rowList.add(new Zone());
-			gridList.add(new Zone());
-		}
-		int y = 0;
-		int x = 0;
-		for (; x < problem.length; x++) {
-			colum = new ArrayList<Coordinate>();
-			for (y = 0; y < problem.length; y++) {
-				rowList.get(y).addCoordinate(
-						new Coordinate(x, y, problem[x][y]));
-				if (y <= 2) {
-					// grid 1/2/3
-					if (x <= 2) {
-						// grid1
-						gridList.get(0).addCoordinate(
-								new Coordinate(x, y, problem[x][y]));
-					} else if (x <= 5) {
-						// grid2
-						gridList.get(1).addCoordinate(
-								new Coordinate(x, y, problem[x][y]));
+		if (gridList.isEmpty() || rowList.isEmpty() || columList.isEmpty()) {
+			List<Coordinate> colum = new ArrayList<Coordinate>();
+			gridList.clear();
+			rowList.clear();
+			columList.clear();
+			for (int z = 0; z < 9; z++) {
+				rowList.add(new Zone());
+				gridList.add(new Zone());
+			}
+			int y = 0;
+			int x = 0;
+			for (; x < problem.length; x++) {
+				colum = new ArrayList<Coordinate>();
+				for (y = 0; y < problem.length; y++) {
+					rowList.get(y).addCoordinate(
+							new Coordinate(x, y, problem[x][y]));
+					if (y <= 2) {
+						// grid 1/2/3
+						if (x <= 2) {
+							// grid1
+							gridList.get(0).addCoordinate(
+									new Coordinate(x, y, problem[x][y]));
+						} else if (x <= 5) {
+							// grid2
+							gridList.get(1).addCoordinate(
+									new Coordinate(x, y, problem[x][y]));
+						} else {
+							// grid3
+							gridList.get(2).addCoordinate(
+									new Coordinate(x, y, problem[x][y]));
+						}
+					} else if (y <= 5) {
+						// grid4/5/6
+						if (x <= 2) {
+							// grid4
+							gridList.get(3).addCoordinate(
+									new Coordinate(x, y, problem[x][y]));
+						} else if (x <= 5) {
+							// grid5
+							gridList.get(4).addCoordinate(
+									new Coordinate(x, y, problem[x][y]));
+						} else {
+							// grid6
+							gridList.get(5).addCoordinate(
+									new Coordinate(x, y, problem[x][y]));
+						}
 					} else {
-						// grid3
-						gridList.get(2).addCoordinate(
-								new Coordinate(x, y, problem[x][y]));
+						// grid 7/8/9
+						if (x <= 2) {
+							// grid7
+							gridList.get(6).addCoordinate(
+									new Coordinate(x, y, problem[x][y]));
+						} else if (x <= 5) {
+							// grid8
+							gridList.get(7).addCoordinate(
+									new Coordinate(x, y, problem[x][y]));
+						} else {
+							// grid9
+							gridList.get(8).addCoordinate(
+									new Coordinate(x, y, problem[x][y]));
+						}
 					}
-				} else if (y <= 5) {
-					// grid4/5/6
-					if (x <= 2) {
-						// grid4
-						gridList.get(3).addCoordinate(
+
+					colum.add(new Coordinate(x, y, problem[x][y]));
+				}
+				columList.add(new Zone(colum));
+			}
+
+			for (Zone z : rowList) {
+				z.populateWatch();
+			}
+			for (Zone z : gridList) {
+				z.populateWatch();
+			}
+		} else {
+			for (int x = 0; x < problem.length; x++)
+				for (int y = 0; y < problem.length; y++) {
+					if (!columList.get(x).contains(
+							new Coordinate(x, y, problem[x][y]))) {
+						columList.get(x).eddit(
 								new Coordinate(x, y, problem[x][y]));
-					} else if (x <= 5) {
-						// grid5
-						gridList.get(4).addCoordinate(
+						rowList.get(y).eddit(
 								new Coordinate(x, y, problem[x][y]));
-					} else {
-						// grid6
-						gridList.get(5).addCoordinate(
-								new Coordinate(x, y, problem[x][y]));
-					}
-				} else {
-					// grid 7/8/9
-					if (x <= 2) {
-						// grid7
-						gridList.get(6).addCoordinate(
-								new Coordinate(x, y, problem[x][y]));
-					} else if (x <= 5) {
-						// grid8
-						gridList.get(7).addCoordinate(
-								new Coordinate(x, y, problem[x][y]));
-					} else {
-						// grid9
-						gridList.get(8).addCoordinate(
-								new Coordinate(x, y, problem[x][y]));
+						if (y <= 2) {
+							// grid 1/2/3
+							if (x <= 2) {
+								// grid1
+								gridList.get(0).eddit(
+										new Coordinate(x, y, problem[x][y]));
+							} else if (x <= 5) {
+								// grid2
+								gridList.get(1).eddit(
+										new Coordinate(x, y, problem[x][y]));
+							} else {
+								// grid3
+								gridList.get(2).eddit(
+										new Coordinate(x, y, problem[x][y]));
+							}
+						} else if (y <= 5) {
+							// grid4/5/6
+							if (x <= 2) {
+								// grid4
+								gridList.get(3).eddit(
+										new Coordinate(x, y, problem[x][y]));
+							} else if (x <= 5) {
+								// grid5
+								gridList.get(4).eddit(
+										new Coordinate(x, y, problem[x][y]));
+							} else {
+								// grid6
+								gridList.get(5).eddit(
+										new Coordinate(x, y, problem[x][y]));
+							}
+						} else {
+							// grid 7/8/9
+							if (x <= 2) {
+								// grid7
+								gridList.get(6).eddit(
+										new Coordinate(x, y, problem[x][y]));
+							} else if (x <= 5) {
+								// grid8
+								gridList.get(7).eddit(
+										new Coordinate(x, y, problem[x][y]));
+							} else {
+								// grid9
+								gridList.get(8).eddit(
+										new Coordinate(x, y, problem[x][y]));
+							}
+						}
 					}
 				}
-
-				colum.add(new Coordinate(x, y, problem[x][y]));
-			}
-			columList.add(new Zone(colum));
-		}
-
-		for (Zone z : rowList) {
-			z.populateWatch();
-		}
-		for (Zone z : gridList) {
-			z.populateWatch();
 		}
 	}
 }

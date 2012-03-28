@@ -9,7 +9,6 @@ import java.util.Random;
 import agent.Knowledge.OthersModel;
 import agent.Knowledge.Personality;
 import agent.Knowledge.WorldView;
-import agent.Reasoning.DecisionMaking;
 
 import sudoku.Coordinate;
 import sudoku.Sudoku;
@@ -53,6 +52,11 @@ public class Pupil extends Agent {
 	public static final int ARGUING = 3;
 	public static final int WAITING = 4;
 	public static final int DISTRACTED = 5;
+
+	public static final int VIS_WORKING = 1;
+	public static final int VIS_ARGUING = 2;
+	public static final int VIS_DISTRACTED = 3;
+	public static final int VIS_SHY = 4;
 
 	// wait modifier that changes based on previous things
 	private double waitMod = 0;
@@ -104,8 +108,7 @@ public class Pupil extends Agent {
 		}
 
 		// persons understanding of the world
-		world = new WorldView(peers,
-				personality.isDyslexic());
+		world = new WorldView(peers, personality.isDyslexic());
 
 		brain = new Sudoku(world.getProblem());
 
@@ -115,6 +118,11 @@ public class Pupil extends Agent {
 
 	}
 
+	public Map<AID, Integer> getPeers(){
+		return world.getPeers();
+	}
+	
+	
 	public void waits(Behaviour b) {
 		if (personality.isDyslexic() && !testing) {
 			int wait = r.nextInt(150) + 200;
@@ -147,15 +155,13 @@ public class Pupil extends Agent {
 	}
 
 	public void waiting(Behaviour b) {
-		if (DecisionMaking.decide(DecisionMaking.WAIT, waitMod,
-				personality.getOCEAN())) {
+		if (personality.decide(Personality.SHY, waitMod)) {
 			waitMod += 0.01 * waitMod;
 			System.out.println("System: waitMod update on "
 					+ this.getAID().getLocalName());
 		} else {
 			// should I distract?
-			if (DecisionMaking.decide(DecisionMaking.DISTRACT, waitMod,
-					personality.getOCEAN())
+			if (personality.decide(Personality.DISTRACT, waitMod)
 					&& state != DISTRACTED
 					&& prevState != DISTRACTED) {
 				distract();
@@ -182,16 +188,16 @@ public class Pupil extends Agent {
 				if (brain.done()) {
 					endStats();
 					this.blockingReceive();
-				}else{
+				} else {
 					Coordinate err = brain.searchErr();
-					if(err!=null){
+					if (err != null) {
 						ArrayList<AID> send = new ArrayList<AID>();
-						for (AID a : world.getPeers()) {
+						for (AID a : world.getPeers().keySet()) {
 							if (!a.equals(this.getAID()))
 								send.add(a);
 						}
 						Messages.errorQuery(err, send, this);
-					
+
 					}
 				}
 			} else if (!asked.contains(nextNum)) {
@@ -202,7 +208,7 @@ public class Pupil extends Agent {
 				asked.add(nextNum);
 				asking.add(nextNum);
 				ArrayList<AID> send = new ArrayList<AID>();
-				for (AID a : world.getPeers()) {
+				for (AID a : world.getPeers().keySet()) {
 					if (!a.equals(this.getAID()))
 						send.add(a);
 				}
@@ -230,7 +236,7 @@ public class Pupil extends Agent {
 	public void messageHandel(Message res, Behaviour b) {
 		peerData.get(res.getSender()).setLastCom(System.currentTimeMillis());
 		ArrayList<AID> send = new ArrayList<AID>();
-		for (AID a : world.getPeers())
+		for (AID a : world.getPeers().keySet())
 			if (!a.equals(this.getAID()))
 				send.add(a);
 		switch (res.getPerformative()) {
@@ -275,7 +281,7 @@ public class Pupil extends Agent {
 				responded.add(res.getCoordinate());
 			}
 			break;
-		case Message.QUERY_IF: 
+		case Message.QUERY_IF:
 			if (state != ARGUING || state != DISTRACTED) {
 				Coordinate check = res.getCoordinate();
 				if (check != null)
@@ -287,21 +293,20 @@ public class Pupil extends Agent {
 						world.refresh();
 						brain.refresh(world.getProblem());
 						if (world.check(check)) {
-							if (DecisionMaking.decide(DecisionMaking.DISAGREE,
-									0, personality.getOCEAN())) {
+							if (personality.decide(Personality.DISAGREE,
+									0)) {
 								responded.add(check);
 								Messages.already(check, send, this);
 							}
 						} else if (brain.check(check)) {
-							if (DecisionMaking.decide(DecisionMaking.AGREE, 0,
-									personality.getOCEAN())) {
+							if (personality.decide(Personality.AGREE, 0)) {
 								responded.add(check);
 								Messages.agree(check, send, this);
 								qAnswer++;
 							}
 						} else {
-							if (DecisionMaking.decide(DecisionMaking.DISAGREE,
-									0, personality.getOCEAN())) {
+							if (personality.decide(Personality.DISAGREE,
+									0)) {
 								responded.add(check);
 								Messages.disagree(check, send, this);
 							}
@@ -332,46 +337,39 @@ public class Pupil extends Agent {
 			 */
 			break;
 		case Message.DISTRACT:
-			if (DecisionMaking.decide(DecisionMaking.CHATTER, 0,
-					personality.getOCEAN())) {
+			if (personality.decide(Personality.CHATTER, 0)) {
 				Messages.wasteTime(send, res.getSender(), this);
 				changeState(DISTRACTED);
-			} else if (DecisionMaking.decide(DecisionMaking.TENTITIVE, 0,
-					personality.getOCEAN())) {
+			} else if (personality.decide(Personality.FOCUS, 0)) {
 				Messages.reprisal(send, res.getSender(), this);
-				changeState(WAITING);
-			} else if (DecisionMaking.decide(DecisionMaking.AGRESIVE, 0,
-					personality.getOCEAN())) {
-				Messages.angryReprisal(send, res.getSender(), this);
 				changeState(WAITING);
 			} else {
 				changeState(WAITING);
 			}
 			break;
 		case Message.FOCUS:
-			if (!DecisionMaking.decide(DecisionMaking.IGNORE, 0,
-					personality.getOCEAN())) {
+			if (!personality.decide(Personality.IGNORE, 0)) {
 				changeState(WAITING);
 			}
 			break;
 		case Message.REPRISAL:
-			if (DecisionMaking.decide(DecisionMaking.AGRESIVE, 0,
-					personality.getOCEAN())) {
+			if (personality.decide(Personality.ARGUE, 0)) {
 				Messages.retaliate(send, res.getSender(), this);
 			} else {
 				changeState(WAITING);
 			}
 			break;
 		case Message.ERROR:
-			if(res.getContent().contains("agree")){ //response
+			if (res.getContent().contains("agree")) { // response
 				world.refresh();
 				brain.refresh(world.getProblem());
 				removeCoord(res.getCoordinate());
-			}else{									//query
+			} else { // query
 				brain.refresh(world.getProblem());
-				if(brain.checkErr(res.getCoordinate())){
+				if (brain.checkErr(res.getCoordinate())) {
 					Messages.agreeError(res.getCoordinate(), send, this);
-					world.edditProblem(new Coordinate(res.getCoordinate().getX(), res.getCoordinate().getY(), 0));
+					world.edditProblem(new Coordinate(res.getCoordinate()
+							.getX(), res.getCoordinate().getY(), 0));
 					world.refresh();
 					brain.refresh(world.getProblem());
 					removeCoord(res.getCoordinate());
@@ -381,32 +379,32 @@ public class Pupil extends Agent {
 		}
 	}
 
-	private void removeCoord(Coordinate err){
-		for(Coordinate c: asked){
-			if(c.getX()==err.getX()&&c.getY()==err.getY()){
+	private void removeCoord(Coordinate err) {
+		for (Coordinate c : asked) {
+			if (c.getX() == err.getX() && c.getY() == err.getY()) {
 				asked.remove(c);
 				break;
 			}
 		}
-		for(Coordinate c: responded){
-			if(c.getX()==err.getX()&&c.getY()==err.getY()){
+		for (Coordinate c : responded) {
+			if (c.getX() == err.getX() && c.getY() == err.getY()) {
 				responded.remove(c);
 				break;
 			}
 		}
-		for(Coordinate c: asking){
-			if(c.getX()==err.getX()&&c.getY()==err.getY()){
+		for (Coordinate c : asking) {
+			if (c.getX() == err.getX() && c.getY() == err.getY()) {
 				asking.remove(c);
 				break;
 			}
 		}
 	}
-	
+
 	private void distract() {
 		// TODO: method for distracting a peer
 		// add somthing for finding who you're most likly to talk to
 		ArrayList<AID> send = new ArrayList<AID>();
-		for (AID a : world.getPeers())
+		for (AID a : world.getPeers().keySet())
 			if (!a.equals(this.getAID()))
 				send.add(a);
 
@@ -414,8 +412,7 @@ public class Pupil extends Agent {
 	}
 
 	public void pickAFight() {
-		if (DecisionMaking.decide(DecisionMaking.AGRESIVE, waitMod,
-				personality.getOCEAN())) {
+		if (personality.decide(Personality.ARGUE, waitMod)) {
 			changeState(WAITING);
 			waitMod = 0;
 		} else {
@@ -427,7 +424,7 @@ public class Pupil extends Agent {
 
 	public void askAgain() {
 		ArrayList<AID> send = new ArrayList<AID>();
-		for (AID a : world.getPeers())
+		for (AID a : world.getPeers().keySet())
 			if (!a.equals(this.getAID()))
 				send.add(a);
 
@@ -436,18 +433,15 @@ public class Pupil extends Agent {
 	}
 
 	public void stopDistraction() {
-		if (!DecisionMaking.decide(DecisionMaking.CHATTER, waitMod,
-				personality.getOCEAN())) {
+		if (!personality.decide(Personality.CHATTER, waitMod)) {
 			ArrayList<AID> send = new ArrayList<AID>();
-			for (AID a : world.getPeers())
+			for (AID a : world.getPeers().keySet())
 				if (!a.equals(this.getAID()))
 					send.add(a);
 
-			if (DecisionMaking.decide(DecisionMaking.AGRESIVE, 0,
-					personality.getOCEAN())) {
+			if (personality.decide(Personality.ARGUE, 0)) {
 				Messages.angryReprisal(send, friend, this);
-			} else if (DecisionMaking.decide(DecisionMaking.TENTITIVE, 0,
-					personality.getOCEAN())) {
+			} else if (personality.decide(Personality.FOCUS, 0)) {
 				Messages.reprisal(send, friend, this);
 			}
 			changeState(WAITING);
@@ -479,5 +473,51 @@ public class Pupil extends Agent {
 			if (!a.equals(this.getAID()))
 				peerData.get(a).close();
 		}
+	}
+
+	public boolean shouldEncurage() {
+		if( personality.decide(Personality.ENCORIGE, 0))
+			encurage();
+		else return false;
+		
+		return true;
+	}
+
+	public boolean shy() {
+		return personality.decide(Personality.SHY, 0);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void encurage() {
+		AID shy = this.world.getShyPerson();
+		Messages.encurage((List<AID>)this.world.getPeers().keySet(), shy, this);
+	}
+
+	public boolean shouldBreakDistract() {
+		if(personality.decide(Personality.FOCUS, 0))
+			breakDistract();
+		else return false;
+		
+		return true;
+	}
+
+	@SuppressWarnings("unchecked")
+	public void breakDistract() {
+		AID distracted = this.world.getDistracted();
+		Messages.reprisal((List<AID>)this.world.getPeers().keySet(), distracted, this);
+	}
+
+	public boolean shouldBreakArgue() {
+		if(personality.decide(Personality.PLACATE, 0))
+			breakArgue();
+		else return false;
+		
+		return true;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void breakArgue() {
+		AID arguer = this.world.getArguing();
+		Messages.advise((List<AID>)this.world.getPeers().keySet(), arguer, this);
 	}
 }

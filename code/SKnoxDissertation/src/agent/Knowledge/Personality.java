@@ -10,6 +10,30 @@ import java.util.Random;
  */
 public class Personality {
 
+	// Multiplier grid
+		private static final double[] SHY_PROB = { -0.1, -0.1, -0.3, 0.2, 0.1 };
+		private static final double[] DISTRACT_PROB = { 0, -0.3, 0.2, -0.2, 0.3 };
+		private static final double[] ENCORAGE_PROB = { 0.1, 0.3, 0.3, 0.1, -0.3 };
+		private static final double[] TENTITIVE_PROB = { 0, 0.3, 0.1, 0.3, -0.1 };
+		private static final double[] IGNORE_PROB = { 0, 0.5, -0.3, -0.1, 0.1 };
+		private static final double[] AGREE_PROB = { 0.1, 0.3, 0.1, 0.5, -0.1 };
+		private static final double[] DISAGREE_PROB = { 0.1, 0.3, 0.1, -0.5, 0.5 };
+		private static final double[] ARGUE_PROB = { 0, -0.1, 0.1, -0.5, 0.5 };
+		private static final double[] PLACATE_PROB = { 0, 0.3, 0.3, 0.5, -0.1 };
+		private static final double[] CHATTER_PROB = { 0, -0.3, 0.2, 0.2, 0.3 };
+
+		// e-nums for decision case statement
+		public static final int SHY = 1;
+		public static final int DISTRACT = 2;
+		public static final int ENCORIGE = 3;
+		public static final int FOCUS = 4;
+		public static final int IGNORE = 5;
+		public static final int AGREE = 6;
+		public static final int DISAGREE = 7;
+		public static final int ARGUE = 8;
+		public static final int PLACATE = 9;
+		public static final int CHATTER = 0;
+	
 	private double openness, conscientiousness, extraversion, agreeableness,
 			neuroticism;
 
@@ -300,5 +324,71 @@ public class Personality {
 	 */
 	public void setSpatialTemporal(double spatialTemporal) {
 		this.spatialTemporal = spatialTemporal;
+	}
+	/**
+	 * method to handle the action decisions based on the personality of the
+	 * agent
+	 * 
+	 * @param decision
+	 * @param prior
+	 * @param ocean
+	 * @return
+	 */
+	@SuppressWarnings("null") //remove when reimplementing personalitys
+	public boolean decide(int decision, double prior) {
+
+		double[] question = null;
+		switch (decision) {
+		case (SHY):
+			question = SHY_PROB;
+			return false;// temporary override
+			// break;
+		case (DISTRACT):
+			question = DISTRACT_PROB;
+			return false;// temporary override
+			// break;
+		case (FOCUS):
+			question = TENTITIVE_PROB;
+			return false;// temporary override
+			// break;
+		case (IGNORE):
+			question = IGNORE_PROB;
+			return false;// temporary override
+			// break;
+		case (AGREE):
+			question = AGREE_PROB;
+			return true;// temporary override
+			// break;
+		case (DISAGREE):
+			question = DISAGREE_PROB;
+			return true;// temporary override
+			// break;
+		case (ARGUE):
+			question = ARGUE_PROB;
+			return false;// temporary override
+			// break;
+		case (PLACATE):
+			question = PLACATE_PROB;
+			return false;// temporary override
+			// break;
+		case (CHATTER):
+			question = CHATTER_PROB;
+			return false;// temporary override
+			// break;
+		case (ENCORIGE):
+			question = ENCORAGE_PROB;
+			return false; //temp override
+			//break;
+		}
+
+		double ans = prior;
+		double[] ocean = getOCEAN(); //TODO: get rid of this, get ocean
+		for (int x = 0; x < ocean.length; x++)
+			ans += (ocean[x] * question[x]);
+
+		if (r.nextDouble() < ans)
+			return true;
+		else
+			return false;
 	}
 }

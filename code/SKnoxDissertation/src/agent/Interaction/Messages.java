@@ -282,6 +282,18 @@ public class Messages {
 				+ msg.getContent());
 		sender.send(msg);
 	}
+	
+	public static void encurage(List<AID> send, AID focus, Agent sender){
+		Message msg = new Message(Message.ENCORAGE);
+		for (AID a : send) {
+			msg.addReceiver(a);
+		}
+		msg.addReplyTo(focus);
+		msg.setContent("What do you thing the next number is "+sender.getLocalName());
+		System.out.println(sender.getAID().getLocalName() + ": "
+				+ msg.getContent());
+		sender.send(msg);
+	}
 
 	/**
 	 * method to retaliate to anger

@@ -2,9 +2,12 @@ package agent.Knowledge;
 
 import jade.core.AID;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+
+import agent.Interaction.Pupil;
 
 import control.Problem;
 
@@ -24,7 +27,7 @@ public class WorldView {
 	private final double NORM_WRITE = 0.000001;
 	
 	int problem[][] = new int[9][9]; // current problem to be solved
-	List<AID> Agents = new ArrayList<AID>(); // list of agents within the group
+	Map<AID, Integer> Agents = new HashMap<AID, Integer>(); // list of agents within the group
 	Random r = new Random();
 	private boolean dyslexic = false;
 
@@ -37,7 +40,9 @@ public class WorldView {
 	public WorldView(List<AID> agentList, boolean isDyslexic) {
 		int[][] prob = Problem.getProblem();
 		passByVALUE(prob);
-		Agents = agentList;
+		for(AID a: agentList)
+			Agents.put(a, Pupil.VIS_WORKING);
+			
 		this.dyslexic = isDyslexic;
 	}
 
@@ -179,7 +184,7 @@ public class WorldView {
 	 * world view
 	 * @return
 	 */
-	public List<AID> getPeers() {
+	public Map<AID,Integer> getPeers() {
 		return Agents;
 	}
 
@@ -191,5 +196,29 @@ public class WorldView {
 	 */
 	public boolean check(Coordinate coordinate) {
 		return problem[coordinate.getX()][coordinate.getY()] == coordinate.getVal();
+	}
+
+	public AID getShyPerson() throws NullPointerException {
+		for(AID a: Agents.keySet())
+			if(Agents.get(a)==Pupil.VIS_SHY)
+				return a;
+		
+		return null;
+	}
+
+	public AID getDistracted() throws NullPointerException {
+		for(AID a: Agents.keySet())
+			if(Agents.get(a)==Pupil.VIS_DISTRACTED)
+				return a;
+		
+		return null;
+	}
+
+	public AID getArguing() throws NullPointerException {
+		for(AID a: Agents.keySet())
+			if(Agents.get(a)==Pupil.VIS_ARGUING)
+				return a;
+		
+		return null;
 	}
 }

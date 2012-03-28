@@ -29,6 +29,7 @@ public class Message extends ACLMessage {
 	public static final int REPRISAL = -4;
 	public static final int FOCUS = -5;
 	public static final int ERROR = -6;
+	public static final int ENCORAGE = -7;
 	
 	private Coordinate coordinate=null;
 	private AID focus = null;

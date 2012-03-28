@@ -18,9 +18,9 @@ import sudoku.Coordinate;
  */
 public class WorldView {
 	
-	private final double DYSLEX_READ = 0.001;
-	private final double NORM_READ = 0.00001;
-	private final double DYSLEX_WRITE = 0.0001;
+	private final double DYSLEX_READ = 0.01;
+	private final double NORM_READ = 0.0001;
+	private final double DYSLEX_WRITE = 0.001;
 	private final double NORM_WRITE = 0.000001;
 	
 	int problem[][] = new int[9][9]; // current problem to be solved
@@ -56,13 +56,13 @@ public class WorldView {
 						this.problem[x][y] = swopNum(problem[x][y]);
 						//TODO: implement actual focus system
 						System.out.println("**************(" + x + "," + y
-								+ ")=" + problem[x][y]);
+								+ ")=" + this.problem[x][y]);
 					} else
 						this.problem[x][y] = problem[x][y];
 				else if (r.nextDouble() <= NORM_READ) {
 					this.problem[x][y] = swopNum(problem[x][y]);
 					System.out.println("**************(" + x + "," + y + ")="
-							+ problem[x][y]);
+							+ this.problem[x][y]);
 				} else
 					this.problem[x][y] = problem[x][y];
 			}

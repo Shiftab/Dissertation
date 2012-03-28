@@ -94,7 +94,7 @@ public class Pupil extends Agent {
 			personality = new Personality(0);
 		} else if (this.getAID().getLocalName().equals("Alicia")) {
 			// dyscalculic
-			personality = new Personality(NORM);
+			personality = new Personality(DYSCAL);
 		} else if (this.getAID().getLocalName().equals("Steve")) {
 			// dyslexic
 			personality = new Personality(DYSLEX);

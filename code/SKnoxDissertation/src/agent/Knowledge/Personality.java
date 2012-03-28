@@ -1,5 +1,7 @@
 package agent.Knowledge;
 
+import jade.core.AID;
+
 import java.util.Random;
 
 /**

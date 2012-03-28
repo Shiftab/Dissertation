@@ -221,4 +221,8 @@ public class WorldView {
 		
 		return null;
 	}
+
+	public void setVisState(AID sender, int state) {
+		Agents.put(sender, state);
+	}
 }

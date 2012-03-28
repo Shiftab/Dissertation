@@ -168,8 +168,7 @@ public class Pupil extends Agent {
 			} else if (prevState == ASKING) {
 				askAgain();
 			} else {
-				waits(b);
-				search(); // TODO: might be a problem hear with
+				waits(b); // TODO: might be a problem hear with
 							// intermitent states
 			}
 			// TODO: add stuff for interveaning on
@@ -177,7 +176,8 @@ public class Pupil extends Agent {
 		}
 	}
 
-	public void search() {
+	public void search(Behaviour b) {
+		waits(b);
 		if (this.getCurQueueSize() == 0) {
 			world.refresh();
 			brain.refresh(world.getProblem());
@@ -232,7 +232,7 @@ public class Pupil extends Agent {
 		others.incQuestionAnswered(answer);
 		others.incQuestion();
 	}
-
+	
 	public void messageHandel(Message res, Behaviour b) {
 		peerData.get(res.getSender()).setLastCom(System.currentTimeMillis());
 		ArrayList<AID> send = new ArrayList<AID>();
@@ -241,6 +241,7 @@ public class Pupil extends Agent {
 				send.add(a);
 		switch (res.getPerformative()) {
 		case Message.INFORM:
+			world.setVisState(res.getSender(), Pupil.VIS_WORKING);
 			peerData.get(res.getSender()).incAnswered();
 			if (asking.contains(res.getCoordinate())) {
 				if (res.getContent().contains("already")) {
@@ -282,6 +283,7 @@ public class Pupil extends Agent {
 			}
 			break;
 		case Message.QUERY_IF:
+			world.setVisState(res.getSender(), Pupil.VIS_WORKING);
 			if (state != ARGUING || state != DISTRACTED) {
 				Coordinate check = res.getCoordinate();
 				if (check != null)
@@ -316,6 +318,7 @@ public class Pupil extends Agent {
 			}
 			break;
 		case Message.ARGUE:
+			world.setVisState(res.getSender(), Pupil.VIS_ARGUING);
 			// at the moment the only argue is somone saying that there number
 			// is correct
 
@@ -337,6 +340,7 @@ public class Pupil extends Agent {
 			 */
 			break;
 		case Message.DISTRACT:
+			world.setVisState(res.getSender(), Pupil.VIS_DISTRACTED);
 			if (personality.decide(Personality.CHATTER, 0)) {
 				Messages.wasteTime(send, res.getSender(), this);
 				changeState(DISTRACTED);
@@ -348,11 +352,13 @@ public class Pupil extends Agent {
 			}
 			break;
 		case Message.FOCUS:
+			world.setVisState(res.getSender(), Pupil.VIS_WORKING);
 			if (!personality.decide(Personality.IGNORE, 0)) {
 				changeState(WAITING);
 			}
 			break;
 		case Message.REPRISAL:
+			world.setVisState(res.getSender(), Pupil.VIS_WORKING);
 			if (personality.decide(Personality.ARGUE, 0)) {
 				Messages.retaliate(send, res.getSender(), this);
 			} else {
@@ -360,6 +366,7 @@ public class Pupil extends Agent {
 			}
 			break;
 		case Message.ERROR:
+			world.setVisState(res.getSender(), Pupil.VIS_WORKING);
 			if (res.getContent().contains("agree")) { // response
 				world.refresh();
 				brain.refresh(world.getProblem());

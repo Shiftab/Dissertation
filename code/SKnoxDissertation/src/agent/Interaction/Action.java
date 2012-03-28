@@ -45,14 +45,14 @@ public class Action extends CyclicBehaviour {
 
 			if (working >= 2) {
 				// enough people to keep working and ignore others
-				parent.search();
+				parent.search(this);
 			}
 			// else if one, check for probabilitys of search or break others
 			// else if zero, check for prob of break or shy
 			if (shy > 1) {
 				if (working == 1) {
 					if (!parent.shouldEncurage()) {
-						parent.search();
+						parent.search(this);
 					}
 				} else if (!parent.shy()) {
 					parent.encurage();
@@ -61,7 +61,7 @@ public class Action extends CyclicBehaviour {
 			} else if (distracted > 1) {
 				if (working == 1) {
 					if (!parent.shouldBreakDistract()) {
-						parent.search();
+						parent.search(this);
 					}
 				} else if (!parent.shy()) {
 					parent.breakDistract();
@@ -69,7 +69,7 @@ public class Action extends CyclicBehaviour {
 			} else if (arguing > 1) {
 				if (working == 1) {
 					if (!parent.shouldBreakArgue()) {
-						parent.search();
+						parent.search(this);
 					}
 				} else if (!parent.shy()) {
 					parent.breakArgue();

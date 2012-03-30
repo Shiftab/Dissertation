@@ -3,7 +3,7 @@ package agent.Interaction;
 import jade.core.AID;
 import jade.core.Agent;
 
-import java.util.List;
+import java.util.Set;
 
 import control.Message;
 
@@ -24,7 +24,7 @@ public class Messages {
 	 * @param send
 	 * @param sender
 	 */
-	public static void query(Coordinate coordinate, List<AID> send,
+	public static void query(Coordinate coordinate, Set<AID> send,
 			Agent sender, AID focus) {
 		Message msg = new Message(Message.QUERY_IF);
 		for (AID a : send) {
@@ -48,7 +48,7 @@ public class Messages {
 	 * @param send
 	 * @param sender
 	 */
-	public static void errorQuery(Coordinate coordinate, List<AID> send,
+	public static void errorQuery(Coordinate coordinate, Set<AID> send,
 			Agent sender) {
 		Message msg = new Message(Message.ERROR);
 		for (AID a : send) {
@@ -71,7 +71,7 @@ public class Messages {
 	 * @param send
 	 * @param sender
 	 */
-	public static void agreeError(Coordinate coordinate, List<AID> send,
+	public static void agreeError(Coordinate coordinate, Set<AID> send,
 			Agent sender) {
 		Message msg = new Message(Message.ERROR);
 		for (AID a : send) {
@@ -93,7 +93,7 @@ public class Messages {
 	 * @param send
 	 * @param sender
 	 */
-	public static void agree(Coordinate coordinate, List<AID> send, Agent sender) {
+	public static void agree(Coordinate coordinate, Set<AID> send, Agent sender) {
 		Message msg = new Message(Message.INFORM);
 		for (AID a : send) {
 			msg.addReceiver(a);
@@ -113,7 +113,7 @@ public class Messages {
 	 * @param send
 	 * @param sender
 	 */
-	public static void already(Coordinate coordinate, List<AID> send,
+	public static void already(Coordinate coordinate, Set<AID> send,
 			Agent sender) {
 		Message msg = new Message(Message.INFORM);
 		for (AID a : send) {
@@ -133,7 +133,7 @@ public class Messages {
 	 * @param send
 	 * @param sender
 	 */
-	public static void disagree(Coordinate coordinate, List<AID> send,
+	public static void disagree(Coordinate coordinate, Set<AID> send,
 			Agent sender) {
 		Message msg = new Message(Message.INFORM);
 		for (AID a : send) {
@@ -155,7 +155,7 @@ public class Messages {
 	 * @param send
 	 * @param sender
 	 */
-	public static void change(Coordinate coordinate, List<AID> send,
+	public static void change(Coordinate coordinate, Set<AID> send,
 			Agent sender) {
 		Message msg = new Message(Message.INFORM);
 		for (AID a : send) {
@@ -176,11 +176,9 @@ public class Messages {
 	 * @param send
 	 * @param sender
 	 */
-	public static void argue(Coordinate coordinate, List<AID> send, Agent sender) {
+	public static void argue(Coordinate coordinate, AID send, Agent sender) {
 		Message msg = new Message(Message.ARGUE);
-		for (AID a : send) {
-			msg.addReceiver(a);
-		}
+		msg.addReceiver(send);
 		msg.setContent("Well I think " + coordinate.getVal() + " would be at ("
 				+ coordinate.getX() + "," + coordinate.getY() + ")!");
 		msg.setCoordinate(coordinate);
@@ -196,7 +194,7 @@ public class Messages {
 	 * @param send
 	 * @param sender
 	 */
-	public static void acknowledge(List<AID> send, Agent sender) {
+	public static void acknowledge(Set<AID> send, Agent sender) {
 		Message msg = new Message(Message.INFORM);
 		for (AID a : send) {
 			msg.addReceiver(a);
@@ -214,7 +212,7 @@ public class Messages {
 	 * @param focus
 	 * @param sender
 	 */
-	public static void distract(List<AID> send, AID focus, Agent sender) {
+	public static void distract(Set<AID> send, AID focus, Agent sender) {
 		Message msg = new Message(Message.DISTRACT);
 		for (AID a : send) {
 			msg.addReceiver(a);
@@ -233,7 +231,7 @@ public class Messages {
 	 * @param focus
 	 * @param sender
 	 */
-	public static void wasteTime(List<AID> send, AID focus, Agent sender) {
+	public static void wasteTime(Set<AID> send, AID focus, Agent sender) {
 		Message msg = new Message(Message.DISTRACT);
 		for (AID a : send) {
 			msg.addReceiver(a);
@@ -252,7 +250,7 @@ public class Messages {
 	 * @param focus
 	 * @param sender
 	 */
-	public static void reprisal(List<AID> send, AID focus, Agent sender) {
+	public static void reprisal(Set<AID> send, AID focus, Agent sender) {
 		Message msg = new Message(Message.REPRISAL);
 		for (AID a : send) {
 			msg.addReceiver(a);
@@ -271,7 +269,7 @@ public class Messages {
 	 * @param focus
 	 * @param sender
 	 */
-	public static void angryReprisal(List<AID> send, AID focus, Agent sender) {
+	public static void angryReprisal(Set<AID> send, AID focus, Agent sender) {
 		Message msg = new Message(Message.REPRISAL);
 		for (AID a : send) {
 			msg.addReceiver(a);
@@ -283,7 +281,7 @@ public class Messages {
 		sender.send(msg);
 	}
 	
-	public static void encurage(List<AID> send, AID focus, Agent sender){
+	public static void encurage(Set<AID> send, AID focus, Agent sender){
 		Message msg = new Message(Message.ENCORAGE);
 		for (AID a : send) {
 			msg.addReceiver(a);
@@ -302,7 +300,7 @@ public class Messages {
 	 * @param focus
 	 * @param sender
 	 */
-	public static void retaliate(List<AID> send, AID focus, Agent sender) {
+	public static void retaliate(Set<AID> send, AID focus, Agent sender) {
 		Message msg = new Message(Message.ARGUE);
 		for (AID a : send) {
 			msg.addReceiver(a);
@@ -321,7 +319,7 @@ public class Messages {
 	 * @param focus
 	 * @param sender
 	 */
-	public static void advise(List<AID> send, AID focus, Agent sender) {
+	public static void advise(Set<AID> send, AID focus, Agent sender) {
 		Message msg = new Message(Message.FOCUS);
 		for (AID a : send) {
 			msg.addReceiver(a);

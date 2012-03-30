@@ -33,6 +33,7 @@ public class BasicStart extends Agent {
 		agents.add("Bob");
 		agents.add("Steve");
 		agents.add("Alicia");
+		agents.add("test");
 
 		Problem.setProblem(problem);
 

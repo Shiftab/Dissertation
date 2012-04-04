@@ -107,26 +107,6 @@ public class Messages {
 	}
 
 	/**
-	 * method used to inform about the existence of a value
-	 * 
-	 * @param coordinate
-	 * @param send
-	 * @param sender
-	 */
-	public static void already(Coordinate coordinate, Set<AID> send,
-			Agent sender) {
-		Message msg = new Message(Message.INFORM);
-		for (AID a : send) {
-			msg.addReceiver(a);
-		}
-		msg.setContent("Yes, " + coordinate.getVal() + " is already at ("
-				+ coordinate.getX() + "," + coordinate.getY() + ").");
-		System.out.println(sender.getAID().getLocalName() + ": "
-				+ msg.getContent());
-		sender.send(msg);
-	}
-
-	/**
 	 * method to disagree with a value
 	 * 
 	 * @param coordinate
@@ -156,11 +136,12 @@ public class Messages {
 	 * @param sender
 	 */
 	public static void change(Coordinate coordinate, Set<AID> send,
-			Agent sender) {
+			Agent sender, AID focus) {
 		Message msg = new Message(Message.INFORM);
 		for (AID a : send) {
 			msg.addReceiver(a);
 		}
+		msg.setFocus(focus);
 		msg.setContent("Changing value to " + coordinate.getVal() + " at ("
 				+ coordinate.getX() + "," + coordinate.getY() + ").");
 		msg.setCoordinate(coordinate);
@@ -176,9 +157,12 @@ public class Messages {
 	 * @param send
 	 * @param sender
 	 */
-	public static void argue(Coordinate coordinate, AID send, Agent sender) {
+	public static void argue(Coordinate coordinate, Set<AID> send, Agent sender, AID focus) {
 		Message msg = new Message(Message.ARGUE);
-		msg.addReceiver(send);
+		for(AID s: send)
+			msg.addReceiver(s);
+				
+		msg.setFocus(focus);
 		msg.setContent("Well I think " + coordinate.getVal() + " would be at ("
 				+ coordinate.getX() + "," + coordinate.getY() + ")!");
 		msg.setCoordinate(coordinate);
@@ -194,11 +178,13 @@ public class Messages {
 	 * @param send
 	 * @param sender
 	 */
-	public static void acknowledge(Set<AID> send, Agent sender) {
+	public static void acknowledge(Coordinate coordinate, Set<AID> send, Agent sender, AID focus) {
 		Message msg = new Message(Message.INFORM);
 		for (AID a : send) {
 			msg.addReceiver(a);
 		}
+		msg.setCoordinate(coordinate);
+		msg.setFocus(focus);
 		msg.setContent("Woops I must have not been paying attention.");
 		System.out.println(sender.getAID().getLocalName() + ": "
 				+ msg.getContent());
@@ -244,88 +230,30 @@ public class Messages {
 	}
 
 	/**
-	 * method to tentatively bring the distractor back to the problem
-	 * 
-	 * @param send
-	 * @param focus
-	 * @param sender
-	 */
-	public static void reprisal(Set<AID> send, AID focus, Agent sender) {
-		Message msg = new Message(Message.REPRISAL);
-		for (AID a : send) {
-			msg.addReceiver(a);
-		}
-		msg.addReplyTo(focus);
-		msg.setContent("Maby we should continue with the problem?");
-		System.out.println(sender.getAID().getLocalName() + ": "
-				+ msg.getContent());
-		sender.send(msg);
-	}
-
-	/**
-	 * method to angraly bring the distractor back to the problem
-	 * 
-	 * @param send
-	 * @param focus
-	 * @param sender
-	 */
-	public static void angryReprisal(Set<AID> send, AID focus, Agent sender) {
-		Message msg = new Message(Message.REPRISAL);
-		for (AID a : send) {
-			msg.addReceiver(a);
-		}
-		msg.addReplyTo(focus);
-		msg.setContent("Would you shut up!");
-		System.out.println(sender.getAID().getLocalName() + ": "
-				+ msg.getContent());
-		sender.send(msg);
-	}
-	
-	public static void encurage(Set<AID> send, AID focus, Agent sender){
-		Message msg = new Message(Message.ENCORAGE);
-		for (AID a : send) {
-			msg.addReceiver(a);
-		}
-		msg.addReplyTo(focus);
-		msg.setContent("What do you thing the next number is "+sender.getLocalName());
-		System.out.println(sender.getAID().getLocalName() + ": "
-				+ msg.getContent());
-		sender.send(msg);
-	}
-
-	/**
-	 * method to retaliate to anger
-	 * 
-	 * @param send
-	 * @param focus
-	 * @param sender
-	 */
-	public static void retaliate(Set<AID> send, AID focus, Agent sender) {
-		Message msg = new Message(Message.ARGUE);
-		for (AID a : send) {
-			msg.addReceiver(a);
-		}
-		msg.addReplyTo(focus);
-		msg.setContent("No, you shut up!");
-		System.out.println(sender.getAID().getLocalName() + ": "
-				+ msg.getContent());
-		sender.send(msg);
-	}
-
-	/**
 	 * method to advise a peer to ignore an agresive distracter
 	 * 
 	 * @param send
 	 * @param focus
 	 * @param sender
 	 */
-	public static void advise(Set<AID> send, AID focus, Agent sender) {
+	public static void focus(Set<AID> send, Agent sender) {
 		Message msg = new Message(Message.FOCUS);
 		for (AID a : send) {
 			msg.addReceiver(a);
 		}
-		msg.addReplyTo(focus);
 		msg.setContent("Just ignore him/her");
+		System.out.println(sender.getAID().getLocalName() + ": "
+				+ msg.getContent());
+		sender.send(msg);
+	}
+	
+	public static void focused(Set<AID> send, Agent sender){
+
+		Message msg = new Message(Message.INFORM);
+		for (AID a : send) {
+			msg.addReceiver(a);
+		}
+		msg.setContent("Fine I'll ignore him/her");
 		System.out.println(sender.getAID().getLocalName() + ": "
 				+ msg.getContent());
 		sender.send(msg);

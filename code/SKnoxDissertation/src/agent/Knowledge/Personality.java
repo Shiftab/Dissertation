@@ -4,6 +4,8 @@ import jade.core.AID;
 
 import java.util.Random;
 
+import agent.Interaction.Pupil;
+
 /**
  * the agents particular personality
  * 
@@ -12,36 +14,79 @@ import java.util.Random;
  */
 public class Personality {
 
-	// Multiplier grid
-		private static final double[] SHY_PROB = { -0.1, -0.1, -0.3, 0.2, 0.1 };
-		private static final double[] DISTRACT_PROB = { 0, -0.3, 0.2, -0.2, 0.3 };
-		private static final double[] ENCORAGE_PROB = { 0.1, 0.3, 0.3, 0.1, -0.3 };
-		private static final double[] TENTITIVE_PROB = { 0, 0.3, 0.1, 0.3, -0.1 };
-		private static final double[] IGNORE_PROB = { 0, 0.5, -0.3, -0.1, 0.1 };
-		private static final double[] AGREE_PROB = { 0.1, 0.3, 0.1, 0.5, -0.1 };
-		private static final double[] DISAGREE_PROB = { 0.1, 0.3, 0.1, -0.5, 0.5 };
-		private static final double[] ARGUE_PROB = { 0, -0.1, 0.1, -0.5, 0.5 };
-		private static final double[] PLACATE_PROB = { 0, 0.3, 0.3, 0.5, -0.1 };
-		private static final double[] CHATTER_PROB = { 0, -0.3, 0.2, 0.2, 0.3 };
+	private static final int WAIT_TIME = 100;
 
-		// e-nums for decision case statement
-		public static final int SHY = 1;
-		public static final int DISTRACT = 2;
-		public static final int ENCORIGE = 3;
-		public static final int FOCUS = 4;
-		public static final int IGNORE = 5;
-		public static final int AGREE = 6;
-		public static final int DISAGREE = 7;
-		public static final int ARGUE = 8;
-		public static final int PLACATE = 9;
-		public static final int CHATTER = 0;
-	
+	// Multiplier grid
+	private static final double[] SHY_PROB = { 0, -0.1, -0.5, -0.2, 0.1 };
+	private static final double[] DISTRACT_PROB = { 0, -0.3, 0.2, -0.2, 0.3 };
+	private static final double[] FOCUS_PROB = { 0, 0, 0, 0, 0 };
+	private static final double[] IGNORE_PROB = { 0, 0.5, -0.3, -0.1, 0.1 };
+	private static final double[] AGREE_PROB = { 0.1, 0.3, 0.1, 0.5, -0.1 };
+	private static final double[] DISAGREE_PROB = { 0.1, 0.3, 0.1, -0.5, 0.5 };
+	private static final double[] ARGUE_PROB = { 0, 0, 0, -0.3, 0.3 };
+	private static final double[] CHATTER_PROB = { 0, -0.3, 0.2, 0.2, 0.3 };
+
+	// e-nums for decision case statement
+	public static final int SHY = 1;
+	public static final int DISTRACT = 2;
+	public static final int FOCUS = 4;
+	public static final int IGNORE = 5;
+	public static final int AGREE = 6;
+	public static final int DISAGREE = 7;
+	public static final int ARGUE = 8;
+	public static final int CHATTER = 0;
+
+	/**
+	 * all stats 0 is avg openness: + = open to new things, likes science and
+	 * abstract thinking - = closed minded, likes things to be the same as
+	 * normal
+	 * 
+	 * conscientiousness: + = hardworking, carfull with a large attention to
+	 * detail. perfectionists - = easly distracted, lazy, less goal oriented
+	 * 
+	 * extraversion: + = works well with others, social and assertive - = shy
+	 * and quiet, strugles with larger groups
+	 * 
+	 * agreeableness: + = accommidating, friendly, helpfull - = less social,
+	 * argumentitive untrusting
+	 * 
+	 * Neuroticism: + = easly stressed, very emotional, self-conscious - =
+	 * lazyfair, calm, even-tempered
+	 */
 	private double openness, conscientiousness, extraversion, agreeableness,
 			neuroticism;
 
+	/**
+	 * all stats 0.5 is avg operational: ability to manipulate operations and
+	 * sequences
+	 * 
+	 * numberConceptual: the atributation of meaning to numbers, effects symbol
+	 * understanding as well as sequence understanding
+	 * 
+	 * number Comparative: the understanding of how numbers relate, including
+	 * sequencing
+	 * 
+	 * abstractSymbolic: the understanding of abstract concepts and ideas
+	 * 
+	 * graphica: the ability to manipulate or understand graphical
+	 * interpretations of problems
+	 * 
+	 * spatialTemporal: the ability to understand space and time intuitivly
+	 */
 	private double operational, numberConceptual, numberComparative,
 			abstractSymbolic, graphical, spatialTemporal, tempAvg;
 
+	/**
+	 * 0 is avg
+	 */
+	private double selfEsteam = 0, shyness = 1;
+
+	/**
+	 * random within 10 percent, more likly with certan traits low
+	 * numberConceptual low spacialTemporal mid-high graphics
+	 * 
+	 * dyscalculic is purly for output
+	 */
 	private boolean dyslexic = false, dyscalculic = false;
 
 	Random r = new Random();
@@ -51,10 +96,7 @@ public class Personality {
 	 * 
 	 * type options:
 	 * 
-	 * Standard = 1
-	 * Dyslexic = 2
-	 * Dyscalculic = 3
-	 * Random(No default) = -1
+	 * Standard = 1 Dyslexic = 2 Dyscalculic = 3 Random(No default) = -1
 	 * 
 	 * @param type
 	 */
@@ -104,45 +146,12 @@ public class Personality {
 		else if (tempAvg <= 0.78)
 			dyslexic = true;
 
-		System.out.print("**" + tempAvg + "**");
-	}
-
-	/**
-	 * old constructor for personality, implemented OCEAN factors
-	 * @deprecated
-	 */
-	public Personality() {
-		if (r.nextBoolean())
-			openness = -r.nextDouble();
-		else
-			openness = r.nextDouble();
-
-		if (r.nextBoolean())
-			conscientiousness = -r.nextDouble();
-		else
-			conscientiousness = r.nextDouble();
-
-		if (r.nextBoolean())
-			extraversion = -r.nextDouble();
-		else
-			extraversion = r.nextDouble();
-
-		if (r.nextBoolean())
-			agreeableness = -r.nextDouble();
-		else
-			agreeableness = r.nextDouble();
-
-		if (r.nextBoolean())
-			neuroticism = -r.nextDouble();
-		else
-			neuroticism = r.nextDouble();
-
-		System.out.println("O=" + openness + " C=" + conscientiousness + " E="
-				+ extraversion + " A=" + agreeableness + " N=" + neuroticism);
+		selfEsteam = (extraversion + (-neuroticism)) * 0.1;
 	}
 
 	/**
 	 * getter for quering if an agent is dyslexic
+	 * 
 	 * @return
 	 */
 	public boolean isDyslexic() {
@@ -151,6 +160,7 @@ public class Personality {
 
 	/**
 	 * getter for quering if an agent is dyscalculic
+	 * 
 	 * @return
 	 */
 	public boolean isDyscalculic() {
@@ -158,13 +168,9 @@ public class Personality {
 	}
 
 	/**
-	 * getter for ocean values
-	 * array structure:
-	 * 0=openness
-	 * 1=conscientiousness
-	 * 2=extraversion
-	 * 3=agreeableness
-	 * 4=neuroticism
+	 * getter for ocean values array structure: 0=openness 1=conscientiousness
+	 * 2=extraversion 3=agreeableness 4=neuroticism
+	 * 
 	 * @return
 	 */
 	public double[] getOCEAN() {
@@ -175,158 +181,34 @@ public class Personality {
 	}
 
 	/**
-	 * @return the openness
+	 * method for returning the speed at wich a pupil compleates a task
+	 * 
+	 * @return
 	 */
-	public double getOpenness() {
-		return openness;
+	public int getSpeed() {
+		double multiplyer = operational + numberComparative + numberConceptual
+				+ abstractSymbolic;
+		return (int) (WAIT_TIME * multiplyer) + r.nextInt(WAIT_TIME);
 	}
 
-	/**
-	 * @param openness the openness to set
-	 */
-	public void setOpenness(double openness) {
-		this.openness = openness;
+	public double getSelfEsteam() {
+		return selfEsteam;
 	}
 
-	/**
-	 * @return the conscientiousness
-	 */
-	public double getConscientiousness() {
-		return conscientiousness;
+	public void incSelfEsteam() {
+		if (this.selfEsteam < 1)
+			this.selfEsteam += 0.2;
 	}
 
-	/**
-	 * @param conscientiousness the conscientiousness to set
-	 */
-	public void setConscientiousness(double conscientiousness) {
-		this.conscientiousness = conscientiousness;
+	public void decSelfEsteam() {
+		if (this.selfEsteam > -1)
+			this.selfEsteam -= 0.2;
 	}
 
-	/**
-	 * @return the extraversion
-	 */
-	public double getExtraversion() {
-		return extraversion;
+	public double getShyness() {
+		return shyness;
 	}
 
-	/**
-	 * @param extraversion the extraversion to set
-	 */
-	public void setExtraversion(double extraversion) {
-		this.extraversion = extraversion;
-	}
-
-	/**
-	 * @return the agreeableness
-	 */
-	public double getAgreeableness() {
-		return agreeableness;
-	}
-
-	/**
-	 * @param agreeableness the agreeableness to set
-	 */
-	public void setAgreeableness(double agreeableness) {
-		this.agreeableness = agreeableness;
-	}
-
-	/**
-	 * @return the neuroticism
-	 */
-	public double getNeuroticism() {
-		return neuroticism;
-	}
-
-	/**
-	 * @param neuroticism the neuroticism to set
-	 */
-	public void setNeuroticism(double neuroticism) {
-		this.neuroticism = neuroticism;
-	}
-
-	/**
-	 * @return the operational
-	 */
-	public double getOperational() {
-		return operational;
-	}
-
-	/**
-	 * @param operational the operational to set
-	 */
-	public void setOperational(double operational) {
-		this.operational = operational;
-	}
-
-	/**
-	 * @return the numberConceptual
-	 */
-	public double getNumberConceptual() {
-		return numberConceptual;
-	}
-
-	/**
-	 * @param numberConceptual the numberConceptual to set
-	 */
-	public void setNumberConceptual(double numberConceptual) {
-		this.numberConceptual = numberConceptual;
-	}
-
-	/**
-	 * @return the numberComparative
-	 */
-	public double getNumberComparative() {
-		return numberComparative;
-	}
-
-	/**
-	 * @param numberComparative the numberComparative to set
-	 */
-	public void setNumberComparative(double numberComparative) {
-		this.numberComparative = numberComparative;
-	}
-
-	/**
-	 * @return the abstractSymbolic
-	 */
-	public double getAbstractSymbolic() {
-		return abstractSymbolic;
-	}
-
-	/**
-	 * @param abstractSymbolic the abstractSymbolic to set
-	 */
-	public void setAbstractSymbolic(double abstractSymbolic) {
-		this.abstractSymbolic = abstractSymbolic;
-	}
-
-	/**
-	 * @return the graphical
-	 */
-	public double getGraphical() {
-		return graphical;
-	}
-
-	/**
-	 * @param graphical the graphical to set
-	 */
-	public void setGraphical(double graphical) {
-		this.graphical = graphical;
-	}
-
-	/**
-	 * @return the spatialTemporal
-	 */
-	public double getSpatialTemporal() {
-		return spatialTemporal;
-	}
-
-	/**
-	 * @param spatialTemporal the spatialTemporal to set
-	 */
-	public void setSpatialTemporal(double spatialTemporal) {
-		this.spatialTemporal = spatialTemporal;
-	}
 	/**
 	 * method to handle the action decisions based on the personality of the
 	 * agent
@@ -336,21 +218,23 @@ public class Personality {
 	 * @param ocean
 	 * @return
 	 */
-	@SuppressWarnings("null") //remove when reimplementing personalitys
+	@SuppressWarnings("null")
+	// remove when reimplementing personalitys
 	public boolean decide(int decision, double prior) {
-
+		double SE = 0;
 		double[] question = null;
 		switch (decision) {
 		case (SHY):
 			question = SHY_PROB;
-			return false;// temporary override
-			// break;
+			SE = selfEsteam;
+			break;
 		case (DISTRACT):
 			question = DISTRACT_PROB;
+			SE = selfEsteam * 0.5;
 			return false;// temporary override
 			// break;
 		case (FOCUS):
-			question = TENTITIVE_PROB;
+			question = FOCUS_PROB;
 			return false;// temporary override
 			// break;
 		case (IGNORE):
@@ -369,28 +253,67 @@ public class Personality {
 			question = ARGUE_PROB;
 			return false;// temporary override
 			// break;
-		case (PLACATE):
-			question = PLACATE_PROB;
-			return false;// temporary override
-			// break;
 		case (CHATTER):
 			question = CHATTER_PROB;
 			return false;// temporary override
 			// break;
-		case (ENCORIGE):
-			question = ENCORAGE_PROB;
-			return false; //temp override
-			//break;
 		}
 
 		double ans = prior;
-		double[] ocean = getOCEAN(); //TODO: get rid of this, get ocean
+		double[] ocean = getOCEAN(); // TODO: get rid of this, get ocean
 		for (int x = 0; x < ocean.length; x++)
 			ans += (ocean[x] * question[x]);
 
+		ans += SE;
+
+		ans = (ans + 1) / 2;
+		System.out.println(" " + ans);
 		if (r.nextDouble() < ans)
 			return true;
 		else
 			return false;
+	}
+
+	public void resetSelfEsteam() {
+		selfEsteam = (extraversion + (-neuroticism)) * 0.1;
+	}
+
+	public boolean isShy() {
+		double personality = 0;
+		double[] ocean = getOCEAN();
+		double[] question = SHY_PROB;
+		for (int x = 0; x < ocean.length; x++)
+			personality += (ocean[x] * question[x]);
+
+		personality = (1 - (personality / 0.8)) / 2;
+		double SE = (1 + selfEsteam) / 2;
+		if (((personality / 2) + (SE / 2)) < 0.4) {
+			return true;
+		} else
+			return false;
+	}
+	
+	public boolean distract(){
+		double personality = 0;
+		double[] ocean = getOCEAN();
+		double[] question = DISTRACT_PROB;
+		for (int x = 0; x < ocean.length; x++)
+			personality += (ocean[x] * question[x]);
+
+		personality = (1 + (personality / 0.8)) / 2;
+		return ((personality / 2) + (shyness / 2)) < r.nextDouble();
+	}
+
+	public boolean isChatty() {
+
+		double personality = 0;
+		double[] ocean = getOCEAN();
+		double[] question = SHY_PROB;
+		for (int x = 0; x < ocean.length; x++)
+			personality += (ocean[x] * question[x]);
+
+		personality = (1 - (personality / 0.8)) / 2;
+		double SE = (1 + selfEsteam) / 2;
+		return (((personality / 2) + (SE / 2)) < r.nextDouble());
 	}
 }

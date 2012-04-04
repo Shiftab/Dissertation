@@ -21,13 +21,13 @@ import sudoku.Coordinate;
  */
 public class WorldView {
 	
-	private final double DYSLEX_READ = 0.01;
-	private final double NORM_READ = 0.0001;
-	private final double DYSLEX_WRITE = 0.001;
-	private final double NORM_WRITE = 0.000001;
+	//taken out for the moment, as is not mision critical, running out of time and causing to meny errors
+	private final double DYSLEX_READ = 0;
+	private final double NORM_READ = 0;
+	private final double DYSLEX_WRITE = 0;
+	private final double NORM_WRITE = 0;
 	
 	int problem[][] = new int[9][9]; // current problem to be solved
-	Map<AID, Integer> Agents = new HashMap<AID, Integer>(); // list of agents within the group
 	Random r = new Random();
 	private boolean dyslexic = false;
 
@@ -40,8 +40,6 @@ public class WorldView {
 	public WorldView(List<AID> agentList, boolean isDyslexic) {
 		int[][] prob = Problem.getProblem();
 		passByVALUE(prob);
-		for(AID a: agentList)
-			Agents.put(a, Pupil.VIS_WORKING);
 			
 		this.dyslexic = isDyslexic;
 	}
@@ -59,15 +57,12 @@ public class WorldView {
 				if (dyslexic)
 					if (r.nextDouble() <= DYSLEX_READ) {
 						this.problem[x][y] = swopNum(problem[x][y]);
+						System.out.println("err:"+x+","+y+":"+problem[x][y]);
 						//TODO: implement actual focus system
-						System.out.println("**************(" + x + "," + y
-								+ ")=" + this.problem[x][y]);
 					} else
 						this.problem[x][y] = problem[x][y];
 				else if (r.nextDouble() <= NORM_READ) {
 					this.problem[x][y] = swopNum(problem[x][y]);
-					System.out.println("**************(" + x + "," + y + ")="
-							+ this.problem[x][y]);
 				} else
 					this.problem[x][y] = problem[x][y];
 			}
@@ -180,15 +175,6 @@ public class WorldView {
 	}
 
 	/**
-	 * method to return the peers a participat has in there
-	 * world view
-	 * @return
-	 */
-	public Map<AID,Integer> getPeers() {
-		return Agents;
-	}
-
-	/**
 	 * method to check if a coordinate is in the view of the
 	 * problem
 	 * @param coordinate
@@ -198,31 +184,5 @@ public class WorldView {
 		return problem[coordinate.getX()][coordinate.getY()] == coordinate.getVal();
 	}
 
-	public AID getShyPerson() throws NullPointerException {
-		for(AID a: Agents.keySet())
-			if(Agents.get(a)==Pupil.VIS_SHY)
-				return a;
-		
-		return null;
-	}
 
-	public AID getDistracted() throws NullPointerException {
-		for(AID a: Agents.keySet())
-			if(Agents.get(a)==Pupil.VIS_DISTRACTED)
-				return a;
-		
-		return null;
-	}
-
-	public AID getArguing() throws NullPointerException {
-		for(AID a: Agents.keySet())
-			if(Agents.get(a)==Pupil.VIS_ARGUING)
-				return a;
-		
-		return null;
-	}
-
-	public void setVisState(AID sender, int state) {
-		Agents.put(sender, state);
-	}
 }

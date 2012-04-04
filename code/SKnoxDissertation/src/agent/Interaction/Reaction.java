@@ -1,24 +1,17 @@
 package agent.Interaction;
 
 import java.util.ArrayList;
-import java.util.List;
+
+import agent.Knowledge.Personality;
 
 import sudoku.Coordinate;
 
-import agent.Knowledge.Personality;
 import control.Message;
-import control.Problem;
 import jade.core.behaviours.CyclicBehaviour;
 
-/**
- * class to handel the reactive behaviours of agents
- * 
- * @author shiftab
- * 
- */
-@SuppressWarnings("serial")
 public class Reaction extends CyclicBehaviour {
 
+	private final int YES = 1, NO = 2, CHANGE = 3;
 	private Pupil parent;
 
 	/**
@@ -56,9 +49,6 @@ public class Reaction extends CyclicBehaviour {
 				case Message.DISTRACT:
 					distract(res);
 					break;
-				case Message.ENCORAGE:
-					encorage(res);
-					break;
 				case Message.ERROR:
 					error(res);
 					break;
@@ -72,156 +62,176 @@ public class Reaction extends CyclicBehaviour {
 			for (Message res : query) {
 				query(res);
 			}
-
 	}
 
-	private void inform(Message res) {
-		parent.setPeerVisState(res.getSender(), Pupil.VIS_WORKING);
-	//	peerData.get(res.getSender()).incAnswered();
-		List<Coordinate> asked = parent.getAsked();
-		List<Coordinate> asking = parent.getAsking();
-		List<Coordinate> responded = parent.getResponded();
-		if (asking.contains(res.getCoordinate())) {
-			if (res.getContent().contains("already")) {
-				Messages.acknowledge(parent.getPeers().keySet(), parent);
-				parent.changeState(Pupil.WAITING);
-				asking.remove(res.getCoordinate());
-			} else if (res.getContent().startsWith("Yes")) {
-				if (asked.contains(res.getCoordinate())) {
-					if (Problem.edditProblem(res.getCoordinate())) {
-//						totalQ++;
-//						peerData.get(res.getSender()).incMyAnswer();
-//						write(res.getSender());
-						Messages.change(res.getCoordinate(), parent.getPeers().keySet(), parent);
-						parent.edditProblem(res.getCoordinate());
-						parent.print();
-					}
-					parent.refreshWorld();
-					parent.changeState(Pupil.WAITING);
-					asking.remove(res.getCoordinate());
-//					usefullAnswers.add(res.getSender());
-				}
-			} else if (res.getContent().startsWith("No")) {
-				// TODO:Stuff for errors
-			} else if (res.getContent().contains("Changing")) {
-				
-			}
-		}
-		if (res.getCoordinate() != null) {
-			if(!asked.contains(res.getCoordinate()))
-			asked.add(res.getCoordinate());
-			if(!responded.contains(res.getCoordinate()))
-			responded.add(res.getCoordinate());
-		}
-		
-		parent.setAsked(asked);
-		parent.setAsking(asking);
-		parent.setResponded(responded);
-	}
-
-	private void error(Message res) {
-		parent.setPeerVisState(res.getSender(), Pupil.VIS_WORKING);
-		if (res.getContent().contains("agree")) { // response
-			parent.refreshWorld();
-			parent.addChecked(res.getCoordinate());
-		} else { // query
-			parent.refreshWorld();
-			if (parent.checkErr(res.getCoordinate())) {
-				Messages.agreeError(res.getCoordinate(), parent.getPeers()
-						.keySet(), parent);
-				parent.edditProblem(new Coordinate(res.getCoordinate().getX(),
-						res.getCoordinate().getY(), 0));
-				parent.refreshWorld();
-				parent.removeCoord(res.getCoordinate());
+	private void query(Message res) {
+		parent.setPeerActionState(res.getSender(), Pupil.WORKING);
+		if (!parent.haveResponded(res.getCoordinate())) {
+			parent.setActionState(Pupil.WORKING);
+			parent.responded(res.getCoordinate());
+			if (parent.checkAnswer(res.getCoordinate(), this)) {
+				if (true)// !parent.shy())
+					Messages.agree(res.getCoordinate(), parent.getPeers(),
+							parent);
 			} else {
-				Messages.argue(res.getCoordinate(), res.getSender(), parent);
+				if (true)// !parent.shy())
+					Messages.disagree(res.getCoordinate(), parent.getPeers(),
+							parent);
 			}
-		}
-	}
-
-	private void argue(Message res) {
-		parent.setPeerVisState(res.getSender(), Pupil.VIS_ARGUING);
-		// at the moment the only argue is somone saying that there number
-		// is correct
-		parent.refreshWorld();
-		if(parent.checkErr(res.getCoordinate())){
-			Messages.acknowledge(parent.getPeers().keySet(), parent);
-			parent.edditProblem(res.getCoordinate());
-			parent.refreshWorld();
-		}else if(parent.decide(Personality.ARGUE, 0)){
-			Messages.disagree(res.getCoordinate(), parent.getPeers().keySet(), parent);
-		}else{
-			parent.refreshWorld();
-			Messages.acknowledge(parent.getPeers().keySet(), parent);
-		}
-	}
-
-	private void distract(Message res) {
-		parent.setPeerVisState(res.getSender(), Pupil.VIS_DISTRACTED);
-		if (parent.decide(Personality.CHATTER, 0)) {
-			Messages.wasteTime(parent.getPeers().keySet(), res.getSender(), parent);
-			parent.changeState(Pupil.DISTRACTED);
-		} else if (parent.decide(Personality.FOCUS, 0)) {
-			Messages.reprisal(parent.getPeers().keySet(), res.getSender(), parent);
-			parent.changeState(Pupil.WAITING);
-		} else {
-			parent.changeState(Pupil.WAITING);
 		}
 	}
 
 	private void focus(Message res) {
-		parent.setPeerVisState(res.getSender(), Pupil.VIS_WORKING);
-		if (!parent.decide(Personality.IGNORE, 0)) {
-			parent.changeState(Pupil.WAITING);
+		parent.setPeerActionState(res.getSender(), Pupil.WORKING);
+		switch (parent.getActionState()) {
+		case Pupil.ARGUING:
+			parent.setAnswered(res.getCoordinate());
+			parent.setActionState(Pupil.WORKING);
+			break;
+		case Pupil.DISTRACTED:
+			parent.setActionState(Pupil.WORKING);
+			parent.resetSelfEsteam();
+			Messages.focused(parent.getPeers(), parent);
+			break;
+		case Pupil.SHY:
+			parent.setActionState(Pupil.WORKING);
+			parent.resetSelfEsteam();
+			break;
 		}
 	}
 
-	private void encorage(Message res) {
-		parent.setPeerVisState(res.getSender(), Pupil.VIS_WORKING);
-		if(!parent.decide(Personality.IGNORE, 0)){
-			parent.changeState(Pupil.WAITING);
+	private void error(Message res) {
+		parent.setPeerActionState(res.getSender(), Pupil.WORKING);
+		if (errorQuery(res.getContent())) {
+			if (res.getFocus().equals(parent.getAID())) {
+				Coordinate wipe = res.getCoordinate();
+				wipe.setVal(0);
+				parent.newNumber(res.getCoordinate());
+				parent.setActionState(Pupil.WORKING);
+				Messages.change(wipe, parent.getPeers(), parent,
+						res.getSender());
+				parent.incFocus(res.getSender());
+			}
+		} else {
+			parent.responded(res.getCoordinate());
+			parent.setActionState(Pupil.WORKING);
+			if (parent.checkErr(res.getCoordinate(), this)) {
+				Messages.agreeError(res.getCoordinate(), parent.getPeers(),
+						parent);
+			} else {
+				Messages.disagree(res.getCoordinate(), parent.getPeers(),
+						parent);
+			}
 		}
 	}
 
-	private void query(Message res) {
-		parent.setPeerVisState(res.getSender(), Pupil.VIS_WORKING);
-		int state = parent.getState();
-		List<Coordinate> responded = parent.getAnswered();
-		List<Coordinate> asked = parent.getAsked();
+	private boolean errorQuery(String content) {
+		if (content.contains("agree"))
+			return false;
+		else
+			return false;
+	}
 
-		if (state != Pupil.ARGUING || state != Pupil.DISTRACTED) {
-			Coordinate check = res.getCoordinate();
-			if (check != null)
-				if (!responded.contains(check)) {
-					// peerData.get(res.getSender()).incAsked();
-					parent.changeState(Pupil.ANSWERING);
-					parent.waits(this);
-					asked.add(check);
+	private void argue(Message res) {
+		parent.setPeerActionState(res.getSender(), Pupil.ARGUING);
+		if (parent.getActionState() == Pupil.ARGUING)
+			parent.setWaitTime();
+		if (!parent.isAnswered(res.getCoordinate())) {
+			parent.refreshWorld();
+			if (parent.checkAnswer(res.getCoordinate(), this)) {
+				parent.decSelfEsteam();
+				parent.setActionState(Pupil.WORKING);
+				Messages.acknowledge(res.getCoordinate(), parent.getPeers(),
+						parent, res.getSender());
+			} else {
+				parent.setActionState((Pupil.ARGUING));
+				Messages.argue(res.getCoordinate(), parent.getPeers(), parent,
+						res.getSender());
+				// parent.lowerFocus(res.getSender());
+			}
+		}
+	}
+
+	private void distract(Message res) {
+		parent.setPeerActionState(res.getSender(), Pupil.DISTRACTED);
+		if (parent.getActionState() == Pupil.DISTRACTED) {
+			if (parent.getWaitTime() > 2000) {
+				parent.setWaitTime();
+				Messages.wasteTime(parent.getPeers(), res.getSender(), parent);
+			}
+		} else if (parent.isChatty()) {// , prior)){
+			parent.setActionState(Pupil.DISTRACTED);
+			Messages.wasteTime(parent.getPeers(), res.getSender(), parent);
+		} else {
+			// parent.lowerFocus(res.getSender());
+			parent.setActionState(Pupil.WORKING);
+		}
+	}
+
+	private void inform(Message res) {
+		parent.setPeerActionState(res.getSender(), Pupil.WORKING);
+		switch (getType(res.getContent())) {
+		case YES:
+			if (parent.getAsking() != null)
+				if (parent.getAsking().equals(res.getCoordinate())) {
+					parent.incSelfEsteam();
+					parent.incFocus(res.getSender());
+					parent.setAnswered(res.getCoordinate());
+					parent.answer(res.getCoordinate());
+					Messages.change(res.getCoordinate(), parent.getPeers(),
+							parent, res.getSender());
+				} else {
+					parent.decSelfEsteam();
+				}
+			break;
+		case NO:
+			if (parent.getAsking() != null)
+				if (res.getCoordinate().equals(parent.getAsking())) {
 					parent.refreshWorld();
-					if (parent.checkAlready(check)) {
-						if (parent.decide(Personality.DISAGREE, 0)) {
-							responded.add(check);
-							Messages.already(check, parent.getPeers().keySet(),
-									parent);
-						}
-					} else if (parent.checkCorrect(check)) {
-						if (parent.decide(Personality.AGREE, 0)) {
-							responded.add(check);
-							Messages.agree(check, parent.getPeers().keySet(),
-									parent);
-							// qAnswer++;
-						}
+					if (parent.checkAnswer(res.getCoordinate(), this)) {
+						Messages.acknowledge(res.getCoordinate(),
+								parent.getPeers(), parent, res.getSender());
+						parent.decSelfEsteam();
+						parent.setActionState(Pupil.WORKING);
 					} else {
-						if (parent.decide(Personality.DISAGREE, 0)) {
-							responded.add(check);
-							Messages.disagree(check,
-									parent.getPeers().keySet(), parent);
+						if (true) {// parent.decide(Personality.ARGUE, 0)){
+							Messages.argue(res.getCoordinate(),
+									parent.getPeers(), parent, res.getSender());
+							// parent.lowerFocus(res.getSender());
+							parent.setActionState(Pupil.ARGUING);
+						} else {
+							parent.setAnswered(res.getCoordinate());
+							parent.decSelfEsteam();
+							parent.setActionState(Pupil.WORKING);
 						}
 					}
 				}
-			parent.changeState(Pupil.WAITING);
+			break;
+		case CHANGE:
+			parent.setPeerActionState(res.getSender(), Pupil.WORKING);
+			if (res.getFocus().equals(parent.getAID())) {
+				parent.incSelfEsteam();
+			} else
+				parent.decSelfEsteam();
+			parent.setAnswered(res.getCoordinate());
+			parent.setActionState(Pupil.WORKING);
+			break;
+		default:
+			break;
 		}
-		parent.setAsked(asked);
-		parent.setAnswered(responded);
+	}
+
+	private int getType(String content) {
+		content = content.toLowerCase();
+		if (content.contains("yes")) {
+			return YES;
+		} else if (content.contains("no")) {
+			return NO;
+		} else if (content.contains("changing")) {
+			return CHANGE;
+		} else if (content.contains("woops")) {
+			return CHANGE;
+		} else
+			return -1; // error
 	}
 }

@@ -1,9 +1,12 @@
 package agent.Interaction;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
+import java.util.Set;
+
+import control.Problem;
 
 import agent.Knowledge.OthersModel;
 import agent.Knowledge.Personality;
@@ -11,55 +14,35 @@ import agent.Knowledge.WorldView;
 
 import sudoku.Coordinate;
 import sudoku.Sudoku;
-
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 
-@SuppressWarnings("serial")
 public class Pupil extends Agent {
 
-	boolean testing = false;
-	boolean testingDisability = true;
-
-	private static final int NORM = 1, DYSLEX = 2, DYSCAL = 3;
-
-	Random r = new Random();
-
-	// TODO: diside if use thease
-	// finals for state modifiers
-	/*
-	 * private final double ASKING_MOD = 1; private final double ANSWERING_MOD =
-	 * 2; private final double ARGUING_MOD = 3; private final double WAITING_MOD
-	 * = 4; private final double DISTRACTED_MOD = 5;
-	 */
-	// finals for state
-	public static final int ASKING = 1;
-	public static final int ANSWERING = 2;
 	public static final int ARGUING = 3;
-	public static final int WAITING = 4;
+	public static final int WORKING = 4;
 	public static final int DISTRACTED = 5;
+	public static final int SHY = 6;
 
-	public static final int VIS_WORKING = 1;
-	public static final int VIS_ARGUING = 2;
-	public static final int VIS_DISTRACTED = 3;
-	public static final int VIS_SHY = 4;
+	private final boolean testingDisability = true;
 
-	// wait modifier that changes based on previous things
-	private volatile int state = 4;
+	private final int DYSCAL = 1, DYSLEX = 2, NORM = 3;
+
 	private WorldView world;
 	private Sudoku brain;
 	private Personality personality;
 	private OthersModel others;
-	private List<Coordinate> asking = new ArrayList<Coordinate>();
-	private List<Coordinate> asked = new ArrayList<Coordinate>();
-	private List<Coordinate> responded = new ArrayList<Coordinate>();
-	private List<Coordinate> checked = new ArrayList<Coordinate>();
 
-	@SuppressWarnings("unchecked")
+	private Coordinate asking = null;
+	private List<Coordinate> asked = new ArrayList<Coordinate>(47);
+	private List<Coordinate> responded = new ArrayList<Coordinate>(47);
+	private List<Coordinate> answered = new ArrayList<Coordinate>(47);
+	private int state = WORKING;
+	private long waitTime = 0;
+
 	@Override
 	protected void setup() {
-		super.setup();
 
 		Object[] args = getArguments(); // get arguments from startup
 
@@ -72,8 +55,6 @@ public class Pupil extends Agent {
 		}
 
 		others = new OthersModel(peers);
-
-		System.out.print(this.getAID().getLocalName() + ": ");
 
 		if (!testingDisability) {
 			personality = new Personality(0);
@@ -98,57 +79,96 @@ public class Pupil extends Agent {
 		this.addBehaviour(new Action(this));
 
 		this.addBehaviour(new Reaction(this));
-
 	}
 
-	public Map<AID, Integer> getPeers() {
-		return world.getPeers();
+	public void setPeerActionState(AID sender, int visWorking) {
+		others.setVisState(sender, visWorking);
 	}
 
-	public void waits(Behaviour b) {
-		if (personality.isDyslexic() && !testing) {
-			int wait = r.nextInt(150) + 200;
-			doWait(wait);
-			// b.block(wait);
-		} else if (personality.isDyscalculic() && !testing) {
-			int wait = r.nextInt(150) + 400;
-			doWait(wait);
-			// b.block(wait);
-		} else {
-			int wait = r.nextInt(150) + 100;
-			doWait(wait);
-			// b.block(wait);
-		}
+	public void setActionState(int state) {
+		this.state = state;
 	}
 
-	public void changeState(int state) {
-		if (this.state != state) {
-			this.state = state;
-		}
+	public int getActionState() {
+		return state;
 	}
 
-	public List<Coordinate> getAnswered() {
-		return responded;
-	}
+	// -------------State------------
 
-	public List<Coordinate> getAsked() {
-		return asked;
-	}
+	// asking
 
-	public List<Coordinate> getAsking() {
+	public Coordinate getAsking() {
 		return asking;
 	}
 
-	public void setAsking(List<Coordinate> asking) {
-		this.asking = asking;
+	public void setAsking(Coordinate ans) {
+		// set waitTime
+		this.asking = ans;
+		this.asked.add(ans);
+		waitTime = System.currentTimeMillis();
+
 	}
 
-	public void setAnswered(List<Coordinate> responded) {
-		this.responded = responded;
+	// asked
+
+	public boolean asked(Coordinate ans) {
+		return asked.contains(ans);
 	}
 
-	public void setAsked(List<Coordinate> asked) {
-		this.asked = asked;
+	// answered
+
+	public void newNumber(Coordinate coordinate) {
+		asking = null;
+		coordinate = new Coordinate(coordinate.getX(), coordinate.getY(), 0);
+		Problem.edditProblem(coordinate);
+	}
+
+	public void setAnswered(Coordinate coordinate) {
+		world.refresh();
+		brain.refresh(world.getProblem());
+		responded.add(coordinate);
+		asking = null;
+		answered.add(coordinate);
+	}
+
+	public boolean isAnswered(Coordinate coordinate) {
+		return answered.contains(coordinate);
+	}
+
+	// responded
+	public boolean haveResponded(Coordinate coordinate) {
+		return responded.contains(coordinate);
+	}
+
+	public void responded(Coordinate coordinate) {
+		responded.add(coordinate);
+	}
+
+	// ------------Answers/Questions---------------
+
+	public boolean checkAnswer(Coordinate coordinate, Behaviour b) {
+		System.out.println(this.getLocalName()+":"+personality.getSpeed());
+		doWait(personality.getSpeed());
+		b.block(personality.getSpeed());
+		return brain.check(coordinate);
+	}
+
+	public boolean checkErr(Coordinate coordinate, Behaviour b) {
+		System.out.println(this.getLocalName()+":"+personality.getSpeed());
+		doWait(personality.getSpeed());
+		b.block(personality.getSpeed());
+		world.refresh();
+		brain.refresh(world.getProblem());
+		if(!world.check(coordinate))
+			return false;
+		
+		return brain.checkErr(coordinate);
+	}
+
+	// ------------check coords-----------------
+
+	public void resetSelfEsteam() {
+		personality.resetSelfEsteam();
 	}
 
 	public void refreshWorld() {
@@ -156,48 +176,82 @@ public class Pupil extends Agent {
 		brain.refresh(world.getProblem());
 	}
 
-	public void setPeerVisState(AID aid, int state) {
-		world.setVisState(aid, state);
+	public void decSelfEsteam() {
+		personality.decSelfEsteam();
 	}
 
-	public boolean checkAlready(Coordinate coordinate) {
-		return world.check(coordinate);
+	public void lowerFocus(AID sender) {
+		others.lowerFocus(sender);
 	}
 
-	public boolean checkCorrect(Coordinate coordinate) {
-		return brain.check(coordinate);
+	public void incSelfEsteam() {
+		personality.incSelfEsteam();
 	}
 
-	public boolean decide(int decision, double prior) {
-		return personality.decide(decision, prior);
+	public void incFocus(AID sender) {
+		others.incFocus(sender);
 	}
 
-	public void addChecked(Coordinate coordinate) {
-		checked.add(coordinate);
+	// --------------selfEsteam/focus-------------
+	public Map<AID, Integer> getPeersStates() {
+		return others.getPeers();
 	}
 
-	public boolean checkErr(Coordinate coordinate) {
-		return brain.checkErr(coordinate);
+	public Set<AID> getPeers() {
+		return others.getPeers().keySet();
 	}
 
-	public void edditProblem(Coordinate coordinate) {
-		world.edditProblem(coordinate);
+	// -------------others----------------
+
+	public Set<AID> getDistracted() {
+		Set<AID> ans = new HashSet<AID>();
+		Map<AID, Integer> peers = getPeersStates();
+		for (AID a : peers.keySet()) {
+			if (peers.get(a) == Pupil.DISTRACTED)
+				ans.add(a);
+		}
+		return ans;
 	}
 
-	public List<Coordinate> getResponded() {
-		return responded;
+	public Set<AID> getArguing() {
+		Set<AID> ans = new HashSet<AID>();
+		Map<AID, Integer> peers = getPeersStates();
+		for (AID a : peers.keySet()) {
+			if (peers.get(a) == Pupil.ARGUING)
+				ans.add(a);
+		}
+		return ans;
 	}
 
-	public void setResponded(List<Coordinate> responded) {
-		this.responded = responded;
+	public Set<AID> getShy() {
+		Set<AID> ans = new HashSet<AID>();
+		Map<AID, Integer> peers = getPeersStates();
+		for (AID a : peers.keySet()) {
+			if (peers.get(a) == Pupil.SHY)
+				ans.add(a);
+		}
+		return ans;
 	}
 
-	public void print() {
-		brain.print();
+	public AID getFocus() {
+		return others.focus();
 	}
 
-	public void search(Behaviour b) {
-		waits(b);
+	// --------------------self---------------------
+
+	public long getWaitTime() {
+		// TODO Auto-generated method stub
+		return System.currentTimeMillis() - waitTime;
+	}
+
+	public void setWaitTime() {
+		waitTime = System.currentTimeMillis();
+	}
+
+	public Coordinate search(Behaviour b) {
+		doWait(personality.getSpeed());
+			b.block(personality.getSpeed());
+			
 		if (this.getCurQueueSize() == 0) {
 			world.refresh();
 			brain.refresh(world.getProblem());
@@ -206,90 +260,57 @@ public class Pupil extends Agent {
 				// TODO: make this an official message and create a stuck and a
 				// finish system
 				if (brain.done()) {
-					//endStats();
+					System.out.println(this.getLocalName()+": done");
+					// endStats();
+					return null;
 				} else {
 					Coordinate err = brain.searchErr();
-					if (err != null) {
-						Messages.errorQuery(err, getPeers().keySet(), this);
-					}
+					return err;
 				}
-			} else if (!asked.contains(nextNum)) {
-				asked.add(nextNum);
-				asking.add(nextNum);
-				Messages.query(nextNum, getPeers().keySet(), this,
-						others.focus());
+			} else if (!asked.contains(nextNum) || !responded.contains(nextNum)
+					|| !answered.contains(nextNum)) {
+				waitTime = System.currentTimeMillis();
+				incSelfEsteam();
+				return nextNum;
+			} else {
+				System.out.println(this.getLocalName() + ": stuck");
+				return null;
 			}
+		} else {
+			return null;
 		}
 	}
-
-	public void removeCoord(Coordinate err) {
-		for (Coordinate c : asked) {
-			if (c.getX() == err.getX() && c.getY() == err.getY()) {
-				asked.remove(c);
-				break;
-			}
-		}
-		for (Coordinate c : responded) {
-			if (c.getX() == err.getX() && c.getY() == err.getY()) {
-				responded.remove(c);
-				break;
-			}
-		}
-		for (Coordinate c : asking) {
-			if (c.getX() == err.getX() && c.getY() == err.getY()) {
-				asking.remove(c);
-				break;
-			}
-		}
+	public void answer(Coordinate coordinate){
+		Problem.edditProblem(coordinate);
+		brain.print();
 	}
 
-	public int getBehaviourState() {
-		return state;
+	public void clearCoordinates() {
+		asked.clear();
+		answered.clear();
+		responded.clear();
 	}
 
-	public boolean shouldEncurage() {
-		if (personality.decide(Personality.ENCORIGE, 0))
-			encurage();
-		else
-			return false;
-
-		return true;
+	public void incQuestions() {
+		others.incQuestion();
 	}
 
-	public boolean shy() {
-		return personality.decide(Personality.SHY, 0);
+	public boolean isChatty() {
+		return personality.isChatty();
 	}
-
-	public void encurage() {
-		AID shy = this.world.getShyPerson();
-		Messages.encurage(this.world.getPeers().keySet(), shy, this);
+	
+	public boolean isShy() {
+		boolean shy = personality.isShy();
+		if(shy)
+			System.out.print(this.getLocalName()+": SHY");
+		return shy;
 	}
-
-	public boolean shouldBreakDistract() {
-		if (personality.decide(Personality.FOCUS, 0))
-			breakDistract();
-		else
-			return false;
-
-		return true;
+	
+	public AID getDistractable() {
+		return others.getDistractable();
 	}
-
-	public void breakDistract() {
-		AID distracted = this.world.getDistracted();
-		Messages.reprisal(this.world.getPeers().keySet(), distracted, this);
-	}
-
-	public boolean shouldBreakArgue() {
-		if (personality.decide(Personality.PLACATE, 0))
-			breakArgue();
-		else
-			return false;
-
-		return true;
-	}
-
-	public void breakArgue() {
-		AID arguer = this.world.getArguing();
-		Messages.advise(this.world.getPeers().keySet(), arguer, this);
+	
+	public boolean distract(){
+		return personality.distract();
 	}
 }

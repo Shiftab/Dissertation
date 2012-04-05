@@ -81,6 +81,7 @@ public class Action extends CyclicBehaviour {
 				parent.incQuestions();
 				Messages.query(ans, parent.getPeers(), parent,
 						parent.getFocus());
+				parent.incAskedStats();
 			} else {
 				parent.refreshWorld();
 				System.out.println(ans);

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import control.Problem;
+import extras.Stats;
 
 import agent.Knowledge.OthersModel;
 import agent.Knowledge.Personality;
@@ -33,6 +34,7 @@ public class Pupil extends Agent {
 	private Sudoku brain;
 	private Personality personality;
 	private OthersModel others;
+	private Stats stats;
 
 	private Coordinate asking = null;
 	private List<Coordinate> asked = new ArrayList<Coordinate>(47);
@@ -75,6 +77,8 @@ public class Pupil extends Agent {
 		world = new WorldView(peers, personality.isDyslexic());
 
 		brain = new Sudoku(world.getProblem());
+
+		stats = new Stats(this.getAID(), personality.getOCEAN());
 
 		this.addBehaviour(new Action(this));
 
@@ -147,21 +151,21 @@ public class Pupil extends Agent {
 	// ------------Answers/Questions---------------
 
 	public boolean checkAnswer(Coordinate coordinate, Behaviour b) {
-		System.out.println(this.getLocalName()+":"+personality.getSpeed());
+		System.out.println(this.getLocalName() + ":" + personality.getSpeed());
 		doWait(personality.getSpeed());
 		b.block(personality.getSpeed());
 		return brain.check(coordinate);
 	}
 
 	public boolean checkErr(Coordinate coordinate, Behaviour b) {
-		System.out.println(this.getLocalName()+":"+personality.getSpeed());
+		System.out.println(this.getLocalName() + ":" + personality.getSpeed());
 		doWait(personality.getSpeed());
 		b.block(personality.getSpeed());
 		world.refresh();
 		brain.refresh(world.getProblem());
-		if(!world.check(coordinate))
+		if (!world.check(coordinate))
 			return false;
-		
+
 		return brain.checkErr(coordinate);
 	}
 
@@ -250,8 +254,8 @@ public class Pupil extends Agent {
 
 	public Coordinate search(Behaviour b) {
 		doWait(personality.getSpeed());
-			b.block(personality.getSpeed());
-			
+		b.block(personality.getSpeed());
+
 		if (this.getCurQueueSize() == 0) {
 			world.refresh();
 			brain.refresh(world.getProblem());
@@ -260,7 +264,8 @@ public class Pupil extends Agent {
 				// TODO: make this an official message and create a stuck and a
 				// finish system
 				if (brain.done()) {
-					System.out.println(this.getLocalName()+": done");
+					System.out.println(this.getLocalName() + ": done");
+					stats.print();
 					// endStats();
 					return null;
 				} else {
@@ -280,7 +285,8 @@ public class Pupil extends Agent {
 			return null;
 		}
 	}
-	public void answer(Coordinate coordinate){
+
+	public void answer(Coordinate coordinate) {
 		Problem.edditProblem(coordinate);
 		brain.print();
 	}
@@ -298,19 +304,39 @@ public class Pupil extends Agent {
 	public boolean isChatty() {
 		return personality.isChatty();
 	}
-	
+
 	public boolean isShy() {
 		boolean shy = personality.isShy();
-		if(shy)
-			System.out.print(this.getLocalName()+": SHY");
+		if (shy)
+			System.out.print(this.getLocalName() + ": SHY");
 		return shy;
 	}
-	
+
 	public AID getDistractable() {
 		return others.getDistractable();
 	}
-	
-	public boolean distract(){
+
+	public boolean distract() {
 		return personality.distract();
+	}
+
+	public void incAskedStats() {
+		stats.incAsked();
+	}
+
+	public void incAnsweredStats() {
+		stats.incAnswered();
+	}
+
+	public void incQuestionsStats() {
+		stats.incQuestions();
+	}
+
+	public void incShyMissedStats() {
+		stats.incShyMissed();
+	}
+
+	public void incDistractionsStats() {
+		stats.incDistractions();
 	}
 }

@@ -1,28 +1,25 @@
 package extras;
 
-import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import jade.core.AID;
 
 /**
- * class for handeling the data pertraning to a particular agents
- * view of his world
+ * class for handeling the data pertraning to a particular agents view of his
+ * world
+ * 
  * @author shiftab
- *
+ * 
  */
 public class Stats {
 
-	FileWriter fstream;
-	BufferedWriter out;
-	String name, output;
-	AID AID, parent;
+	double[] OCEAN;
+	AID parent;
 	int asked;
 	int answered;
-	int myAnswer;
-	long lastCom;
-	long totalWait;
-	int waitCount;
+	int questions;
+	int shyMissed;
+	int distractions;
 
 	/**
 	 * constructor for initiating all of the variables
@@ -30,61 +27,94 @@ public class Stats {
 	 * @param peer
 	 * @param parent
 	 */
-	public Stats(AID peer, AID parent) {
-		this.parent=parent;
-		setAID(peer);
-		setName(peer.getLocalName());
+	public Stats(AID parent, double[] ocean) {
+		this.parent = parent;
+		OCEAN = ocean;
 		asked = 0;
 		answered = 0;
-		myAnswer = 0;
-		lastCom = 0;
-		totalWait = 0;
-		waitCount = 0;
+		questions = 0;
+		shyMissed = 0;
+		distractions = 0;
 	}
 
 	/**
-	 * getter for subject agents name
-	 * 
-	 * @return
+	 * @return the oCEAN
 	 */
-	public String getName() {
-		return name;
+	public double[] getOCEAN() {
+		return OCEAN;
 	}
 
 	/**
-	 * setter for subject agents name
-	 * @param name
+	 * @param oCEAN
+	 *            the oCEAN to set
 	 */
-	public void setName(String name) {
-		this.name = name;
-		try {
-			fstream = new FileWriter(parent.getLocalName()+"_"+name + ".csv");
-
-			out = new BufferedWriter(fstream);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void setOCEAN(double[] oCEAN) {
+		OCEAN = oCEAN;
 	}
 
 	/**
-	 * getter for subject agents AID
-	 * @return
+	 * @return the parent
 	 */
-	public AID getAID() {
-		return AID;
+	public AID getParent() {
+		return parent;
 	}
 
 	/**
-	 * setter for subject agents AID
-	 * @param aid
+	 * @param parent
+	 *            the parent to set
 	 */
-	public void setAID(AID aid) {
-		this.AID = aid;
+	public void setParent(AID parent) {
+		this.parent = parent;
+	}
+
+	/**
+	 * @return the questions
+	 */
+	public int getQuestions() {
+		return questions;
+	}
+
+	/**
+	 * @param questions
+	 *            the questions to set
+	 */
+	public void setQuestions(int questions) {
+		this.questions = questions;
+	}
+
+	/**
+	 * @return the shyMissed
+	 */
+	public int getShyMissed() {
+		return shyMissed;
+	}
+
+	/**
+	 * @param shyMissed
+	 *            the shyMissed to set
+	 */
+	public void setShyMissed(int shyMissed) {
+		this.shyMissed = shyMissed;
+	}
+
+	/**
+	 * @return the distractions
+	 */
+	public int getDistractions() {
+		return distractions;
+	}
+
+	/**
+	 * @param distractions
+	 *            the distractions to set
+	 */
+	public void setDistractions(int distractions) {
+		this.distractions = distractions;
 	}
 
 	/**
 	 * getter for questions this agent asked
+	 * 
 	 * @return
 	 */
 	public int getAsked() {
@@ -93,6 +123,7 @@ public class Stats {
 
 	/**
 	 * setter for questions this agent asked
+	 * 
 	 * @param asked
 	 */
 	public void setAsked(int asked) {
@@ -108,6 +139,7 @@ public class Stats {
 
 	/**
 	 * getter for questions this agent answered
+	 * 
 	 * @return
 	 */
 	public int getAnswered() {
@@ -116,6 +148,7 @@ public class Stats {
 
 	/**
 	 * setter for questions this agent answered
+	 * 
 	 * @param answered
 	 */
 	public void setAnswered(int answered) {
@@ -129,116 +162,21 @@ public class Stats {
 		answered++;
 	}
 
-	/**
-	 * getter for the number questions by the parent this
-	 *  agent answered
-	 * @return
-	 */
-	public int getMyAnswer() {
-		return myAnswer;
+	public void incQuestions() {
+		questions++;
 	}
 
-	/**
-	 * setter for the number of questions by the parent
-	 * this agent answered
-	 * @param myAnswer
-	 */
-	public void setMyAnswer(int myAnswer) {
-		this.myAnswer = myAnswer;
+	public void incShyMissed() {
+		shyMissed++;
 	}
 
-	/**
-	 * incrementer for the number of questions by the
-	 * parent this agent answered
-	 */
-	public void incMyAnswer() {
-		myAnswer++;
+	public void incDistractions() {
+		distractions++;
 	}
 
-	/**
-	 * getter for the last time this agent was heard
-	 * from
-	 * @return
-	 */
-	public long getLastCom() {
-		return lastCom;
-	}
-
-	/**
-	 * getter for the current wait time since this agent
-	 * was last heard from
-	 * @param currentTime
-	 * @return
-	 */
-	public long getWait(long currentTime) {
-		return currentTime - lastCom;
-	}
-
-	/**
-	 * setter for the last time this agent communicated
-	 * @param currentTime
-	 */
-	public void setLastCom(long currentTime) {
-		if (lastCom == 0)
-			totalWait = 0;
-		else
-			totalWait += currentTime - lastCom;
-		waitCount++;
-		this.lastCom = currentTime;
-	}
-
-	/**
-	 * getter for the averiage wait time for this
-	 * agent
-	 * @return
-	 */
-	public long getAvgWait() {
-		if (waitCount == 0)
-			return -1;
-		else
-			return totalWait / waitCount;
-	}
-
-	/**
-	 * update method for the output
-	 */
-	public void update() {
-		/*System.out.println(name + ": asked=" + asked + " answered=" + answered
-				+ "\nmyAnswers=" + myAnswer + " lastWait="
-				+ getWait(System.currentTimeMillis()) + " avgWiat="
-				+ getAvgWait() + "\n");
-*/
-		output = asked + "," + answered + "," + myAnswer + ","
-				+ getWait(System.currentTimeMillis()) + "," + getAvgWait();
-	}
-
-	/**
-	 * method to write a stats event out to the storige file
-	 * @param answered
-	 */
-	public void write(boolean answered, int totalAsked) {
-			if(answered) 
-				output+=","+totalAsked+",1\n";
-			else
-				output+=","+totalAsked+",0\n";
-			
-			try {
-				out.write(output);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	}
-	
-	/**
-	 * method to close the writer
-	 */
-	public void close(){
-		try {
-			out.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void print() {
+		System.out.println(parent.getLocalName() + ": asked:" + asked
+				+ " answered:" + answered + " Shy:" + shyMissed
+				+ " distractions:" + distractions);
 	}
 }

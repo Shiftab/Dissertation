@@ -65,6 +65,7 @@ public class Reaction extends CyclicBehaviour {
 	}
 
 	private void query(Message res) {
+		parent.incQuestionsStats();
 		parent.setPeerActionState(res.getSender(), Pupil.WORKING);
 		if (!parent.haveResponded(res.getCoordinate())) {
 			parent.setActionState(Pupil.WORKING);
@@ -78,6 +79,7 @@ public class Reaction extends CyclicBehaviour {
 					Messages.disagree(res.getCoordinate(), parent.getPeers(),
 							parent);
 			}
+			parent.incAnsweredStats();
 		}
 	}
 
@@ -211,10 +213,14 @@ public class Reaction extends CyclicBehaviour {
 			parent.setPeerActionState(res.getSender(), Pupil.WORKING);
 			if (res.getFocus().equals(parent.getAID())) {
 				parent.incSelfEsteam();
+				parent.incAnsweredStats();
 			} else
 				parent.decSelfEsteam();
 			parent.setAnswered(res.getCoordinate());
-			parent.setActionState(Pupil.WORKING);
+			if(parent.getActionState()==Pupil.DISTRACTED)
+				parent.incDistractionsStats();
+			else if(parent.getActionState()==Pupil.SHY)
+				parent.incShyMissedStats();
 			break;
 		default:
 			break;

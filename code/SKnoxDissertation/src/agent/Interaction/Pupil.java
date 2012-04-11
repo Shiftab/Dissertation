@@ -30,6 +30,8 @@ public class Pupil extends Agent {
 
 	private final int DYSCAL = 1, DYSLEX = 2, NORM = 3;
 
+	private long startTime;
+	private int timeLimit;
 	private WorldView world;
 	private Sudoku brain;
 	private Personality personality;
@@ -56,6 +58,9 @@ public class Pupil extends Agent {
 			}
 		}
 
+		timeLimit = (Integer)args[2];
+		startTime = (Long)args[3];
+		
 		others = new OthersModel(peers);
 
 		if (!testingDisability) {
@@ -287,6 +292,7 @@ public class Pupil extends Agent {
 	}
 
 	public void answer(Coordinate coordinate) {
+		System.out.println("timeleft:"+((startTime+(timeLimit*6000))-System.currentTimeMillis()));
 		Problem.edditProblem(coordinate);
 		brain.print();
 	}

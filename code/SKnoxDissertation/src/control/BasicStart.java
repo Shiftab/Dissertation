@@ -1,7 +1,12 @@
 package control;
 
+import gui.Setup;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.JFrame;
+
 import jade.core.Agent;
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
@@ -20,7 +25,6 @@ public class BasicStart extends Agent {
 	 */
 	@Override 
 	protected void setup() {
-
 		Object[] args = new Object[3];
 
 		int[][] problem = { { 6, 0, 0, 1, 0, 0, 0, 0, 0 },
@@ -34,11 +38,11 @@ public class BasicStart extends Agent {
 		agents.add("Steve");
 		agents.add("Alicia");
 		agents.add("test");
-
 		Problem.setProblem(problem);
-
+		
 		args[0] = problem;
 		args[1] = agents;
+		args[2] = 5;
 		try {
 			for (String a : agents){
 				((AgentController) getContainerController().createNewAgent(a,

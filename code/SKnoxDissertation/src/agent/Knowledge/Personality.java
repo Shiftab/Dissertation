@@ -179,6 +179,28 @@ public class Personality {
 
 		return ocean;
 	}
+	
+	public void setOCEAN(double[] ocean){
+		openness = ocean[0];
+		conscientiousness = ocean[1]; 
+		extraversion = ocean[2];
+		agreeableness = ocean[3];
+		neuroticism = ocean[4];
+	}
+	
+	public double[] getAbility(){
+		double[] ability = {operational, numberConceptual, numberComparative,
+				abstractSymbolic, graphical, spatialTemporal};
+		return ability;
+	}
+	public void setAbility(double[] ability){
+		operational = ability[0];
+		numberConceptual = ability[1]; 
+		numberComparative = ability[2];
+		abstractSymbolic = ability[3];
+		graphical = ability[4];
+		spatialTemporal = ability[5];
+	}
 
 	/**
 	 * method for returning the speed at wich a pupil compleates a task

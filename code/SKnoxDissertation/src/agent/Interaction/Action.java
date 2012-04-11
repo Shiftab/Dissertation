@@ -18,6 +18,9 @@ public class Action extends CyclicBehaviour {
 
 	@Override
 	public void action() {
+		if(parent.timeUp()){
+			parent.stop();
+		}
 		int working = 0, arguing = 0, distracted = 0, shy = 0;
 		Map<AID, Integer> pupils = parent.getPeersStates();
 		for (AID a : pupils.keySet()) {

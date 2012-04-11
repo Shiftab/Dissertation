@@ -9,13 +9,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import extras.Stats;
+
+import agent.Interaction.Pupil;
 import agent.Knowledge.Personality;
 
+import gui.FinalScreen;
+import gui.Loading;
 import gui.ParamiterEddit;
 import gui.ProblemEddit;
 import gui.PupilEddit;
 import gui.Setup;
 import jade.core.Agent;
+import jade.core.behaviours.CyclicBehaviour;
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
 
@@ -31,27 +37,35 @@ public class Control extends Agent {
 	private ParamiterEddit paramEddit = new ParamiterEddit(this);
 	private ProblemEddit probEddit = new ProblemEddit(this);
 	private PupilEddit pupilEddit = new PupilEddit(this);
+	private FinalScreen summary = new FinalScreen(this);
+	private Loading loading = new Loading();
 
 	private Map<String, Personality> pupils = new HashMap<String, Personality>();
+	private Map<String, Stats> endStats = new HashMap<String, Stats>();
 	private List<String> pupilList = new ArrayList<String>();
+	private List<Pupil> agents = new ArrayList<Pupil>();
 	private int[][] problem = new int[9][9];
+	private long startTime = 0;
+	private int timeLimit = 0;
+
+	private List<AgentController> ac = new ArrayList<AgentController>();
 
 	@Override
 	protected void setup() {
 		for (String s : names) {
 			pupils.put(s, new Personality(0));
 		}
-		Scanner scanner=null;
+		Scanner scanner = null;
 		try {
-			 scanner = new Scanner(new FileInputStream("problem.csv"));
+			scanner = new Scanner(new FileInputStream("problem.csv"));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		int count = 0;
-		while(scanner.hasNextLine()){
+		while (scanner.hasNextLine()) {
 			int split = 0;
-			for(String s: scanner.nextLine().split(",")){
+			for (String s : scanner.nextLine().split(",")) {
 				problem[split][count] = Integer.parseInt(s.trim());
 				split++;
 			}
@@ -95,13 +109,13 @@ public class Control extends Agent {
 	}
 
 	public void newName(String oldName, String newName) {
-		if(oldName.equals(newName))
+		if (oldName.equals(newName))
 			return;
 		pupils.put(newName, pupils.get(oldName));
 		pupils.remove(oldName);
 	}
-	
-	public void newProblem(int[][] problem){
+
+	public void newProblem(int[][] problem) {
 		this.problem = problem;
 	}
 
@@ -126,24 +140,69 @@ public class Control extends Agent {
 			break;
 		}
 	}
-	
-	public void start(int time, List<String> names){
+
+	public void start(int time, List<String> names) {
 		Object[] args = new Object[5];
 
-		List<String> agents = names;
+		pupilList = names;
 		Problem.setProblem(problem);
-		
+		timeLimit = time;
 		args[0] = problem;
-		args[1] = agents;
-		args[2] = (Integer)time;
-		args[3] = (Long)System.currentTimeMillis();
+		args[1] = pupilList;
+		args[2] = (Integer) timeLimit;
+		args[3] = (Long) System.currentTimeMillis();
+		args[4] = this;
 		try {
-			for (String a : agents){
-				((AgentController) getContainerController().createNewAgent(a,
-						"agent.Interaction.Pupil", args)).start();
+			for (String a : pupilList) {
+				ac.add((AgentController) getContainerController()
+						.createNewAgent(a, "agent.Interaction.Pupil", args));
 			}
+
+			for (AgentController a : ac)
+				a.start();
 		} catch (StaleProxyException e) {
 			e.printStackTrace();
 		}
+		startTime = (Long) args[3];
+		main.setPane(loading);
+		this.addBehaviour(new CyclicBehaviour(this) {
+			long lastTime = startTime;
+
+			public void action() {
+				if (System.currentTimeMillis() - lastTime > 1000) {
+					lastTime = System.currentTimeMillis();
+					loading.updateTime(((((startTime + (timeLimit * 6000)) - System
+							.currentTimeMillis()) / 6000.0) / timeLimit) * 100);
+				}
+			}
+		});
+	}
+
+	public void updateLoadingTime(double time) {
+		loading.updateTime(time);
+	}
+
+	public void updateLoadingProb() {
+		loading.updateProb(Problem.amountDone());
+	}
+
+	public void stopPupil(String name, Stats stats, Pupil pupil) {
+		agents.add(pupil);
+		endStats.put(name, stats);
+		if (endStats.size() == pupilList.size()) {
+			stop(System.currentTimeMillis());
+		}
+	}
+
+	public void stop(long endTime) {
+		for (AgentController a : ac)
+			try {
+				a.kill();
+			} catch (StaleProxyException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		summary.display(endStats, Problem.amountDone(), endTime - startTime);
+		summary.setVisible();
 	}
 }

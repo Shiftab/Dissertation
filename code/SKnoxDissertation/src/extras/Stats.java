@@ -18,8 +18,10 @@ public class Stats {
 	int asked;
 	int answered;
 	int questions;
-	int shyMissed;
-	int distractions;
+	long shyMissed;
+	long shyStart;
+	long distractions;
+	long distractStart;
 
 	/**
 	 * constructor for initiating all of the variables
@@ -85,7 +87,7 @@ public class Stats {
 	/**
 	 * @return the shyMissed
 	 */
-	public int getShyMissed() {
+	public long getShyMissed() {
 		return shyMissed;
 	}
 
@@ -93,14 +95,18 @@ public class Stats {
 	 * @param shyMissed
 	 *            the shyMissed to set
 	 */
-	public void setShyMissed(int shyMissed) {
-		this.shyMissed = shyMissed;
+	public void setStartShy(){
+		shyStart = System.currentTimeMillis();
+	}
+	
+	public void stopShy(){
+		shyMissed += System.currentTimeMillis()-shyStart;
 	}
 
 	/**
 	 * @return the distractions
 	 */
-	public int getDistractions() {
+	public long getDistractions() {
 		return distractions;
 	}
 
@@ -108,8 +114,12 @@ public class Stats {
 	 * @param distractions
 	 *            the distractions to set
 	 */
-	public void setDistractions(int distractions) {
-		this.distractions = distractions;
+	public void setStartDistractions() {
+		distractStart = System.currentTimeMillis();
+	}
+	
+	public void stopDistract(){
+		distractions += System.currentTimeMillis()-distractStart;
 	}
 
 	/**

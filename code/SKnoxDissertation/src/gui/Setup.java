@@ -19,6 +19,8 @@ import java.awt.BorderLayout;
 import javax.swing.JSlider;
 import javax.swing.BoxLayout;
 import java.awt.GridLayout;
+
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -285,7 +287,8 @@ public class Setup extends GUITemplate {
 			public void actionPerformed(ActionEvent arg0) {
 				List<String> names = new ArrayList<String>();
 				int count = 0;
-				for(String s: pupilList){
+				for(JLabel l: labelList){
+					String s = l.getText();
 					names.add(s);
 					count++;
 					if(count>slPupils.getValue())
@@ -423,4 +426,9 @@ public class Setup extends GUITemplate {
 		);
 		frame.getContentPane().setLayout(groupLayout);
 	}
+	
+	public void setPane(JPanel loading){
+		frame.setContentPane(loading);
+		frame.repaint();
+		}
 }

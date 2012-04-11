@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import control.Control;
 import control.Problem;
 import extras.Stats;
 
@@ -18,6 +19,7 @@ import sudoku.Sudoku;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
+import jade.wrapper.AgentController;
 
 public class Pupil extends Agent {
 
@@ -37,6 +39,7 @@ public class Pupil extends Agent {
 	private Personality personality;
 	private OthersModel others;
 	private Stats stats;
+	private Control parent;
 
 	private Coordinate asking = null;
 	private List<Coordinate> asked = new ArrayList<Coordinate>(47);
@@ -58,9 +61,10 @@ public class Pupil extends Agent {
 			}
 		}
 
-		timeLimit = (Integer)args[2];
-		startTime = (Long)args[3];
-		
+		timeLimit = (Integer) args[2];
+		startTime = (Long) args[3];
+		parent = (Control) args[4];
+
 		others = new OthersModel(peers);
 
 		if (!testingDisability) {
@@ -95,6 +99,24 @@ public class Pupil extends Agent {
 	}
 
 	public void setActionState(int state) {
+		switch (state) {
+		case Pupil.SHY:
+			stats.setStartShy();
+			break;
+		case Pupil.DISTRACTED:
+			stats.setStartDistractions();
+			break;
+		}
+		switch (this.state) {
+		case Pupil.SHY:
+			if (state != Pupil.SHY)
+				stats.stopShy();
+			break;
+		case Pupil.DISTRACTED:
+			if (state != Pupil.DISTRACTED)
+				stats.stopDistract();
+			break;
+		}
 		this.state = state;
 	}
 
@@ -271,6 +293,7 @@ public class Pupil extends Agent {
 				if (brain.done()) {
 					System.out.println(this.getLocalName() + ": done");
 					stats.print();
+					parent.stopPupil(this.getLocalName(), stats, this);
 					// endStats();
 					return null;
 				} else {
@@ -292,8 +315,11 @@ public class Pupil extends Agent {
 	}
 
 	public void answer(Coordinate coordinate) {
-		System.out.println("timeleft:"+((startTime+(timeLimit*6000))-System.currentTimeMillis()));
+		System.out.println("timeleft:"
+				+ ((startTime + (timeLimit * 6000)) - System
+						.currentTimeMillis()));
 		Problem.edditProblem(coordinate);
+		parent.updateLoadingProb();
 		brain.print();
 	}
 
@@ -344,5 +370,18 @@ public class Pupil extends Agent {
 
 	public void incDistractionsStats() {
 		stats.incDistractions();
+	}
+
+	public void stop() {
+		parent.stopPupil(this.getLocalName(), stats, this);
+		this.doWait();
+	}
+
+	public void takeDown() {
+		Agent a = new Agent();
+	}
+
+	public boolean timeUp() {
+		return (startTime + (timeLimit * 6000)) - System.currentTimeMillis() <= 0;
 	}
 }

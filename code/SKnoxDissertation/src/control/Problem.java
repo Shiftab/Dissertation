@@ -11,6 +11,7 @@ import sudoku.Coordinate;
 public final class Problem {
 
 	private static volatile int[][] problem;
+	private static double zeros=0;
 
 	/**
 	 * method to set the paper problem up
@@ -18,6 +19,12 @@ public final class Problem {
 	 */
 	public synchronized static void setProblem(int[][] inputProblem){
 		problem = inputProblem;
+		for(int y=0;y<problem.length;y++){
+			for(int x=0;x<problem.length;x++){
+				if(problem[x][y]==0)
+					zeros++;
+			}
+		}
 	}
 	
 	/**
@@ -52,5 +59,21 @@ public final class Problem {
 			}
 			System.out.print("\n");
 		}
+	}
+	
+	public static double amountDone(){
+		
+		double finished = 0;
+		for(int y=0;y<problem.length;y++){
+			for(int x=0;x<problem.length;x++){
+				if(problem[x][y]==0)
+					finished++;
+			}
+		}
+
+		if(finished==0)
+			return 100;
+		else
+			return (finished/zeros)*100;
 	}
 }

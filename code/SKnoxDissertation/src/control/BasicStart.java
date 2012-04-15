@@ -1,11 +1,7 @@
 package control;
 
-import gui.Setup;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.JFrame;
 
 import jade.core.Agent;
 import jade.wrapper.AgentController;
@@ -45,8 +41,8 @@ public class BasicStart extends Agent {
 		args[2] = 5;
 		try {
 			for (String a : agents){
-				((AgentController) getContainerController().createNewAgent(a,
-						"agent.Interaction.Pupil", args)).start();
+				getContainerController().createNewAgent(a,
+						"agent.Interaction.Pupil", args).start();
 			}
 		} catch (StaleProxyException e) {
 			e.printStackTrace();

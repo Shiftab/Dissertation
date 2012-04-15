@@ -19,7 +19,6 @@ import sudoku.Sudoku;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
-import jade.wrapper.AgentController;
 
 public class Pupil extends Agent {
 
@@ -50,6 +49,20 @@ public class Pupil extends Agent {
 
 	@Override
 	protected void setup() {
+		asking = null;
+		timeLimit = 0;
+		startTime = 0;
+		world = null;
+		brain = null;
+		personality = null;
+		others = null;
+		stats = null;
+		parent = null;
+		asked.clear();
+		responded.clear();
+		answered.clear();
+		state = WORKING;
+		waitTime=0;
 
 		Object[] args = getArguments(); // get arguments from startup
 
@@ -377,6 +390,7 @@ public class Pupil extends Agent {
 		this.doWait();
 	}
 
+	@Override
 	public void takeDown() {
 		Agent a = new Agent();
 	}

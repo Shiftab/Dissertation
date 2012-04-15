@@ -18,6 +18,7 @@ public final class Problem {
 	 * @param inputProblem
 	 */
 	public synchronized static void setProblem(int[][] inputProblem){
+		zeros=0;
 		problem = inputProblem;
 		for(int y=0;y<problem.length;y++){
 			for(int x=0;x<problem.length;x++){

@@ -2,12 +2,11 @@ package agent.Interaction;
 
 import java.util.ArrayList;
 
-import agent.Knowledge.Personality;
-
 import sudoku.Coordinate;
 
 import control.Message;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.lang.acl.ACLMessage;
 
 public class Reaction extends CyclicBehaviour {
 
@@ -30,9 +29,9 @@ public class Reaction extends CyclicBehaviour {
 		ArrayList<Message> query = new ArrayList<Message>();
 		Message msg = (Message) parent.receive();
 		while (msg != null) {
-			if (msg.getPerformative() != Message.QUERY_IF)
+			if (msg.getPerformative() != ACLMessage.QUERY_IF)
 				inform.add(msg);
-			else if (msg.getPerformative() == Message.QUERY_IF)
+			else if (msg.getPerformative() == ACLMessage.QUERY_IF)
 				query.add(msg);
 			msg = (Message) parent.receive();
 		}
@@ -40,7 +39,7 @@ public class Reaction extends CyclicBehaviour {
 		if (!inform.isEmpty())
 			for (Message res : inform) {
 				switch (res.getPerformative()) {
-				case Message.INFORM:
+				case ACLMessage.INFORM:
 					inform(res);
 					break;
 				case Message.ARGUE:
@@ -79,7 +78,6 @@ public class Reaction extends CyclicBehaviour {
 					Messages.disagree(res.getCoordinate(), parent.getPeers(),
 							parent);
 			}
-			parent.incAnsweredStats();
 		}
 	}
 

@@ -2,12 +2,8 @@ package agent.Knowledge;
 
 import jade.core.AID;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
-
-import agent.Interaction.Pupil;
 
 import control.Problem;
 

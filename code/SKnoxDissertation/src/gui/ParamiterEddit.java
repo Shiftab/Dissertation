@@ -1,13 +1,11 @@
 package gui;
 
 import java.awt.Color;
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import java.awt.FlowLayout;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 import java.awt.Font;
 import javax.swing.JSlider;
 import javax.swing.JButton;
@@ -18,18 +16,18 @@ import agent.Knowledge.Personality;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import control.Control;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 
-public class ParamiterEddit extends GUITemplate {
+public class ParamiterEddit extends JPanel {
 
 	// JFrame frame;
 	private Personality personality;
 	private String name;
+	private Control parent;
 
 	private final String[][] DISC_ABILITY = {
 			{ "Proficiant", "Adequit", "Struggles" },
@@ -84,7 +82,7 @@ public class ParamiterEddit extends GUITemplate {
 	 * Create the application.
 	 */
 	public ParamiterEddit(Control parent) {
-		super(parent);
+		this.parent = parent;
 		initialize();
 	}
 
@@ -121,8 +119,7 @@ public class ParamiterEddit extends GUITemplate {
 		for (JSlider js : sliderList) {
 			js.setMaximum(10);
 			js.setMinimum(0);
-			js.setMajorTickSpacing(1);
-			js.setValue((int)ability[count]*10);
+			js.setValue((int)(ability[count]*10));
 			count++;
 		}
 
@@ -168,7 +165,7 @@ public class ParamiterEddit extends GUITemplate {
 			js.setMinimum(-10);
 			js.setValue((int)(ocean[count]*10));
 			js.repaint();
-			frame.repaint();
+			this.repaint();
 			count++;
 		}
 System.out.println("\n");
@@ -208,9 +205,6 @@ System.out.println("\n");
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
-		frame.setBounds(100, 100, 1024, 640);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JLabel lblAbilities = new JLabel("Abilities");
 		lblAbilities.setFont(new Font("Lucida Grande", Font.PLAIN, 18));
@@ -232,6 +226,7 @@ System.out.println("\n");
 		sl6.setMinimum(-10);
 		sl6.setMaximum(10);
 		sl6.addChangeListener(new ChangeListener() {
+			@Override
 			public void stateChanged(ChangeEvent arg0) {
 				setDiscLable(lbDisc6, 5, sl6.getValue());
 			}
@@ -244,6 +239,7 @@ System.out.println("\n");
 		sl5.setMinimum(-10);
 		sl5.setMaximum(10);
 		sl5.addChangeListener(new ChangeListener() {
+			@Override
 			public void stateChanged(ChangeEvent arg0) {
 				setDiscLable(lbDisc5, 4, sl5.getValue());
 			}
@@ -256,6 +252,7 @@ System.out.println("\n");
 		sl4.setMinimum(-10);
 		sl4.setMaximum(10);
 		sl4.addChangeListener(new ChangeListener() {
+			@Override
 			public void stateChanged(ChangeEvent arg0) {
 				setDiscLable(lbDisc4, 3, sl4.getValue());
 			}
@@ -268,6 +265,7 @@ System.out.println("\n");
 		sl3.setMinimum(-10);
 		sl3.setMaximum(10);
 		sl3.addChangeListener(new ChangeListener() {
+			@Override
 			public void stateChanged(ChangeEvent arg0) {
 				setDiscLable(lbDisc3, 2, sl3.getValue());
 			}
@@ -280,6 +278,7 @@ System.out.println("\n");
 		sl2.setMinimum(-10);
 		sl2.setMaximum(10);
 		sl2.addChangeListener(new ChangeListener() {
+			@Override
 			public void stateChanged(ChangeEvent arg0) {
 				setDiscLable(lbDisc2, 1, sl2.getValue());
 			}
@@ -292,6 +291,7 @@ System.out.println("\n");
 		sl1.setMaximum(10);
 		sl1.setMinimum(-10);
 		sl1.addChangeListener(new ChangeListener() {
+			@Override
 			public void stateChanged(ChangeEvent arg0) {
 				setDiscLable(lbDisc1, 0, sl1.getValue());
 			}
@@ -301,6 +301,7 @@ System.out.println("\n");
 
 		JButton btnSave = new JButton("Save");
 		btnSave.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				double[] ans = null;
 				if (ability)
@@ -320,20 +321,21 @@ System.out.println("\n");
 					personality.setOCEAN(ans);
 
 				parent.setPersonality(name, personality);
-				frame.setVisible(false);
+				setVisible(false);
 				parent.pupilEddit(name, personality);
 			}
 		});
 
 		JButton btnCansel = new JButton("Cancel");
 		btnCansel.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				frame.setVisible(false);
+				setVisible(false);
 				parent.changeView(Control.PUPIL);
 			}
 		});
 
-		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
+		GroupLayout groupLayout = new GroupLayout(this);
 		groupLayout
 				.setHorizontalGroup(groupLayout
 						.createParallelGroup(Alignment.LEADING)
@@ -636,6 +638,6 @@ System.out.println("\n");
 														.addComponent(btnSave)
 														.addComponent(btnCansel))
 										.addContainerGap(97, Short.MAX_VALUE)));
-		frame.getContentPane().setLayout(groupLayout);
+		this.setLayout(groupLayout);
 	}
 }

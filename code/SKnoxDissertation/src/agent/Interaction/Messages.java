@@ -2,6 +2,7 @@ package agent.Interaction;
 
 import jade.core.AID;
 import jade.core.Agent;
+import jade.lang.acl.ACLMessage;
 
 import java.util.Set;
 
@@ -26,7 +27,7 @@ public class Messages {
 	 */
 	public static void query(Coordinate coordinate, Set<AID> send,
 			Agent sender, AID focus) {
-		Message msg = new Message(Message.QUERY_IF);
+		Message msg = new Message(ACLMessage.QUERY_IF);
 		for (AID a : send) {
 			msg.addReceiver(a);
 		}
@@ -94,7 +95,7 @@ public class Messages {
 	 * @param sender
 	 */
 	public static void agree(Coordinate coordinate, Set<AID> send, Agent sender) {
-		Message msg = new Message(Message.INFORM);
+		Message msg = new Message(ACLMessage.INFORM);
 		for (AID a : send) {
 			msg.addReceiver(a);
 		}
@@ -115,7 +116,7 @@ public class Messages {
 	 */
 	public static void disagree(Coordinate coordinate, Set<AID> send,
 			Agent sender) {
-		Message msg = new Message(Message.INFORM);
+		Message msg = new Message(ACLMessage.INFORM);
 		for (AID a : send) {
 			msg.addReceiver(a);
 		}
@@ -137,7 +138,7 @@ public class Messages {
 	 */
 	public static void change(Coordinate coordinate, Set<AID> send,
 			Agent sender, AID focus) {
-		Message msg = new Message(Message.INFORM);
+		Message msg = new Message(ACLMessage.INFORM);
 		for (AID a : send) {
 			msg.addReceiver(a);
 		}
@@ -179,7 +180,7 @@ public class Messages {
 	 * @param sender
 	 */
 	public static void acknowledge(Coordinate coordinate, Set<AID> send, Agent sender, AID focus) {
-		Message msg = new Message(Message.INFORM);
+		Message msg = new Message(ACLMessage.INFORM);
 		for (AID a : send) {
 			msg.addReceiver(a);
 		}
@@ -249,7 +250,7 @@ public class Messages {
 	
 	public static void focused(Set<AID> send, Agent sender){
 
-		Message msg = new Message(Message.INFORM);
+		Message msg = new Message(ACLMessage.INFORM);
 		for (AID a : send) {
 			msg.addReceiver(a);
 		}

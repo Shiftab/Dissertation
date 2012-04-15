@@ -1,9 +1,6 @@
 package gui;
 
-import java.awt.EventQueue;
-
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
@@ -12,9 +9,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
 import javax.swing.JPanel;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,11 +21,12 @@ import javax.swing.border.LineBorder;
 
 import control.Control;
 
-public class ProblemEddit extends GUITemplate {
+public class ProblemEddit extends JPanel {
 
 	//JFrame frame;
 	private String file;
 	private String[][] problem = new String[9][9];
+	private Control parent;
 
 	JLabel g00 = new JLabel("0"), g01 = new JLabel("0"), g02 = new JLabel("0"),
 			g03 = new JLabel("0"), g04 = new JLabel("0"),
@@ -92,7 +87,7 @@ public class ProblemEddit extends GUITemplate {
 	 * Create the application.
 	 */
 	public ProblemEddit(Control parent) {
-		super(parent);
+		this.parent = parent;
 		initialize();
 	}
 
@@ -116,9 +111,6 @@ public class ProblemEddit extends GUITemplate {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
-		frame.setBounds(100, 100, 1024, 910);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JLabel lblProblemEddit = new JLabel("Problem Eddit");
 
@@ -128,10 +120,11 @@ public class ProblemEddit extends GUITemplate {
 
 		JButton btnLoadNew = new JButton("Load New");
 		btnLoadNew.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				JFileChooser fc = new JFileChooser();
 
-				int returnVal = fc.showOpenDialog(frame);
+				int returnVal = fc.showOpenDialog(parent.getFrame());
 
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 
@@ -151,7 +144,7 @@ public class ProblemEddit extends GUITemplate {
 						try{
 						problem[count] = scan.nextLine().split(",");
 						}catch(ArrayIndexOutOfBoundsException b){
-							  JOptionPane.showMessageDialog(frame,"Error, the file was not in the correct format");
+							  JOptionPane.showMessageDialog(parent.getFrame(),"Error, the file was not in the correct format");
 							  return;
 						}
 						count++;
@@ -162,13 +155,13 @@ public class ProblemEddit extends GUITemplate {
 							try{
 							Integer.parseInt(problem[x][y].trim());
 							}catch(Exception ex){
-								  JOptionPane.showMessageDialog(frame,"Error, some values were not numbers");
+								  JOptionPane.showMessageDialog(parent.getFrame(),"Error, some values were not numbers");
 								  return;
 							}
 							valueList[x][y].setText(problem[x][y].trim());
 						}
 
-					frame.repaint();
+					repaint();
 				}
 			}
 		});
@@ -178,21 +171,23 @@ public class ProblemEddit extends GUITemplate {
 
 		JButton btnSave = new JButton("Save");
 		btnSave.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				frame.setVisible(false);
+				setVisible(false);
 				parent.changeView(Control.MAIN);
 			}
 		});
 
 		JButton btnCancel = new JButton("Cancel");
 		btnCancel.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				frame.setVisible(false);
+				setVisible(false);
 				parent.changeView(Control.MAIN);
 			}
 		});
 
-		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
+		GroupLayout groupLayout = new GroupLayout(this);
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
@@ -2052,6 +2047,6 @@ public class ProblemEddit extends GUITemplate {
 														GroupLayout.PREFERRED_SIZE))
 								.addGap(373)));
 		panel.setLayout(gl_panel);
-		frame.getContentPane().setLayout(groupLayout);
+		this.setLayout(groupLayout);
 	}
 }

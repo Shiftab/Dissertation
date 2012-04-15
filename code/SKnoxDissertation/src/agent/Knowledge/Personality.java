@@ -1,10 +1,6 @@
 package agent.Knowledge;
 
-import jade.core.AID;
-
 import java.util.Random;
-
-import agent.Interaction.Pupil;
 
 /**
  * the agents particular personality
@@ -101,11 +97,11 @@ public class Personality {
 	 * @param type
 	 */
 	public Personality(int type) {
-		openness = 0.4;
-		conscientiousness = 0.7;
-		extraversion = 0.2;
-		agreeableness = 0.5;
-		neuroticism = -0.3;
+		openness = (r.nextGaussian()*0.6);
+		conscientiousness = (r.nextGaussian()*0.6);
+		extraversion = (r.nextGaussian()*0.6);
+		agreeableness = (r.nextGaussian()*0.6);
+		neuroticism = (r.nextGaussian()*0.6);
 
 		if (type == 1) { // "normal"
 			operational = 1;
@@ -130,12 +126,12 @@ public class Personality {
 			graphical = 0.4;
 			spatialTemporal = 0.4;
 		} else { // no test
-			operational = r.nextDouble();
-			numberConceptual = r.nextDouble();
-			numberComparative = r.nextDouble();
-			abstractSymbolic = r.nextDouble();
-			graphical = r.nextDouble();
-			spatialTemporal = r.nextDouble();
+			operational = ((r.nextGaussian()*0.6)-(-1.5))/((1.5)+(1.5));
+			numberConceptual = ((r.nextGaussian()*0.6)-(-1.5))/((1.5)+(1.5));
+			numberComparative = ((r.nextGaussian()*0.6)-(-1.5))/((1.5)+(1.5));
+			abstractSymbolic = ((r.nextGaussian()*0.6)-(-1.5))/((1.5)+(1.5));
+			graphical = ((r.nextGaussian()*0.6)-(-1.5))/((1.5)+(1.5));
+			spatialTemporal = ((r.nextGaussian()*0.6)-(-1.5))/((1.5)+(1.5));
 		}
 
 		tempAvg = (operational + numberConceptual + numberComparative

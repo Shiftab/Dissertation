@@ -1,6 +1,5 @@
 package sudoku;
 
-import jade.lang.acl.ACLMessage;
 import control.BasicStart;
 
 public class test {

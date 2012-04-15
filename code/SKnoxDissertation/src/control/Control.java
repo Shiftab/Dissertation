@@ -1,5 +1,7 @@
 package control;
 
+import java.awt.CardLayout;
+import java.awt.Component;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -8,6 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import extras.Stats;
 
@@ -34,6 +39,7 @@ public class Control extends Agent {
 			"Steve", "Alica", "Sky", "Erik", "Freya"));
 
 	private Setup main;
+	private JFrame frame = new JFrame();
 	private ParamiterEddit paramEddit = new ParamiterEddit(this);
 	private ProblemEddit probEddit = new ProblemEddit(this);
 	private PupilEddit pupilEddit = new PupilEddit(this);
@@ -47,32 +53,34 @@ public class Control extends Agent {
 	private int[][] problem = new int[9][9];
 	private long startTime = 0;
 	private int timeLimit = 0;
+	
+	private final String PARAM_S="Parameter Eddit", PROB_S="Problem Eddit", PUPIL_S="Pupil Eddit", SUM_S="Summary", LOAD_S="Loading", MAIN_S="Main";
+	
+	private JPanel cards = new JPanel(new CardLayout());
+	private CardLayout cl = (CardLayout) cards.getLayout();
 
 	private List<AgentController> ac = new ArrayList<AgentController>();
 
 	@Override
 	protected void setup() {
+		frame.setBounds(100, 100, 1024, 640);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+		
+		cards.add(paramEddit, PARAM_S);
+		cards.add(probEddit, PROB_S);
+		cards.add(pupilEddit, PUPIL_S);
+		cards.add(summary, SUM_S);
+		cards.add(loading, LOAD_S);
+		
 		for (String s : names) {
 			pupils.put(s, new Personality(0));
 		}
-		Scanner scanner = null;
-		try {
-			scanner = new Scanner(new FileInputStream("problem.csv"));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		int count = 0;
-		while (scanner.hasNextLine()) {
-			int split = 0;
-			for (String s : scanner.nextLine().split(",")) {
-				problem[split][count] = Integer.parseInt(s.trim());
-				split++;
-			}
-			count++;
-		}
+		loadDefault();
 		main = new Setup(this, pupils);
-		main.toggleVisible();
+		cards.add(main, MAIN_S);
+		frame.add(cards);
+		cl.show(cards, MAIN_S);
 
 		/*
 		 * List<String> agents = new ArrayList<String>(); agents.add("Bob");
@@ -88,24 +96,52 @@ public class Control extends Agent {
 		 * (StaleProxyException e) { e.printStackTrace(); }
 		 */
 	}
+	
+	private void loadDefault(){
+		Scanner scanner = null;
+		try {
+			scanner = new Scanner(new FileInputStream("res/problem.csv"));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		int count = 0;
+		while (scanner.hasNextLine()) {
+			int split = 0;
+			for (String s : scanner.nextLine().split(",")) {
+				problem[split][count] = Integer.parseInt(s.trim());
+				split++;
+			}
+			count++;
+		}
+	}
+	
+	public Map<String, Personality> getPupils(){
+		return pupils;
+	}
 
 	public void pupilEddit(String name, Personality pers) {
 		pupilEddit.setUp(name, pers);
-		pupilEddit.setVisible();
+		cl.show(cards, PUPIL_S);
 	}
 
 	public void changeAbility(String name) {
 		paramEddit.setUpAbility(pupils.get(name), name);
-		paramEddit.setVisible();
+		cl.show(cards, PARAM_S);
 	}
 
 	public void changePersonality(String name) {
 		paramEddit.setUpPersonal(pupils.get(name), name);
-		paramEddit.setVisible();
+		cl.show(cards, PARAM_S);
 	}
 
 	public void setPersonality(String name, Personality pers) {
 		pupils.put(name, pers);
+	}
+	
+	public void replasePersonality(String oldName, String name, Personality pers){
+		pupils.remove(oldName);
+		pupils.put(name,  pers);
 	}
 
 	public void newName(String oldName, String newName) {
@@ -123,17 +159,17 @@ public class Control extends Agent {
 		switch (page) {
 		case MAIN:
 			main.refresh(pupils);
-			main.setVisible();
+			cl.show(cards, MAIN_S);
 			break;
 		case PARAM:
-			paramEddit.setVisible();
+			cl.show(cards, PARAM_S);
 			break;
 		case PROB:
 			probEddit.loadProblem(problem);
-			probEddit.setVisible();
+			cl.show(cards, PROB_S);
 			break;
 		case PUPIL:
-			pupilEddit.setVisible();
+			cl.show(cards, PUPIL_S);
 			break;
 		case SUM:
 			// TODO:summary page stuff
@@ -149,12 +185,12 @@ public class Control extends Agent {
 		timeLimit = time;
 		args[0] = problem;
 		args[1] = pupilList;
-		args[2] = (Integer) timeLimit;
-		args[3] = (Long) System.currentTimeMillis();
+		args[2] = timeLimit;
+		args[3] = System.currentTimeMillis();
 		args[4] = this;
 		try {
 			for (String a : pupilList) {
-				ac.add((AgentController) getContainerController()
+				ac.add(getContainerController()
 						.createNewAgent(a, "agent.Interaction.Pupil", args));
 			}
 
@@ -164,10 +200,11 @@ public class Control extends Agent {
 			e.printStackTrace();
 		}
 		startTime = (Long) args[3];
-		main.setPane(loading);
+		cl.show(cards, LOAD_S);
 		this.addBehaviour(new CyclicBehaviour(this) {
 			long lastTime = startTime;
 
+			@Override
 			public void action() {
 				if (System.currentTimeMillis() - lastTime > 1000) {
 					lastTime = System.currentTimeMillis();
@@ -180,6 +217,10 @@ public class Control extends Agent {
 
 	public void updateLoadingTime(double time) {
 		loading.updateTime(time);
+	}
+	
+	public void resetProblem(){
+		loadDefault();
 	}
 
 	public void updateLoadingProb() {
@@ -203,6 +244,10 @@ public class Control extends Agent {
 				e.printStackTrace();
 			}
 		summary.display(endStats, Problem.amountDone(), endTime - startTime);
-		summary.setVisible();
+		cl.show(cards, SUM_S);
+	}
+
+	public Component getFrame() {
+		return frame;
 	}
 }

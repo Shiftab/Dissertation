@@ -146,6 +146,10 @@ public class FinalScreen extends JPanel {
 					String.valueOf(pupils.get(name).getAsked()));
 			answers.get(count).setText(
 					String.valueOf(pupils.get(name).getAnswered()));
+			if(pupils.get(name).getQuestions()==0){
+				input.get(count).setText(
+						String.valueOf(0));
+			}else
 			input.get(count).setText(
 					String.valueOf(format.format(((pupils.get(name).getAsked() + pupils.get(
 							name).getAnswered()) / ((pupils.get(name)

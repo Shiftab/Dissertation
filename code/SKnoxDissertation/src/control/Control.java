@@ -98,22 +98,12 @@ public class Control extends Agent {
 	}
 	
 	private void loadDefault(){
-		Scanner scanner = null;
-		try {
-			scanner = new Scanner(new FileInputStream("res/problem.csv"));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		int count = 0;
-		while (scanner.hasNextLine()) {
-			int split = 0;
-			for (String s : scanner.nextLine().split(",")) {
-				problem[split][count] = Integer.parseInt(s.trim());
-				split++;
-			}
-			count++;
-		}
+		int[][] problem = { { 6, 0, 0, 1, 0, 0, 0, 0, 0 },
+			{ 0, 9, 5, 6, 0, 3, 7, 0, 0 }, { 4, 1, 0, 0, 0, 0, 0, 6, 3 },
+			{ 0, 0, 9, 4, 7, 0, 5, 8, 0 }, { 0, 7, 0, 0, 9, 0, 0, 1, 0 },
+			{ 0, 4, 1, 0, 6, 8, 3, 0, 0 }, { 9, 5, 0, 0, 0, 0, 0, 3, 8 },
+			{ 0, 0, 2, 9, 0, 6, 4, 5, 0 }, { 0, 0, 0, 0, 0, 2, 0, 0, 0 } };
+		this.problem = problem;
 	}
 	
 	public Map<String, Personality> getPupils(){

@@ -75,6 +75,9 @@ public final class Problem {
 		if(finished==0)
 			return 100;
 		else
-			return (finished/zeros)*100;
+			if(zeros==0)
+				return 100;
+			else
+				return (finished/zeros)*100;
 	}
 }

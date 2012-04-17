@@ -20,6 +20,7 @@ import agent.Interaction.Pupil;
 import agent.Knowledge.Personality;
 
 import gui.FinalScreen;
+import gui.Graph;
 import gui.Loading;
 import gui.ParamiterEddit;
 import gui.ProblemEddit;
@@ -66,8 +67,8 @@ public class Control extends Agent {
 		frame.setBounds(100, 100, 1024, 640);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
-		
-		cards.add(paramEddit, PARAM_S);
+		frame.add(new Graph());
+		/*cards.add(paramEddit, PARAM_S);
 		cards.add(probEddit, PROB_S);
 		cards.add(pupilEddit, PUPIL_S);
 		cards.add(summary, SUM_S);
@@ -81,7 +82,7 @@ public class Control extends Agent {
 		cards.add(main, MAIN_S);
 		frame.add(cards);
 		cl.show(cards, MAIN_S);
-
+*/
 		/*
 		 * List<String> agents = new ArrayList<String>(); agents.add("Bob");
 		 * agents.add("Steve"); agents.add("Alicia"); agents.add("test");

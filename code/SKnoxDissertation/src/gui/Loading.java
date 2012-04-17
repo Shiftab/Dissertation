@@ -10,6 +10,7 @@ public class Loading extends JPanel {
 	JProgressBar pbTime= new JProgressBar(), pbProb= new JProgressBar();
 	private final JLabel lbTimeD = new JLabel("100");
 	private final JLabel lbProbD = new JLabel("0");
+	JPanel panel = new Graph();
 	
 	/**
 	 * Create the panel.
@@ -45,6 +46,10 @@ public class Loading extends JPanel {
 		add(pbTime);
 		add(lbTimeD);
 		add(lbProbD);
+		
+		springLayout.putConstraint(SpringLayout.NORTH, panel, 10, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, panel, 10, SpringLayout.WEST, this);
+		add(panel);
 
 		this.setVisible(true);
 	}

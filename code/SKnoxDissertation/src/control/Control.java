@@ -14,6 +14,8 @@ import java.util.Scanner;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import org.jfree.data.xy.XYSeries;
+
 import extras.Stats;
 
 import agent.Interaction.Pupil;
@@ -25,6 +27,7 @@ import gui.Loading;
 import gui.ParamiterEddit;
 import gui.ProblemEddit;
 import gui.PupilEddit;
+import gui.PupilStats;
 import gui.Setup;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -46,6 +49,8 @@ public class Control extends Agent {
 	private PupilEddit pupilEddit = new PupilEddit(this);
 	private FinalScreen summary = new FinalScreen(this);
 	private Loading loading = new Loading();
+	private Graph graph = new Graph();
+	private PupilStats stats = new PupilStats();
 
 	private Map<String, Personality> pupils = new HashMap<String, Personality>();
 	private Map<String, Stats> endStats = new HashMap<String, Stats>();
@@ -54,9 +59,11 @@ public class Control extends Agent {
 	private int[][] problem = new int[9][9];
 	private long startTime = 0;
 	private int timeLimit = 0;
-	
-	private final String PARAM_S="Parameter Eddit", PROB_S="Problem Eddit", PUPIL_S="Pupil Eddit", SUM_S="Summary", LOAD_S="Loading", MAIN_S="Main";
-	
+
+	private final String PARAM_S = "Parameter Eddit", PROB_S = "Problem Eddit",
+			PUPIL_S = "Pupil Eddit", SUM_S = "Summary", LOAD_S = "Loading",
+			MAIN_S = "Main", PUPILSUM_S = "Pupil Summary";
+
 	private JPanel cards = new JPanel(new CardLayout());
 	private CardLayout cl = (CardLayout) cards.getLayout();
 
@@ -67,13 +74,17 @@ public class Control extends Agent {
 		frame.setBounds(100, 100, 1024, 640);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
-		frame.add(new Graph());
-		/*cards.add(paramEddit, PARAM_S);
+
+		cards.add(paramEddit, PARAM_S);
 		cards.add(probEddit, PROB_S);
 		cards.add(pupilEddit, PUPIL_S);
 		cards.add(summary, SUM_S);
 		cards.add(loading, LOAD_S);
+		cards.add(stats, PUPILSUM_S);
 		
+
+		graph.clearSeries();
+
 		for (String s : names) {
 			pupils.put(s, new Personality(0));
 		}
@@ -82,7 +93,7 @@ public class Control extends Agent {
 		cards.add(main, MAIN_S);
 		frame.add(cards);
 		cl.show(cards, MAIN_S);
-*/
+
 		/*
 		 * List<String> agents = new ArrayList<String>(); agents.add("Bob");
 		 * agents.add("Steve"); agents.add("Alicia"); agents.add("test");
@@ -97,17 +108,17 @@ public class Control extends Agent {
 		 * (StaleProxyException e) { e.printStackTrace(); }
 		 */
 	}
-	
-	private void loadDefault(){
+
+	private void loadDefault() {
 		int[][] problem = { { 6, 0, 0, 1, 0, 0, 0, 0, 0 },
-			{ 0, 9, 5, 6, 0, 3, 7, 0, 0 }, { 4, 1, 0, 0, 0, 0, 0, 6, 3 },
-			{ 0, 0, 9, 4, 7, 0, 5, 8, 0 }, { 0, 7, 0, 0, 9, 0, 0, 1, 0 },
-			{ 0, 4, 1, 0, 6, 8, 3, 0, 0 }, { 9, 5, 0, 0, 0, 0, 0, 3, 8 },
-			{ 0, 0, 2, 9, 0, 6, 4, 5, 0 }, { 0, 0, 0, 0, 0, 2, 0, 0, 0 } };
+				{ 0, 9, 5, 6, 0, 3, 7, 0, 0 }, { 4, 1, 0, 0, 0, 0, 0, 6, 3 },
+				{ 0, 0, 9, 4, 7, 0, 5, 8, 0 }, { 0, 7, 0, 0, 9, 0, 0, 1, 0 },
+				{ 0, 4, 1, 0, 6, 8, 3, 0, 0 }, { 9, 5, 0, 0, 0, 0, 0, 3, 8 },
+				{ 0, 0, 2, 9, 0, 6, 4, 5, 0 }, { 0, 0, 0, 0, 0, 2, 0, 0, 0 } };
 		this.problem = problem;
 	}
-	
-	public Map<String, Personality> getPupils(){
+
+	public Map<String, Personality> getPupils() {
 		return pupils;
 	}
 
@@ -129,10 +140,10 @@ public class Control extends Agent {
 	public void setPersonality(String name, Personality pers) {
 		pupils.put(name, pers);
 	}
-	
-	public void replasePersonality(String oldName, String name, Personality pers){
+
+	public void replasePersonality(String oldName, String name, Personality pers) {
 		pupils.remove(oldName);
-		pupils.put(name,  pers);
+		pupils.put(name, pers);
 	}
 
 	public void newName(String oldName, String newName) {
@@ -163,7 +174,7 @@ public class Control extends Agent {
 			cl.show(cards, PUPIL_S);
 			break;
 		case SUM:
-			// TODO:summary page stuff
+			cl.show(cards, SUM_S);
 			break;
 		}
 	}
@@ -181,8 +192,8 @@ public class Control extends Agent {
 		args[4] = this;
 		try {
 			for (String a : pupilList) {
-				ac.add(getContainerController()
-						.createNewAgent(a, "agent.Interaction.Pupil", args));
+				ac.add(getContainerController().createNewAgent(a,
+						"agent.Interaction.Pupil", args));
 			}
 
 			for (AgentController a : ac)
@@ -191,6 +202,7 @@ public class Control extends Agent {
 			e.printStackTrace();
 		}
 		startTime = (Long) args[3];
+		loading.setNames(names);
 		cl.show(cards, LOAD_S);
 		this.addBehaviour(new CyclicBehaviour(this) {
 			long lastTime = startTime;
@@ -209,8 +221,15 @@ public class Control extends Agent {
 	public void updateLoadingTime(double time) {
 		loading.updateTime(time);
 	}
-	
-	public void resetProblem(){
+
+	public void updateGraph(String name, Stats stats) {
+		loading.updateGraph(name, 100-((((startTime + (timeLimit * 6000)) - System
+				.currentTimeMillis()) / 6000.0) / timeLimit) * 100,
+				(((stats.getAsked() + stats.getAnswered()) / ((stats
+						.getQuestions() + stats.getAsked()) * 2.0)) * 100.0));
+	}
+
+	public void resetProblem() {
 		loadDefault();
 	}
 
@@ -234,8 +253,13 @@ public class Control extends Agent {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		summary.display(endStats, Problem.amountDone(), endTime - startTime);
+		summary.display(endStats, Problem.amountDone(), endTime - startTime, loading.getGraphData());
 		cl.show(cards, SUM_S);
+	}
+	
+	public void pupilSummery(String name, Stats stats, XYSeries series){
+		this.stats.setUp(name, stats, series, startTime, timeLimit);
+		cl.show(cards, PUPILSUM_S);
 	}
 
 	public Component getFrame() {

@@ -1,16 +1,22 @@
 package gui;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JLabel;
 import javax.swing.SpringLayout;
+
+import org.jfree.data.xy.XYSeries;
 
 public class Loading extends JPanel {
 
 	JProgressBar pbTime= new JProgressBar(), pbProb= new JProgressBar();
 	private final JLabel lbTimeD = new JLabel("100");
 	private final JLabel lbProbD = new JLabel("0");
-	JPanel panel = new Graph();
+	Graph panel = new Graph();
 	
 	/**
 	 * Create the panel.
@@ -21,24 +27,26 @@ public class Loading extends JPanel {
 		
 		JLabel lblProblem = new JLabel("Problem");
 		SpringLayout springLayout = new SpringLayout();
-		springLayout.putConstraint(SpringLayout.EAST, lbProbD, 0, SpringLayout.EAST, lbTimeD);
-		springLayout.putConstraint(SpringLayout.WEST, lblProblem, 199, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.SOUTH, lblTime, -6, SpringLayout.NORTH, pbTime);
-		springLayout.putConstraint(SpringLayout.EAST, lblTime, 0, SpringLayout.EAST, lblProblem);
-		springLayout.putConstraint(SpringLayout.NORTH, lbProbD, 6, SpringLayout.SOUTH, pbProb);
-		springLayout.putConstraint(SpringLayout.SOUTH, lbProbD, -166, SpringLayout.SOUTH, this);
 		springLayout.putConstraint(SpringLayout.NORTH, pbProb, 6, SpringLayout.SOUTH, lblProblem);
-		springLayout.putConstraint(SpringLayout.WEST, pbProb, 0, SpringLayout.WEST, pbTime);
-		springLayout.putConstraint(SpringLayout.SOUTH, pbProb, -188, SpringLayout.SOUTH, this);
-		springLayout.putConstraint(SpringLayout.EAST, pbProb, 0, SpringLayout.EAST, pbTime);
-		springLayout.putConstraint(SpringLayout.NORTH, lbTimeD, 6, SpringLayout.SOUTH, pbTime);
-		springLayout.putConstraint(SpringLayout.WEST, pbTime, 250, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.SOUTH, pbProb, -287, SpringLayout.SOUTH, this);
+		springLayout.putConstraint(SpringLayout.NORTH, lbProbD, 6, SpringLayout.SOUTH, pbProb);
 		springLayout.putConstraint(SpringLayout.WEST, lbProbD, 0, SpringLayout.WEST, lbTimeD);
-		springLayout.putConstraint(SpringLayout.EAST, pbTime, 615, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.SOUTH, lblProblem, -239, SpringLayout.SOUTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, lbTimeD, 427, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, pbTime, 197, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.SOUTH, pbTime, -324, SpringLayout.SOUTH, this);
+		springLayout.putConstraint(SpringLayout.SOUTH, lbProbD, -265, SpringLayout.SOUTH, this);
+		springLayout.putConstraint(SpringLayout.EAST, lbProbD, -479, SpringLayout.EAST, this);
+		springLayout.putConstraint(SpringLayout.WEST, pbProb, 188, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.EAST, pbProb, -312, SpringLayout.EAST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, lblProblem, 6, SpringLayout.SOUTH, panel);
+		springLayout.putConstraint(SpringLayout.WEST, lblProblem, 0, SpringLayout.WEST, lblTime);
+		springLayout.putConstraint(SpringLayout.WEST, pbTime, 199, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.EAST, pbTime, -301, SpringLayout.EAST, this);
+		springLayout.putConstraint(SpringLayout.WEST, lblTime, 199, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, lbTimeD, 105, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.NORTH, pbTime, 6, SpringLayout.SOUTH, lblTime);
+		springLayout.putConstraint(SpringLayout.SOUTH, pbTime, -6, SpringLayout.NORTH, lbTimeD);
+		springLayout.putConstraint(SpringLayout.NORTH, panel, 42, SpringLayout.SOUTH, lbTimeD);
+		springLayout.putConstraint(SpringLayout.WEST, panel, 96, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.WEST, lbTimeD, 362, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, lblTime, 10, SpringLayout.NORTH, this);
 		setLayout(springLayout);
 		add(lblTime);
 		add(lblProblem);
@@ -46,12 +54,24 @@ public class Loading extends JPanel {
 		add(pbTime);
 		add(lbTimeD);
 		add(lbProbD);
-		
-		springLayout.putConstraint(SpringLayout.NORTH, panel, 10, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, panel, 10, SpringLayout.WEST, this);
 		add(panel);
 
 		this.setVisible(true);
+	}
+	
+	public void setNames(List<String> names){
+		panel.setNames(names);
+	}
+	
+	public void updateGraph(String name, double time, double input){
+		panel.updateChart();
+		panel.updateSeries(name, time, input);
+		panel.display();
+		this.repaint();
+	}
+	
+	public Graph getGraphData(){
+		return panel;
 	}
 	
 	public void updateTime(double time){

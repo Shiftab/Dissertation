@@ -68,9 +68,11 @@ public class Pupil extends Agent {
 
 		List<AID> peers = new ArrayList<AID>();
 		List<String> temp = (List<String>) args[1];
+		List<String> peersStr = new ArrayList<String>();
 		for (String s : temp) {
 			if (!s.equals(this.getLocalName())) {
 				peers.add(new AID(s, AID.ISLOCALNAME));
+				peersStr.add(s);
 			}
 		}
 
@@ -100,7 +102,7 @@ public class Pupil extends Agent {
 
 		brain = new Sudoku(world.getProblem());
 
-		stats = new Stats(this.getAID(), personality.getOCEAN());
+		stats = new Stats(this.getAID(), personality.getOCEAN(), peersStr);
 
 		this.addBehaviour(new Action(this));
 
@@ -375,6 +377,7 @@ public class Pupil extends Agent {
 
 	public void incQuestionsStats() {
 		stats.incQuestions();
+		parent.updateGraph(this.getAID().getLocalName(), stats);
 	}
 
 	public void incShyMissedStats() {

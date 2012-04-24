@@ -1,5 +1,10 @@
 package extras;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import jade.core.AID;
 
 /**
@@ -20,6 +25,9 @@ public class Stats {
 	long shyStart;
 	long distractions;
 	long distractStart;
+	List<Long> distractTimes = new ArrayList<Long>();
+	List<Long> shyTimes = new ArrayList<Long>();
+	List<focus> focusTimes = new ArrayList<focus>();
 
 	/**
 	 * constructor for initiating all of the variables
@@ -27,7 +35,10 @@ public class Stats {
 	 * @param peer
 	 * @param parent
 	 */
-	public Stats(AID parent, double[] ocean) {
+	public Stats(AID parent, double[] ocean, List<String> peers) {
+		for(String s: peers){
+			focusTimes.add(new focus(s));
+		}
 		this.parent = parent;
 		OCEAN = ocean;
 		asked = 0;
@@ -95,10 +106,48 @@ public class Stats {
 	 */
 	public void setStartShy(){
 		shyStart = System.currentTimeMillis();
+		shyTimes.add(System.currentTimeMillis());
 	}
 	
 	public void stopShy(){
 		shyMissed += System.currentTimeMillis()-shyStart;
+		shyTimes.add(System.currentTimeMillis());
+	}
+	
+	public List<Long> getShyTimes(){
+		return shyTimes;
+	}
+	
+	public void startFocus(String name){
+		for(focus f: focusTimes){
+			if(f.equals(name)){
+				f.newStart();
+			}
+		}
+	}
+	
+	public void stopFocus(String name){
+		for(focus f: focusTimes){
+			if(f.equals(name)){
+				f.newEnd();
+			}
+		}
+	}
+	
+	public Map<String, List<long[]>> getFocus(){
+		Map<String, List<long[]>> foc = new HashMap<String, List<long[]>>();
+		for(focus f: focusTimes){
+			if(!f.isEmpty()){
+				List<Long> times = f.getTimes();
+				List<long[]> pares = new ArrayList<long[]>();
+				for(int x = 0; x<f.getNumEvents();x+=2 ){
+					pares.add(new long[]{times.get(x), times.get(x+1)});
+				}
+				foc.put(f.name(), pares);
+			}
+		}
+		
+		return foc;
 	}
 
 	/**
@@ -114,10 +163,12 @@ public class Stats {
 	 */
 	public void setStartDistractions() {
 		distractStart = System.currentTimeMillis();
+		distractTimes.add(System.currentTimeMillis());
 	}
 	
 	public void stopDistract(){
 		distractions += System.currentTimeMillis()-distractStart;
+		distractTimes.add(System.currentTimeMillis());
 	}
 
 	/**
@@ -187,4 +238,48 @@ public class Stats {
 				+ " answered:" + answered + " Shy:" + shyMissed
 				+ " distractions:" + distractions);
 	}
+	
+	private class focus{
+		String name;
+		List<Long> times = new ArrayList<Long>();
+		
+		public focus(String name){
+			this.name = name;
+		}
+		
+		public void newStart(){
+			times.add(System.currentTimeMillis());
+		}
+		public void newEnd(){
+			times.add(System.currentTimeMillis());
+		}
+		
+		public String name(){
+			return name;
+		}
+		
+		public int getNumEvents(){
+			return times.size()/2;
+		}
+		
+		public List<Long> getTimes(){
+			return times;
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object arg0) {
+			// TODO Auto-generated method stub
+			return name.equals((String)arg0);
+		}
+		
+		public boolean isEmpty(){
+			if(times.isEmpty())
+				return true;
+			return false;
+		}
+	}
 }
+

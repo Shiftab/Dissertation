@@ -24,7 +24,13 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
 
+import control.Control;
+
 import extras.Stats;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.util.List;
+import java.util.Map;
 
 public class PupilStats extends JPanel {
 
@@ -34,10 +40,16 @@ public class PupilStats extends JPanel {
 			distractTime = new JLabel("distracted");
 	JButton btnBack = new JButton("Back");
 	private JLabel lblGraph = new JLabel("");
-	
+	private Control parent;
 	long startTime, timeLimit;
 
-	public void setUp(String name, Stats stats, XYSeries graph, long startTime, long endTime) {
+	public PupilStats(Control p) {
+		parent = p;
+		init();
+	}
+
+	public void setUp(String name, Stats stats, XYSeries graph, long startTime,
+			long endTime) {
 		this.startTime = startTime;
 		this.timeLimit = endTime;
 		createGraph(graph, stats);
@@ -61,9 +73,11 @@ public class PupilStats extends JPanel {
 
 		XYPlot plot = chart.getXYPlot();
 		boolean toggle = true;
+		Long lastTime = Long.MIN_VALUE;
 		for (Long l : stats.getShyTimes()) {
-			Marker currentEnd = new ValueMarker(100-((((startTime + (timeLimit * 6000)) - l) / 6000.0) / timeLimit) * 100);
-			currentEnd.setPaint(Color.red);
+			Marker currentEnd = new ValueMarker(
+					100 - ((((startTime + (timeLimit * 6000)) - l) / 6000.0) / timeLimit) * 100);
+			currentEnd.setPaint(Color.yellow);
 			if (toggle)
 				currentEnd.setLabel("Became Shy");
 			else
@@ -71,7 +85,60 @@ public class PupilStats extends JPanel {
 			currentEnd.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
 			currentEnd.setLabelTextAnchor(TextAnchor.TOP_LEFT);
 			plot.addDomainMarker(currentEnd);
-			toggle=!toggle;
+			toggle = !toggle;
+		}
+		toggle = true;
+		for (Long l : stats.getDistractTimes()) {
+			Marker currentEnd = new ValueMarker(
+					100 - ((((startTime + (timeLimit * 6000)) - l) / 6000.0) / timeLimit) * 100);
+			if (toggle)
+				currentEnd.setLabel("Distract");
+			if (l > lastTime + 500) {
+				currentEnd.setPaint(Color.blue);
+				currentEnd.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
+				currentEnd.setLabelTextAnchor(TextAnchor.TOP_LEFT);
+				plot.addDomainMarker(currentEnd);
+				toggle = !toggle;
+			}
+			lastTime = l;
+		}
+		toggle = true;
+		Map<String, List<Long>> pupilFocus = stats.getFocus();
+		for (String s : pupilFocus.keySet()) {
+			for (long l : pupilFocus.get(s)) {
+				Marker currentEnd = new ValueMarker(
+						100 - ((((startTime + (timeLimit * 6000)) - l) / 6000.0) / timeLimit) * 100);
+				if (toggle)
+					currentEnd.setLabel("Focused on " + s);
+				if (l > lastTime + 500) {
+					currentEnd.setPaint(Color.green);
+					currentEnd.setLabelAnchor(RectangleAnchor.BOTTOM_LEFT);
+					currentEnd.setLabelTextAnchor(TextAnchor.BOTTOM_LEFT);
+					plot.addDomainMarker(currentEnd);
+					toggle = !toggle;
+				}
+
+				lastTime = l;
+			}
+		}
+		toggle = true;
+		Map<String, List<Long>> distracted = stats.getDistractedTimes();
+		for (String s : distracted.keySet()) {
+			for (long l : distracted.get(s)) {
+				Marker currentEnd = new ValueMarker(
+						100 - ((((startTime + (timeLimit * 6000)) - l) / 6000.0) / timeLimit) * 100);
+				if (toggle)
+					currentEnd.setLabel("Distracted by " + s);
+				if (l > lastTime + 500) {
+					currentEnd.setPaint(Color.black);
+					currentEnd.setLabelAnchor(RectangleAnchor.BOTTOM_LEFT);
+					currentEnd.setLabelTextAnchor(TextAnchor.BOTTOM_LEFT);
+					plot.addDomainMarker(currentEnd);
+					toggle = !toggle;
+				}
+
+				lastTime = l;
+			}
 		}
 
 		BufferedImage image = chart.createBufferedImage(500, 300);
@@ -83,7 +150,7 @@ public class PupilStats extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public PupilStats() {
+	public void init() {
 
 		JSeparator separator = new JSeparator();
 
@@ -97,7 +164,13 @@ public class PupilStats extends JPanel {
 
 		JLabel label_9 = new JLabel("Time wasted due to distractions: ");
 
-		JButton btnBack = new JButton("Back");
+		btnBack = new JButton("Back");
+		btnBack.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				setVisible(false);
+				parent.changeView(Control.SUM);
+			}
+		});
 		GroupLayout groupLayout = new GroupLayout(this);
 		groupLayout
 				.setHorizontalGroup(groupLayout
@@ -267,6 +340,6 @@ public class PupilStats extends JPanel {
 														.addComponent(btnBack))
 										.addGap(20)));
 		setLayout(groupLayout);
-
+		setVisible(true);
 	}
 }

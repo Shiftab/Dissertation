@@ -83,4 +83,8 @@ public class Loading extends JPanel {
 		pbProb.setValue((int)(100-problem));
 		lbProbD.setText(String.valueOf((int)(100-problem)));
 	}
+
+	public void clearGraphs() {
+		panel.clearSeries();
+	}
 }

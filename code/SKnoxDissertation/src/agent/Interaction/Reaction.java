@@ -66,17 +66,16 @@ public class Reaction extends CyclicBehaviour {
 	private void query(Message res) {
 		parent.incQuestionsStats();
 		parent.setPeerActionState(res.getSender(), Pupil.WORKING);
-		if (!parent.haveResponded(res.getCoordinate())) {
+		if (!parent.haveResponded(res.getCoordinate())
+				&& parent.getActionState() != Pupil.SHY
+				&& parent.getActionState() != Pupil.DISTRACTED) {
 			parent.setActionState(Pupil.WORKING);
 			parent.responded(res.getCoordinate());
 			if (parent.checkAnswer(res.getCoordinate(), this)) {
-				if (true)// !parent.shy())
-					Messages.agree(res.getCoordinate(), parent.getPeers(),
-							parent);
+				Messages.agree(res.getCoordinate(), parent.getPeers(), parent);
 			} else {
-				if (true)// !parent.shy())
-					Messages.disagree(res.getCoordinate(), parent.getPeers(),
-							parent);
+				Messages.disagree(res.getCoordinate(), parent.getPeers(),
+						parent);
 			}
 		}
 	}
@@ -155,12 +154,14 @@ public class Reaction extends CyclicBehaviour {
 	private void distract(Message res) {
 		parent.setPeerActionState(res.getSender(), Pupil.DISTRACTED);
 		if (parent.getActionState() == Pupil.DISTRACTED) {
-			if (parent.getWaitTime() > 2000) {
-				parent.setWaitTime();
-				Messages.wasteTime(parent.getPeers(), res.getSender(), parent);
-			}
+			parent.setDistracted(res.getSender().getLocalName());
+			parent.setWaitTime();
+			parent.pauseAction(this);
+			Messages.wasteTime(parent.getPeers(), res.getSender(), parent);
 		} else if (parent.isChatty()) {// , prior)){
+			parent.setDistracted(res.getSender().getLocalName());
 			parent.setActionState(Pupil.DISTRACTED);
+			parent.pauseAction(this);
 			Messages.wasteTime(parent.getPeers(), res.getSender(), parent);
 		} else {
 			// parent.lowerFocus(res.getSender());
@@ -186,7 +187,8 @@ public class Reaction extends CyclicBehaviour {
 			break;
 		case NO:
 			if (parent.getAsking() != null)
-				if (res.getCoordinate().equals(parent.getAsking())) {
+				try{
+				if (res.getCoordinate().equals(parent.getAsking())) { 
 					parent.refreshWorld();
 					if (parent.checkAnswer(res.getCoordinate(), this)) {
 						Messages.acknowledge(res.getCoordinate(),
@@ -206,6 +208,10 @@ public class Reaction extends CyclicBehaviour {
 						}
 					}
 				}
+				}catch(NullPointerException np){
+					np.printStackTrace();
+					System.out.println("*********"+res.getContent());
+				}
 			break;
 		case CHANGE:
 			parent.setPeerActionState(res.getSender(), Pupil.WORKING);
@@ -215,9 +221,9 @@ public class Reaction extends CyclicBehaviour {
 			} else
 				parent.decSelfEsteam();
 			parent.setAnswered(res.getCoordinate());
-			if(parent.getActionState()==Pupil.DISTRACTED)
+			if (parent.getActionState() == Pupil.DISTRACTED)
 				parent.incDistractionsStats();
-			else if(parent.getActionState()==Pupil.SHY)
+			else if (parent.getActionState() == Pupil.SHY)
 				parent.incShyMissedStats();
 			break;
 		default:

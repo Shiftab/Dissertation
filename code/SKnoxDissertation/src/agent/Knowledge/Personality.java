@@ -10,7 +10,7 @@ import java.util.Random;
  */
 public class Personality {
 
-	private static final int WAIT_TIME = 100;
+	private static final int WAIT_TIME = 400;
 
 	// Multiplier grid
 	private static final double[] SHY_PROB = { 0, -0.1, -0.5, -0.2, 0.1 };
@@ -87,6 +87,10 @@ public class Personality {
 
 	Random r = new Random();
 
+	public Personality() {
+		selfEsteam = 1;
+	}
+
 	/**
 	 * constructor to setup the personality of an agent
 	 * 
@@ -97,42 +101,20 @@ public class Personality {
 	 * @param type
 	 */
 	public Personality(int type) {
-		openness = (r.nextGaussian()*0.6);
-		conscientiousness = (r.nextGaussian()*0.6);
-		extraversion = (r.nextGaussian()*0.6);
-		agreeableness = (r.nextGaussian()*0.6);
-		neuroticism = (r.nextGaussian()*0.6);
-
-		if (type == 1) { // "normal"
-			operational = 1;
-			numberConceptual = 0.9;
-			numberComparative = 0.8;
-			abstractSymbolic = 0.7;
-			graphical = 0.85;
-			spatialTemporal = 0.9;
-
-		} else if (type == 2) { // dyslexic
-			operational = 0.6;
-			numberConceptual = 0.7;
-			numberComparative = 0.7;
-			abstractSymbolic = 0.6;
-			graphical = 0.8;
-			spatialTemporal = 0.6;
-		} else if (type == 3) {// dyscalculic
-			operational = 0.1;
-			numberConceptual = 0.2;
-			numberComparative = 0.3;
-			abstractSymbolic = 0.1;
-			graphical = 0.4;
-			spatialTemporal = 0.4;
-		} else { // no test
-			operational = ((r.nextGaussian()*0.6)-(-1.5))/((1.5)+(1.5));
-			numberConceptual = ((r.nextGaussian()*0.6)-(-1.5))/((1.5)+(1.5));
-			numberComparative = ((r.nextGaussian()*0.6)-(-1.5))/((1.5)+(1.5));
-			abstractSymbolic = ((r.nextGaussian()*0.6)-(-1.5))/((1.5)+(1.5));
-			graphical = ((r.nextGaussian()*0.6)-(-1.5))/((1.5)+(1.5));
-			spatialTemporal = ((r.nextGaussian()*0.6)-(-1.5))/((1.5)+(1.5));
-		}
+		openness = (r.nextGaussian() * 0.6);
+		conscientiousness = (r.nextGaussian() * 0.6);
+		extraversion = (r.nextGaussian() * 0.6);
+		agreeableness = (r.nextGaussian() * 0.6);
+		neuroticism = (r.nextGaussian() * 0.6);
+		operational = ((r.nextGaussian() * 0.6) - (-1.5)) / ((1.5) + (1.5));
+		numberConceptual = ((r.nextGaussian() * 0.6) - (-1.5))
+				/ ((1.5) + (1.5));
+		numberComparative = ((r.nextGaussian() * 0.6) - (-1.5))
+				/ ((1.5) + (1.5));
+		abstractSymbolic = ((r.nextGaussian() * 0.6) - (-1.5))
+				/ ((1.5) + (1.5));
+		graphical = ((r.nextGaussian() * 0.6) - (-1.5)) / ((1.5) + (1.5));
+		spatialTemporal = ((r.nextGaussian() * 0.6) - (-1.5)) / ((1.5) + (1.5));
 
 		tempAvg = (operational + numberConceptual + numberComparative
 				+ abstractSymbolic + graphical + spatialTemporal) / 6;
@@ -142,7 +124,7 @@ public class Personality {
 		else if (tempAvg <= 0.78)
 			dyslexic = true;
 
-		selfEsteam = (extraversion + (-neuroticism)) * 0.1;
+		selfEsteam = (1 + (extraversion + (-neuroticism))) / 2;
 	}
 
 	/**
@@ -175,27 +157,28 @@ public class Personality {
 
 		return ocean;
 	}
-	
-	public void setOCEAN(double[] ocean){
+
+	public void setOCEAN(double[] ocean) {
 		openness = ocean[0];
-		conscientiousness = ocean[1]; 
+		conscientiousness = ocean[1];
 		extraversion = ocean[2];
 		agreeableness = ocean[3];
 		neuroticism = ocean[4];
 	}
-	
-	public double[] getAbility(){
-		double[] ability = {operational, numberConceptual, numberComparative,
-				abstractSymbolic, graphical, spatialTemporal};
+
+	public double[] getAbility() {
+		double[] ability = { operational, numberConceptual, numberComparative,
+				abstractSymbolic, graphical, spatialTemporal };
 		return ability;
 	}
-	public void setAbility(double[] ability){
-		operational = ability[0];
-		numberConceptual = ability[1]; 
-		numberComparative = ability[2];
-		abstractSymbolic = ability[3];
-		graphical = ability[4];
-		spatialTemporal = ability[5];
+
+	public void setAbility(double[] test) {
+		operational = test[0];
+		numberConceptual = test[1];
+		numberComparative = test[2];
+		abstractSymbolic = test[3];
+		graphical = test[4];
+		spatialTemporal = test[5];
 	}
 
 	/**
@@ -204,9 +187,8 @@ public class Personality {
 	 * @return
 	 */
 	public int getSpeed() {
-		double multiplyer = operational + numberComparative + numberConceptual
-				+ abstractSymbolic;
-		return (int) (WAIT_TIME * multiplyer) + r.nextInt(WAIT_TIME);
+		double multiplyer = 4-(operational + numberComparative + numberConceptual + abstractSymbolic);
+		return (int) ((WAIT_TIME*multiplyer)) + r.nextInt(WAIT_TIME);
 	}
 
 	public double getSelfEsteam() {
@@ -215,12 +197,12 @@ public class Personality {
 
 	public void incSelfEsteam() {
 		if (this.selfEsteam < 1)
-			this.selfEsteam += 0.2;
+			this.selfEsteam += 0.3;
 	}
 
 	public void decSelfEsteam() {
 		if (this.selfEsteam > -1)
-			this.selfEsteam -= 0.2;
+			this.selfEsteam -= 0.25;
 	}
 
 	public double getShyness() {
@@ -293,32 +275,31 @@ public class Personality {
 	}
 
 	public void resetSelfEsteam() {
-		selfEsteam = (extraversion + (-neuroticism)) * 0.1;
+		selfEsteam = (1 + (extraversion + (-neuroticism))) / 2;
 	}
 
-	public boolean isShy() {
+	public boolean isShy(String name) {
 		double personality = 0;
 		double[] ocean = getOCEAN();
 		double[] question = SHY_PROB;
 		for (int x = 0; x < ocean.length; x++)
 			personality += (ocean[x] * question[x]);
-
-		personality = (1 - (personality / 0.8)) / 2;
+		double personality2 = 1-((personality - (-0.8)) / 2);
 		double SE = (1 + selfEsteam) / 2;
-		if (((personality / 2) + (SE / 2)) < 0.4) {
+		if (((personality2 / 2) + (SE / 2)) <= 0.5) {
 			return true;
 		} else
 			return false;
 	}
-	
-	public boolean distract(){
+
+	public boolean distract() {
 		double personality = 0;
 		double[] ocean = getOCEAN();
 		double[] question = DISTRACT_PROB;
 		for (int x = 0; x < ocean.length; x++)
 			personality += (ocean[x] * question[x]);
 
-		personality = (1 + (personality / 0.8)) / 2;
+		personality = (1 + (personality / 0.5)) / 2;
 		return ((personality / 2) + (shyness / 2)) < r.nextDouble();
 	}
 

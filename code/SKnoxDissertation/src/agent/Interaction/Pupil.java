@@ -39,6 +39,7 @@ public class Pupil extends Agent {
 	private OthersModel others;
 	private Stats stats;
 	private Control parent;
+	private AID currentFocus = null;
 
 	private Coordinate asking = null;
 	private List<Coordinate> asked = new ArrayList<Coordinate>(47);
@@ -62,7 +63,7 @@ public class Pupil extends Agent {
 		responded.clear();
 		answered.clear();
 		state = WORKING;
-		waitTime=0;
+		waitTime = 0;
 
 		Object[] args = getArguments(); // get arguments from startup
 
@@ -76,26 +77,12 @@ public class Pupil extends Agent {
 			}
 		}
 
+		personality = (Personality) args[0];
 		timeLimit = (Integer) args[2];
 		startTime = (Long) args[3];
 		parent = (Control) args[4];
 
 		others = new OthersModel(peers);
-
-		if (!testingDisability) {
-			personality = new Personality(0);
-		} else if (this.getAID().getLocalName().equals("Alicia")) {
-			// dyscalculic
-			personality = new Personality(DYSCAL);
-		} else if (this.getAID().getLocalName().equals("Steve")) {
-			// dyslexic
-			personality = new Personality(DYSLEX);
-		} else if (this.getAID().getLocalName().equals("Bob")) {
-			// "normal"
-			personality = new Personality(NORM);
-		} else {
-			personality = new Personality(0);
-		}
 
 		// persons understanding of the world
 		world = new WorldView(peers, personality.isDyslexic());
@@ -103,6 +90,8 @@ public class Pupil extends Agent {
 		brain = new Sudoku(world.getProblem());
 
 		stats = new Stats(this.getAID(), personality.getOCEAN(), peersStr);
+
+		personality.resetSelfEsteam();
 
 		this.addBehaviour(new Action(this));
 
@@ -116,7 +105,14 @@ public class Pupil extends Agent {
 	public void setActionState(int state) {
 		switch (state) {
 		case Pupil.SHY:
-			stats.setStartShy();
+			if (this.state != DISTRACTED) {
+				stats.setStartShy();
+				System.out
+						.println(this.getLocalName()
+								+ ": SHY:"
+								+ (100 - ((((startTime + (timeLimit * 6000)) - System
+										.currentTimeMillis()) / 6000.0) / timeLimit) * 100));
+			}
 			break;
 		case Pupil.DISTRACTED:
 			stats.setStartDistractions();
@@ -124,8 +120,14 @@ public class Pupil extends Agent {
 		}
 		switch (this.state) {
 		case Pupil.SHY:
-			if (state != Pupil.SHY)
+			if (state != Pupil.SHY && state != Pupil.DISTRACTED) {
 				stats.stopShy();
+				System.out
+						.println(this.getLocalName()
+								+ "STOP SHY :"
+								+ (100 - ((((startTime + (timeLimit * 6000)) - System
+										.currentTimeMillis()) / 6000.0) / timeLimit) * 100));
+			}
 			break;
 		case Pupil.DISTRACTED:
 			if (state != Pupil.DISTRACTED)
@@ -137,6 +139,14 @@ public class Pupil extends Agent {
 
 	public int getActionState() {
 		return state;
+	}
+	
+	public void setDistract(){
+		stats.addDistract();
+	}
+	
+	public void setDistracted(String name){
+		stats.addDistracted(name);
 	}
 
 	// -------------State------------
@@ -192,6 +202,12 @@ public class Pupil extends Agent {
 
 	// ------------Answers/Questions---------------
 
+	public void pauseAction(Behaviour b){
+		checkDone();
+		doWait(personality.getSpeed());
+		b.block(personality.getSpeed());
+	}
+	
 	public boolean checkAnswer(Coordinate coordinate, Behaviour b) {
 		System.out.println(this.getLocalName() + ":" + personality.getSpeed());
 		doWait(personality.getSpeed());
@@ -280,7 +296,18 @@ public class Pupil extends Agent {
 	}
 
 	public AID getFocus() {
-		return others.focus();
+		AID ans = others.focus();
+		if (ans != null) {
+			if (currentFocus == null) {
+				currentFocus = ans;
+				stats.focus(ans.getLocalName());
+			} else if (currentFocus != ans) {
+				stats.focus(currentFocus.getLocalName());
+				currentFocus = ans;
+				stats.focus(ans.getLocalName());
+			}
+		}
+		return ans;
 	}
 
 	// --------------------self---------------------
@@ -292,6 +319,18 @@ public class Pupil extends Agent {
 
 	public void setWaitTime() {
 		waitTime = System.currentTimeMillis();
+	}
+	
+	public void checkDone(){
+		if (brain.done()||((startTime + (timeLimit * 6000)) - System
+				.currentTimeMillis())<0) {
+			System.out.println(this.getLocalName() + ": done");
+			stats.print();
+			parent.stopPupil(this.getLocalName(), stats, this);
+			// endStats();
+			while(true)
+			doWait();
+		}
 	}
 
 	public Coordinate search(Behaviour b) {
@@ -353,7 +392,7 @@ public class Pupil extends Agent {
 	}
 
 	public boolean isShy() {
-		boolean shy = personality.isShy();
+		boolean shy = personality.isShy(this.getLocalName());
 		if (shy)
 			System.out.print(this.getLocalName() + ": SHY");
 		return shy;

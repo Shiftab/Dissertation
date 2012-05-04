@@ -65,9 +65,9 @@ public class Sudoku {
 	 * method to print out this view of the problem
 	 */
 	public void print() {
-		System.out.println('\n');
+		/*System.out.println('\n');
 		for (Zone z : rowList)
-			System.out.println(z);
+			System.out.println(z);*/
 	}
 
 	/**

@@ -50,7 +50,7 @@ public class Control extends Agent {
 	private FinalScreen summary = new FinalScreen(this);
 	private Loading loading = new Loading();
 	private Graph graph = new Graph();
-	private PupilStats stats = new PupilStats();
+	private PupilStats stats = new PupilStats(this);
 
 	private Map<String, Personality> pupils = new HashMap<String, Personality>();
 	private Map<String, Stats> endStats = new HashMap<String, Stats>();
@@ -75,13 +75,12 @@ public class Control extends Agent {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 
+		cards.add(stats, PUPILSUM_S);
 		cards.add(paramEddit, PARAM_S);
 		cards.add(probEddit, PROB_S);
 		cards.add(pupilEddit, PUPIL_S);
-		cards.add(summary, SUM_S);
 		cards.add(loading, LOAD_S);
-		cards.add(stats, PUPILSUM_S);
-		
+		cards.add(summary, SUM_S);
 
 		graph.clearSeries();
 
@@ -93,7 +92,7 @@ public class Control extends Agent {
 		cards.add(main, MAIN_S);
 		frame.add(cards);
 		cl.show(cards, MAIN_S);
-
+		
 		/*
 		 * List<String> agents = new ArrayList<String>(); agents.add("Bob");
 		 * agents.add("Steve"); agents.add("Alicia"); agents.add("test");
@@ -125,16 +124,19 @@ public class Control extends Agent {
 	public void pupilEddit(String name, Personality pers) {
 		pupilEddit.setUp(name, pers);
 		cl.show(cards, PUPIL_S);
+		frame.repaint();
 	}
 
 	public void changeAbility(String name) {
 		paramEddit.setUpAbility(pupils.get(name), name);
 		cl.show(cards, PARAM_S);
+		frame.repaint();
 	}
 
 	public void changePersonality(String name) {
 		paramEddit.setUpPersonal(pupils.get(name), name);
 		cl.show(cards, PARAM_S);
+		frame.repaint();
 	}
 
 	public void setPersonality(String name, Personality pers) {
@@ -180,18 +182,19 @@ public class Control extends Agent {
 	}
 
 	public void start(int time, List<String> names) {
-		Object[] args = new Object[5];
-
 		pupilList = names;
 		Problem.setProblem(problem);
 		timeLimit = time;
-		args[0] = problem;
-		args[1] = pupilList;
-		args[2] = timeLimit;
-		args[3] = System.currentTimeMillis();
-		args[4] = this;
+		startTime = System.currentTimeMillis();
+		
 		try {
 			for (String a : pupilList) {
+				Object[] args = new Object[5];
+				args[0] = pupils.get(a);
+				args[1] = pupilList;
+				args[2] = timeLimit;
+				args[3] = startTime;
+				args[4] = this;
 				ac.add(getContainerController().createNewAgent(a,
 						"agent.Interaction.Pupil", args));
 			}
@@ -201,9 +204,10 @@ public class Control extends Agent {
 		} catch (StaleProxyException e) {
 			e.printStackTrace();
 		}
-		startTime = (Long) args[3];
+		loading.clearGraphs();
 		loading.setNames(names);
 		cl.show(cards, LOAD_S);
+		frame.repaint();
 		this.addBehaviour(new CyclicBehaviour(this) {
 			long lastTime = startTime;
 
@@ -257,8 +261,8 @@ public class Control extends Agent {
 		cl.show(cards, SUM_S);
 	}
 	
-	public void pupilSummery(String name, Stats stats, XYSeries series){
-		this.stats.setUp(name, stats, series, startTime, timeLimit);
+	public void pupilSummery(String name, Stats pupilStats, XYSeries series){
+		stats.setUp(name, pupilStats, series, startTime, timeLimit);
 		cl.show(cards, PUPILSUM_S);
 	}
 

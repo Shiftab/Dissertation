@@ -18,6 +18,7 @@ public class Action extends CyclicBehaviour {
 
 	@Override
 	public void action() {
+		parent.checkDone();
 		if(parent.timeUp()){
 			parent.stop();
 		}
@@ -43,6 +44,7 @@ public class Action extends CyclicBehaviour {
 		case Pupil.WORKING:
 			if (parent.isShy()) {
 				parent.setActionState(Pupil.SHY);
+				parent.setWaitTime();
 				return;
 			}
 			if (working > 0) {
@@ -63,14 +65,14 @@ public class Action extends CyclicBehaviour {
 				parent.setActionState(Pupil.WORKING);
 			break;
 		case Pupil.SHY:
-			if(parent.distract()&&parent.getWaitTime()>5000){
+			if(parent.distract()&&parent.getWaitTime()>2000){
 				parent.setActionState(Pupil.DISTRACTED);
+				parent.setDistract();
 				parent.setWaitTime();
 				Messages.distract(parent.getPeers(), parent.getDistractable(), parent);
 			}
 			break;
 		}
-
 	}
 
 	private void ask() {

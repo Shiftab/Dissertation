@@ -101,6 +101,7 @@ public class FinalScreen extends JPanel {
 
 		btnDetails1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				setVisible(false);
 				parent.pupilSummery(lblName1.getText(),
 						pupils.get(lblName1.getText()),
 						graph.getSeries(lblName1.getText()));
@@ -109,6 +110,7 @@ public class FinalScreen extends JPanel {
 
 		btnDetails2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				setVisible(false);
 				parent.pupilSummery(lblName2.getText(),
 						pupils.get(lblName2.getText()),
 						graph.getSeries(lblName2.getText()));
@@ -133,6 +135,7 @@ public class FinalScreen extends JPanel {
 
 		btnDetails5.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				setVisible(false);
 				parent.pupilSummery(lblName5.getText(),
 						pupils.get(lblName5.getText()),
 						graph.getSeries(lblName5.getText()));
@@ -141,6 +144,7 @@ public class FinalScreen extends JPanel {
 
 		btnDetails6.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				setVisible(false);
 				parent.pupilSummery(lblName6.getText(),
 						pupils.get(lblName6.getText()),
 						graph.getSeries(lblName6.getText()));
@@ -405,6 +409,7 @@ public class FinalScreen extends JPanel {
 																																btnDetails6))))))
 										.addGap(297)));
 		setLayout(groupLayout);
+		setVisible(true);
 	}
 
 	private double time(long time) {

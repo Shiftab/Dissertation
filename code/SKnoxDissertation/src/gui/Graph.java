@@ -43,7 +43,7 @@ public class Graph extends JPanel {
 
 	volatile XYSeriesCollection dataset = new XYSeriesCollection();
 	JFreeChart chart;
-	JLabel lblGraph = new JLabel("New label");
+	JLabel lblGraph = new JLabel(" ");
 	List<String> names = new ArrayList<String>();
 
 	/**

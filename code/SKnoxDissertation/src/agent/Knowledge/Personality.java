@@ -286,7 +286,6 @@ public class Personality {
 			personality += (ocean[x] * question[x]);
 		double personality2 = 1-((personality - (-0.4)) / 2);
 		double SE = (1 + selfEsteam) / 2;
-		System.out.println("Pers"+SE);
 		if (((personality2 / 2) + (SE / 2)) <= 0.5) {
 			return true;
 		} else

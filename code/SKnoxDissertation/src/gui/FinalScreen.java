@@ -13,8 +13,13 @@ import extras.Stats;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
+
 import javax.swing.JSeparator;
 
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -23,6 +28,7 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.ImageIcon;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JScrollPane;
 
@@ -33,7 +39,7 @@ public class FinalScreen extends JPanel {
 	JLabel lbTimeTaken = new JLabel("time"), lbPercentageCompleat = new JLabel(
 			"percent");
 
-	private final JLabel lbFormat = new JLabel(" ");
+	private final JLabel lbFormat = new JLabel(" "), graphDisplay = new JLabel("");
 	private final JButton btnRestart = new JButton("Re-Start");
 	private final JButton btnDetails1 = new JButton("Details");
 	private final JButton btnDetails2 = new JButton("Details");
@@ -79,11 +85,21 @@ public class FinalScreen extends JPanel {
 			buttons.get(count).setVisible(false);
 		}
 
+		XYSeriesCollection dataset = new XYSeriesCollection();
+		for(XYSeries s: graphData.getSeries())
+			dataset.addSeries(s);
+
+		JFreeChart chart = ChartFactory.createXYLineChart("Group Data",
+				"Time", "Input", dataset, PlotOrientation.VERTICAL, true, true,
+				false);
+
+		BufferedImage image = chart.createBufferedImage(500, 300);
+		graphDisplay.setIcon(new ImageIcon(image));
+		
 		this.startTime = startTime;
 		this.timeLimit = timeLimit;
 		graph = graphData;
-		graph.display();
-		lbTimeTaken.setText(String.valueOf(format.format(time(timeTaken))));
+		lbTimeTaken.setText(formatTime(timeTaken));
 		if (percentCompleat == 100)
 			lbPercentageCompleat.setText(String.valueOf(format
 					.format(percentCompleat)));
@@ -93,6 +109,20 @@ public class FinalScreen extends JPanel {
 
 	}
 
+	private String formatTime(long l){
+		String ans = "";
+		String what = String.valueOf(l/6000.0);
+		String split[] = what.split("\\.");
+		ans+=split[0]+":";
+		try{
+		ans+=String.valueOf(Integer.valueOf(split[1])*60).substring(2);
+		}catch(NumberFormatException nf){ //can start with 0
+
+			ans+=String.valueOf(Integer.valueOf(split[1].substring(1, split[1].length()+1))*60).substring(2);
+		}
+		return ans;
+	}
+	
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -169,245 +199,105 @@ public class FinalScreen extends JPanel {
 
 		JLabel lblPupils = new JLabel("Pupils");
 		GroupLayout groupLayout = new GroupLayout(this);
-		groupLayout
-				.setHorizontalGroup(groupLayout
-						.createParallelGroup(Alignment.LEADING)
-						.addGroup(
-								groupLayout
-										.createSequentialGroup()
-										.addComponent(lblSummary,
-												GroupLayout.PREFERRED_SIZE, 99,
-												GroupLayout.PREFERRED_SIZE)
-										.addGap(187).addComponent(btnRestart)
-										.addGap(646).addComponent(lbFormat))
-						.addGroup(
-								groupLayout
-										.createSequentialGroup()
-										.addComponent(lblTimeTaken,
-												GroupLayout.PREFERRED_SIZE, 99,
-												GroupLayout.PREFERRED_SIZE)
-										.addGap(5).addComponent(lbTimeTaken))
-						.addGroup(
-								groupLayout
-										.createSequentialGroup()
-										.addComponent(lblPercentageCompleat,
-												GroupLayout.PREFERRED_SIZE,
-												152, GroupLayout.PREFERRED_SIZE)
-										.addGap(5)
-										.addComponent(lbPercentageCompleat))
-						.addGroup(
-								groupLayout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												groupLayout
-														.createParallelGroup(
-																Alignment.LEADING)
-														.addComponent(lblName1)
-														.addComponent(
-																lblName2,
-																GroupLayout.PREFERRED_SIZE,
-																42,
-																GroupLayout.PREFERRED_SIZE)
-														.addComponent(
-																lblName3,
-																GroupLayout.PREFERRED_SIZE,
-																42,
-																GroupLayout.PREFERRED_SIZE)
-														.addComponent(
-																lblName4,
-																GroupLayout.PREFERRED_SIZE,
-																42,
-																GroupLayout.PREFERRED_SIZE)
-														.addComponent(
-																lblName5,
-																GroupLayout.PREFERRED_SIZE,
-																42,
-																GroupLayout.PREFERRED_SIZE)
-														.addComponent(
-																lblName6,
-																GroupLayout.PREFERRED_SIZE,
-																42,
-																GroupLayout.PREFERRED_SIZE))
-										.addPreferredGap(
-												ComponentPlacement.RELATED,
-												145, Short.MAX_VALUE)
-										.addGroup(
-												groupLayout
-														.createParallelGroup(
-																Alignment.LEADING)
-														.addComponent(
-																btnDetails6,
-																GroupLayout.PREFERRED_SIZE,
-																88,
-																GroupLayout.PREFERRED_SIZE)
-														.addComponent(
-																btnDetails5,
-																GroupLayout.PREFERRED_SIZE,
-																88,
-																GroupLayout.PREFERRED_SIZE)
-														.addComponent(
-																btnDetails4,
-																GroupLayout.PREFERRED_SIZE,
-																88,
-																GroupLayout.PREFERRED_SIZE)
-														.addComponent(
-																btnDetails3,
-																GroupLayout.PREFERRED_SIZE,
-																88,
-																GroupLayout.PREFERRED_SIZE)
-														.addComponent(
-																btnDetails1)
-														.addComponent(
-																btnDetails2,
-																GroupLayout.PREFERRED_SIZE,
-																88,
-																GroupLayout.PREFERRED_SIZE))
-										.addPreferredGap(
-												ComponentPlacement.RELATED)
-										.addGroup(
-												groupLayout
-														.createParallelGroup(
-																Alignment.TRAILING,
-																false)
-														.addComponent(
-																graph,
-																Alignment.LEADING,
-																GroupLayout.PREFERRED_SIZE,
-																GroupLayout.DEFAULT_SIZE,
-																GroupLayout.PREFERRED_SIZE)
-														.addComponent(
-																separator,
-																Alignment.LEADING,
-																GroupLayout.PREFERRED_SIZE,
-																1,
-																GroupLayout.PREFERRED_SIZE))
-										.addGap(673)
-										.addComponent(lblPupils,
-												GroupLayout.PREFERRED_SIZE, 69,
-												GroupLayout.PREFERRED_SIZE)));
-		groupLayout
-				.setVerticalGroup(groupLayout
-						.createParallelGroup(Alignment.LEADING)
-						.addGroup(
-								groupLayout
-										.createSequentialGroup()
-										.addGroup(
-												groupLayout
-														.createParallelGroup(
-																Alignment.LEADING)
-														.addComponent(
-																lblSummary)
-														.addComponent(
-																btnRestart)
-														.addComponent(lbFormat))
-										.addGap(35)
-										.addGroup(
-												groupLayout
-														.createParallelGroup(
-																Alignment.LEADING)
-														.addComponent(
-																lblTimeTaken)
-														.addComponent(
-																lbTimeTaken))
-										.addGap(5)
-										.addGroup(
-												groupLayout
-														.createParallelGroup(
-																Alignment.LEADING)
-														.addComponent(
-																lblPercentageCompleat)
-														.addComponent(
-																lbPercentageCompleat))
-										.addGap(5)
-										.addComponent(separator,
-												GroupLayout.PREFERRED_SIZE, 1,
-												GroupLayout.PREFERRED_SIZE)
-										.addGroup(
-												groupLayout
-														.createParallelGroup(
-																Alignment.LEADING)
-														.addGroup(
-																groupLayout
-																		.createSequentialGroup()
-																		.addGap(11)
-																		.addComponent(
-																				lblPupils))
-														.addGroup(
-																groupLayout
-																		.createSequentialGroup()
-																		.addGap(18)
-																		.addGroup(
-																				groupLayout
-																						.createParallelGroup(
-																								Alignment.LEADING)
-																						.addComponent(
-																								graph,
-																								GroupLayout.PREFERRED_SIZE,
-																								GroupLayout.DEFAULT_SIZE,
-																								GroupLayout.PREFERRED_SIZE)
-																						.addGroup(
-																								groupLayout
-																										.createSequentialGroup()
-																										.addGroup(
-																												groupLayout
-																														.createParallelGroup(
-																																Alignment.BASELINE)
-																														.addComponent(
-																																btnDetails1)
-																														.addComponent(
-																																lblName1))
-																										.addPreferredGap(
-																												ComponentPlacement.RELATED)
-																										.addGroup(
-																												groupLayout
-																														.createParallelGroup(
-																																Alignment.BASELINE)
-																														.addComponent(
-																																btnDetails2)
-																														.addComponent(
-																																lblName2))
-																										.addPreferredGap(
-																												ComponentPlacement.RELATED)
-																										.addGroup(
-																												groupLayout
-																														.createParallelGroup(
-																																Alignment.BASELINE)
-																														.addComponent(
-																																btnDetails3)
-																														.addComponent(
-																																lblName3))
-																										.addPreferredGap(
-																												ComponentPlacement.RELATED)
-																										.addGroup(
-																												groupLayout
-																														.createParallelGroup(
-																																Alignment.BASELINE)
-																														.addComponent(
-																																btnDetails4)
-																														.addComponent(
-																																lblName4))
-																										.addPreferredGap(
-																												ComponentPlacement.RELATED)
-																										.addGroup(
-																												groupLayout
-																														.createParallelGroup(
-																																Alignment.BASELINE)
-																														.addComponent(
-																																btnDetails5)
-																														.addComponent(
-																																lblName5))
-																										.addPreferredGap(
-																												ComponentPlacement.RELATED)
-																										.addGroup(
-																												groupLayout
-																														.createParallelGroup(
-																																Alignment.LEADING)
-																														.addComponent(
-																																lblName6)
-																														.addComponent(
-																																btnDetails6))))))
-										.addGap(297)));
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addComponent(lblPercentageCompleat, GroupLayout.PREFERRED_SIZE, 152, GroupLayout.PREFERRED_SIZE)
+					.addGap(5)
+					.addComponent(lbPercentageCompleat))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblName1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.addComponent(lblName2, GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)
+						.addComponent(lblName3, GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)
+						.addComponent(lblName4, GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)
+						.addComponent(lblName5, GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)
+						.addComponent(lblName6, GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(btnDetails1)
+							.addGap(6)
+							.addComponent(separator, GroupLayout.PREFERRED_SIZE, 1, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(graphDisplay, GroupLayout.DEFAULT_SIZE, 1142, Short.MAX_VALUE)
+							.addGap(69)
+							.addComponent(lblPupils, GroupLayout.PREFERRED_SIZE, 69, GroupLayout.PREFERRED_SIZE))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(btnDetails6, GroupLayout.PREFERRED_SIZE, 88, GroupLayout.PREFERRED_SIZE)
+								.addComponent(btnDetails5, GroupLayout.PREFERRED_SIZE, 88, GroupLayout.PREFERRED_SIZE)
+								.addComponent(btnDetails4, GroupLayout.PREFERRED_SIZE, 88, GroupLayout.PREFERRED_SIZE)
+								.addComponent(btnDetails3, GroupLayout.PREFERRED_SIZE, 88, GroupLayout.PREFERRED_SIZE)
+								.addComponent(btnDetails2, GroupLayout.PREFERRED_SIZE, 88, GroupLayout.PREFERRED_SIZE))
+							.addContainerGap(1286, Short.MAX_VALUE))))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblSummary, GroupLayout.PREFERRED_SIZE, 99, GroupLayout.PREFERRED_SIZE)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(lblTimeTaken, GroupLayout.PREFERRED_SIZE, 99, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(lbTimeTaken)))
+					.addGap(153)
+					.addComponent(btnRestart)
+					.addGap(646)
+					.addComponent(lbFormat)
+					.addGap(396))
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblSummary)
+						.addComponent(btnRestart)
+						.addComponent(lbFormat))
+					.addGap(21)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblTimeTaken)
+						.addComponent(lbTimeTaken))
+					.addGap(5)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblPercentageCompleat)
+						.addComponent(lbPercentageCompleat))
+					.addGap(5)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(separator, GroupLayout.PREFERRED_SIZE, 1, GroupLayout.PREFERRED_SIZE)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addGroup(groupLayout.createSequentialGroup()
+									.addGap(11)
+									.addComponent(lblPupils))
+								.addGroup(groupLayout.createSequentialGroup()
+									.addGap(18)
+									.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+										.addComponent(btnDetails1)
+										.addComponent(lblName1))
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+										.addComponent(btnDetails2)
+										.addComponent(lblName2))
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+										.addComponent(btnDetails3)
+										.addComponent(lblName3))))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+								.addComponent(btnDetails4)
+								.addComponent(lblName4))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+								.addComponent(btnDetails5)
+								.addComponent(lblName5))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(lblName6)
+								.addComponent(btnDetails6))
+							.addGap(282))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(graphDisplay, GroupLayout.DEFAULT_SIZE, 47, Short.MAX_VALUE)
+							.addContainerGap())))
+		);
 		setLayout(groupLayout);
 		setVisible(true);
 	}

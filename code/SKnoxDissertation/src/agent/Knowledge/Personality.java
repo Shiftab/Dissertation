@@ -10,11 +10,11 @@ import java.util.Random;
  */
 public class Personality {
 
-	private static final int WAIT_TIME = 400;
+	private static final int WAIT_TIME = 200;
 
 	// Multiplier grid
-	private static final double[] SHY_PROB = { 0, -0.1, -0.5, -0.2, 0.1 };
-	private static final double[] DISTRACT_PROB = { 0, -0.3, 0.2, -0.2, 0.3 };
+	private static final double[] SHY_PROB = { 0, -0.1, -0.3, -0.1, 0.1 };
+	private static final double[] DISTRACT_PROB = { 0, -0.3, 0.1, -0.1, 0.2 };
 	private static final double[] FOCUS_PROB = { 0, 0, 0, 0, 0 };
 	private static final double[] IGNORE_PROB = { 0, 0.5, -0.3, -0.1, 0.1 };
 	private static final double[] AGREE_PROB = { 0.1, 0.3, 0.1, 0.5, -0.1 };
@@ -75,7 +75,7 @@ public class Personality {
 	/**
 	 * 0 is avg
 	 */
-	private double selfEsteam = 0, shyness = 1;
+	private double selfEsteam = 0, shyness = 0;
 
 	/**
 	 * random within 10 percent, more likly with certan traits low
@@ -124,7 +124,7 @@ public class Personality {
 		else if (tempAvg <= 0.78)
 			dyslexic = true;
 
-		selfEsteam = (1 + (extraversion + (-neuroticism))) / 2;
+		selfEsteam = 0.5;// (1 + (extraversion + (-neuroticism))) / 2;
 	}
 
 	/**
@@ -275,7 +275,7 @@ public class Personality {
 	}
 
 	public void resetSelfEsteam() {
-		selfEsteam = (1 + (extraversion + (-neuroticism))) / 2;
+		selfEsteam =0.5;// (1 + (extraversion + (-neuroticism))) / 2;
 	}
 
 	public boolean isShy(String name) {
@@ -284,8 +284,9 @@ public class Personality {
 		double[] question = SHY_PROB;
 		for (int x = 0; x < ocean.length; x++)
 			personality += (ocean[x] * question[x]);
-		double personality2 = 1-((personality - (-0.8)) / 2);
+		double personality2 = 1-((personality - (-0.4)) / 2);
 		double SE = (1 + selfEsteam) / 2;
+		System.out.println("Pers"+SE);
 		if (((personality2 / 2) + (SE / 2)) <= 0.5) {
 			return true;
 		} else

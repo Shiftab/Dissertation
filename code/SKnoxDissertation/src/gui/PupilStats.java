@@ -108,15 +108,13 @@ public class PupilStats extends JPanel {
 			for (long l : pupilFocus.get(s)) {
 				Marker currentEnd = new ValueMarker(
 						100 - ((((startTime + (timeLimit * 6000)) - l) / 6000.0) / timeLimit) * 100);
-				if (toggle)
-					currentEnd.setLabel("Focused on " + s);
-				if (l > lastTime + 500) {
+				
+				currentEnd.setLabel("Focused on " + s);
 					currentEnd.setPaint(Color.green);
 					currentEnd.setLabelAnchor(RectangleAnchor.BOTTOM_LEFT);
 					currentEnd.setLabelTextAnchor(TextAnchor.BOTTOM_LEFT);
 					plot.addDomainMarker(currentEnd);
-					toggle = !toggle;
-				}
+				
 
 				lastTime = l;
 			}

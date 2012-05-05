@@ -63,12 +63,11 @@ public class FinalScreen extends JPanel {
 		initialize();
 	}
 
-	public void display(Map<String, Stats> pupils, double percentCompleat,
+	public void display(Map<String, Stats> pupil, double percentCompleat,
 			long timeTaken, Graph graphData) {
-
-		this.pupils = pupils;
+		this.pupils = pupil;
 		int count = 0;
-		for (String s : pupils.keySet()) {
+		for (String s : pupil.keySet()) {
 			names.get(count).setText(s);
 			names.get(count).setVisible(true);
 			buttons.get(count).setVisible(true);
@@ -155,6 +154,7 @@ public class FinalScreen extends JPanel {
 		btnRestart.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				pupils.clear();
 				setVisible(false);
 				parent.changeView(Control.MAIN);
 				parent.resetProblem();

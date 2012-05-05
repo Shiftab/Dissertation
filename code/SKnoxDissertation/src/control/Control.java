@@ -186,7 +186,7 @@ public class Control extends Agent {
 		Problem.setProblem(problem);
 		timeLimit = time;
 		startTime = System.currentTimeMillis();
-		
+		ac.clear();
 		try {
 			for (String a : pupilList) {
 				Object[] args = new Object[5];

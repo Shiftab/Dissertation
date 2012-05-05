@@ -48,8 +48,35 @@ public class Pupil extends Agent {
 	private int state = WORKING;
 	private long waitTime = 0;
 
+	
+	
+	/* (non-Javadoc)
+	 * @see jade.core.Agent#doActivate()
+	 */
+	@Override
+	public void doActivate() {
+		// TODO Auto-generated method stub
+		currentFocus=null;
+		asking = null;
+		timeLimit = 0;
+		startTime = 0;
+		world = null;
+		brain = null;
+		personality = null;
+		others = null;
+		stats = null;
+		parent = null;
+		asked.clear();
+		responded.clear();
+		answered.clear();
+		state = WORKING;
+		waitTime = 0;
+		super.doActivate();
+	}
+
 	@Override
 	protected void setup() {
+		currentFocus=null;
 		asking = null;
 		timeLimit = 0;
 		startTime = 0;
@@ -385,6 +412,10 @@ public class Pupil extends Agent {
 
 	public void incQuestions() {
 		others.incQuestion();
+	}
+	
+	public void updateGraph(){
+		parent.updateGraph(this.getAID().getLocalName(), stats);
 	}
 
 	public boolean isChatty() {

@@ -196,7 +196,7 @@ public class Reaction extends CyclicBehaviour {
 						parent.decSelfEsteam();
 						parent.setActionState(Pupil.WORKING);
 					} else {
-						if (true) {// parent.decide(Personality.ARGUE, 0)){
+						if (false) {// parent.decide(Personality.ARGUE, 0)){
 							Messages.argue(res.getCoordinate(),
 									parent.getPeers(), parent, res.getSender());
 							// parent.lowerFocus(res.getSender());

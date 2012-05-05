@@ -57,11 +57,11 @@ public class OthersModel {
 
 		for (AID a : peers) {
 
-			double bayes = (answers.get(a) / (questionsAsked * 1.0) * (1 / (peers
+			double bayes = (Agents.get(a) / (questionsAsked * 1.0) * (1 / (1+peers
 					.size() * 1.0)))
-					/ ((peers.size() - 1) / (peers.size() * 1.0));
+					/ ((1) / (1+peers.size() * 1.0));
 			if (bayes >= BAYES_TRHESHOLD) {
-				System.out.println("bayes: " + bayes);
+				System.out.println("bayes: " + bayes+"\nAsk:"+Agents.get(a)+"\nQs:"+questionsAsked);
 				return a;
 			}
 		}

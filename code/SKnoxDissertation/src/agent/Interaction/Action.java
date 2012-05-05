@@ -19,6 +19,7 @@ public class Action extends CyclicBehaviour {
 	@Override
 	public void action() {
 		parent.checkDone();
+		parent.updateGraph();
 		if(parent.timeUp()){
 			parent.stop();
 		}

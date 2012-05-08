@@ -14,4 +14,10 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<variableList>
+		<variable>
+			<name>image</name>
+			<value>file:/Users/shiftab/git/Dissertation/code/SKnoxDissertation/src/image.png</value>
+		</variable>
+	</variableList>
 </projectDescription>

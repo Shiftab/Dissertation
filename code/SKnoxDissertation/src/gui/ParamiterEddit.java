@@ -1,8 +1,13 @@
 package gui;
 
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
+
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -15,6 +20,7 @@ import agent.Knowledge.Personality;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,6 +89,7 @@ public class ParamiterEddit extends JPanel {
 	 */
 	public ParamiterEddit(Control parent) {
 		this.parent = parent;
+		setOpaque(false);
 		initialize();
 	}
 
@@ -114,12 +121,15 @@ public class ParamiterEddit extends JPanel {
 		lbParam4.setText("abstractSymbolic");
 		lbParam5.setText("graphical");
 		lbParam6.setText("spatialTemporal");
+		lbParam6.setVisible(true);
+		sl6.setVisible(true);
+		lbDisc6.setVisible(true);
 
 		int count = 0;
 		for (JSlider js : sliderList) {
 			js.setMaximum(10);
 			js.setMinimum(0);
-			js.setValue((int)(ability[count]*10));
+			js.setValue((int) (ability[count] * 10));
 			count++;
 		}
 
@@ -163,12 +173,12 @@ public class ParamiterEddit extends JPanel {
 		for (JSlider js : sliderList) {
 			js.setMaximum(10);
 			js.setMinimum(-10);
-			js.setValue((int)(ocean[count]*10));
+			js.setValue((int) (ocean[count] * 10));
 			js.repaint();
 			this.repaint();
 			count++;
 		}
-System.out.println("\n");
+		System.out.println("\n");
 		count = 0;
 		for (JLabel jl : discList) {
 			setDiscLable(jl, count, sliderList.get(count).getValue());
@@ -356,41 +366,6 @@ System.out.println("\n");
 																groupLayout
 																		.createSequentialGroup()
 																		.addComponent(
-																				lbParam1,
-																				GroupLayout.PREFERRED_SIZE,
-																				73,
-																				GroupLayout.PREFERRED_SIZE)
-																		.addGap(112)
-																		.addComponent(
-																				sl1,
-																				GroupLayout.PREFERRED_SIZE,
-																				GroupLayout.DEFAULT_SIZE,
-																				GroupLayout.PREFERRED_SIZE)
-																		.addGap(6)
-																		.addComponent(
-																				lbDisc1))
-														.addGroup(
-																groupLayout
-																		.createSequentialGroup()
-																		.addComponent(
-																				lbParam2,
-																				GroupLayout.PREFERRED_SIZE,
-																				125,
-																				GroupLayout.PREFERRED_SIZE)
-																		.addGap(60)
-																		.addComponent(
-																				sl2,
-																				GroupLayout.PREFERRED_SIZE,
-																				GroupLayout.DEFAULT_SIZE,
-																				GroupLayout.PREFERRED_SIZE)
-																		.addPreferredGap(
-																				ComponentPlacement.RELATED)
-																		.addComponent(
-																				lbDisc2))
-														.addGroup(
-																groupLayout
-																		.createSequentialGroup()
-																		.addComponent(
 																				lbParam3,
 																				GroupLayout.PREFERRED_SIZE,
 																				133,
@@ -421,26 +396,34 @@ System.out.println("\n");
 																				GroupLayout.PREFERRED_SIZE,
 																				GroupLayout.DEFAULT_SIZE,
 																				GroupLayout.PREFERRED_SIZE)
-																		.addGap(6)
+																		.addPreferredGap(
+																				ComponentPlacement.RELATED)
 																		.addComponent(
-																				lbDisc4))
+																				lbDisc4,
+																				GroupLayout.DEFAULT_SIZE,
+																				75,
+																				Short.MAX_VALUE))
 														.addGroup(
 																groupLayout
 																		.createSequentialGroup()
 																		.addComponent(
 																				lbParam5,
 																				GroupLayout.PREFERRED_SIZE,
-																				59,
+																				88,
 																				GroupLayout.PREFERRED_SIZE)
-																		.addGap(126)
+																		.addGap(97)
 																		.addComponent(
 																				sl5,
 																				GroupLayout.PREFERRED_SIZE,
 																				GroupLayout.DEFAULT_SIZE,
 																				GroupLayout.PREFERRED_SIZE)
-																		.addGap(6)
+																		.addPreferredGap(
+																				ComponentPlacement.RELATED)
 																		.addComponent(
-																				lbDisc5))
+																				lbDisc5,
+																				GroupLayout.DEFAULT_SIZE,
+																				75,
+																				Short.MAX_VALUE))
 														.addGroup(
 																groupLayout
 																		.createSequentialGroup()
@@ -466,35 +449,72 @@ System.out.println("\n");
 																				groupLayout
 																						.createParallelGroup(
 																								Alignment.TRAILING)
-																						.addGroup(
-																								groupLayout
-																										.createSequentialGroup()
-																										.addComponent(
-																												sl6,
-																												GroupLayout.PREFERRED_SIZE,
-																												GroupLayout.DEFAULT_SIZE,
-																												GroupLayout.PREFERRED_SIZE)
-																										.addPreferredGap(
-																												ComponentPlacement.RELATED)
-																										.addComponent(
-																												lbDisc6))
+																						.addComponent(
+																								sl6,
+																								GroupLayout.PREFERRED_SIZE,
+																								GroupLayout.DEFAULT_SIZE,
+																								GroupLayout.PREFERRED_SIZE)
 																						.addComponent(
 																								btnCansel,
 																								GroupLayout.PREFERRED_SIZE,
 																								106,
-																								GroupLayout.PREFERRED_SIZE))))
-										.addContainerGap(284, Short.MAX_VALUE)));
+																								GroupLayout.PREFERRED_SIZE))
+																		.addPreferredGap(
+																				ComponentPlacement.RELATED)
+																		.addComponent(
+																				lbDisc6,
+																				GroupLayout.DEFAULT_SIZE,
+																				75,
+																				Short.MAX_VALUE))
+														.addGroup(
+																groupLayout
+																		.createSequentialGroup()
+																		.addComponent(
+																				lbParam2,
+																				GroupLayout.PREFERRED_SIZE,
+																				125,
+																				GroupLayout.PREFERRED_SIZE)
+																		.addGap(60)
+																		.addComponent(
+																				sl2,
+																				GroupLayout.PREFERRED_SIZE,
+																				GroupLayout.DEFAULT_SIZE,
+																				GroupLayout.PREFERRED_SIZE)
+																		.addPreferredGap(
+																				ComponentPlacement.RELATED)
+																		.addComponent(
+																				lbDisc2,
+																				GroupLayout.DEFAULT_SIZE,
+																				75,
+																				Short.MAX_VALUE))
+														.addGroup(
+																groupLayout
+																		.createSequentialGroup()
+																		.addComponent(
+																				lbParam1,
+																				GroupLayout.PREFERRED_SIZE,
+																				73,
+																				GroupLayout.PREFERRED_SIZE)
+																		.addGap(112)
+																		.addComponent(
+																				sl1,
+																				GroupLayout.PREFERRED_SIZE,
+																				GroupLayout.DEFAULT_SIZE,
+																				GroupLayout.PREFERRED_SIZE)
+																		.addPreferredGap(
+																				ComponentPlacement.RELATED)
+																		.addComponent(
+																				lbDisc1,
+																				GroupLayout.DEFAULT_SIZE,
+																				75,
+																				Short.MAX_VALUE)))
+										.addGap(102)));
 		groupLayout
 				.setVerticalGroup(groupLayout
 						.createParallelGroup(Alignment.LEADING)
 						.addGroup(
 								groupLayout
 										.createSequentialGroup()
-										.addGap(180)
-										.addComponent(lblAbilities,
-												GroupLayout.PREFERRED_SIZE, 34,
-												GroupLayout.PREFERRED_SIZE)
-										.addGap(21)
 										.addGroup(
 												groupLayout
 														.createParallelGroup(
@@ -502,18 +522,32 @@ System.out.println("\n");
 														.addGroup(
 																groupLayout
 																		.createSequentialGroup()
-																		.addGap(13)
+																		.addGap(180)
 																		.addComponent(
-																				lbParam1))
-														.addComponent(
-																sl1,
-																GroupLayout.PREFERRED_SIZE,
-																GroupLayout.DEFAULT_SIZE,
-																GroupLayout.PREFERRED_SIZE)
+																				lblAbilities,
+																				GroupLayout.PREFERRED_SIZE,
+																				34,
+																				GroupLayout.PREFERRED_SIZE)
+																		.addGap(21)
+																		.addGroup(
+																				groupLayout
+																						.createParallelGroup(
+																								Alignment.LEADING)
+																						.addGroup(
+																								groupLayout
+																										.createSequentialGroup()
+																										.addGap(13)
+																										.addComponent(
+																												lbParam1))
+																						.addComponent(
+																								sl1,
+																								GroupLayout.PREFERRED_SIZE,
+																								GroupLayout.DEFAULT_SIZE,
+																								GroupLayout.PREFERRED_SIZE)))
 														.addGroup(
 																groupLayout
 																		.createSequentialGroup()
-																		.addGap(13)
+																		.addGap(248)
 																		.addComponent(
 																				lbDisc1)))
 										.addPreferredGap(
@@ -522,27 +556,19 @@ System.out.println("\n");
 												groupLayout
 														.createParallelGroup(
 																Alignment.TRAILING)
-														.addGroup(
-																groupLayout
-																		.createParallelGroup(
-																				Alignment.LEADING)
-																		.addGroup(
-																				groupLayout
-																						.createSequentialGroup()
-																						.addGap(13)
-																						.addComponent(
-																								lbParam2))
-																		.addGroup(
-																				groupLayout
-																						.createSequentialGroup()
-																						.addGap(13)
-																						.addComponent(
-																								lbDisc2)))
 														.addComponent(
 																sl2,
 																GroupLayout.PREFERRED_SIZE,
 																GroupLayout.DEFAULT_SIZE,
-																GroupLayout.PREFERRED_SIZE))
+																GroupLayout.PREFERRED_SIZE)
+														.addGroup(
+																groupLayout
+																		.createParallelGroup(
+																				Alignment.LEADING)
+																		.addComponent(
+																				lbDisc2)
+																		.addComponent(
+																				lbParam2)))
 										.addGap(6)
 										.addGroup(
 												groupLayout
@@ -565,7 +591,6 @@ System.out.println("\n");
 																		.addGap(13)
 																		.addComponent(
 																				lbDisc3)))
-										.addGap(6)
 										.addGroup(
 												groupLayout
 														.createParallelGroup(
@@ -573,21 +598,30 @@ System.out.println("\n");
 														.addGroup(
 																groupLayout
 																		.createSequentialGroup()
-																		.addGap(13)
-																		.addComponent(
-																				lbParam4))
-														.addComponent(
-																sl4,
-																GroupLayout.PREFERRED_SIZE,
-																GroupLayout.DEFAULT_SIZE,
-																GroupLayout.PREFERRED_SIZE)
+																		.addGap(6)
+																		.addGroup(
+																				groupLayout
+																						.createParallelGroup(
+																								Alignment.LEADING)
+																						.addGroup(
+																								groupLayout
+																										.createSequentialGroup()
+																										.addGap(13)
+																										.addComponent(
+																												lbParam4))
+																						.addComponent(
+																								sl4,
+																								GroupLayout.PREFERRED_SIZE,
+																								GroupLayout.DEFAULT_SIZE,
+																								GroupLayout.PREFERRED_SIZE)))
 														.addGroup(
 																groupLayout
 																		.createSequentialGroup()
-																		.addGap(13)
+																		.addGap(19)
 																		.addComponent(
 																				lbDisc4)))
-										.addGap(6)
+										.addPreferredGap(
+												ComponentPlacement.RELATED)
 										.addGroup(
 												groupLayout
 														.createParallelGroup(
@@ -595,21 +629,30 @@ System.out.println("\n");
 														.addGroup(
 																groupLayout
 																		.createSequentialGroup()
-																		.addGap(13)
+																		.addGap(19)
 																		.addComponent(
-																				lbParam5))
-														.addComponent(
-																sl5,
-																GroupLayout.PREFERRED_SIZE,
-																GroupLayout.DEFAULT_SIZE,
-																GroupLayout.PREFERRED_SIZE)
+																				lbDisc5))
 														.addGroup(
 																groupLayout
 																		.createSequentialGroup()
-																		.addGap(13)
-																		.addComponent(
-																				lbDisc5)))
-										.addGap(6)
+																		.addGap(6)
+																		.addGroup(
+																				groupLayout
+																						.createParallelGroup(
+																								Alignment.LEADING)
+																						.addGroup(
+																								groupLayout
+																										.createSequentialGroup()
+																										.addGap(13)
+																										.addComponent(
+																												lbParam5))
+																						.addComponent(
+																								sl5,
+																								GroupLayout.PREFERRED_SIZE,
+																								GroupLayout.DEFAULT_SIZE,
+																								GroupLayout.PREFERRED_SIZE))))
+										.addPreferredGap(
+												ComponentPlacement.RELATED)
 										.addGroup(
 												groupLayout
 														.createParallelGroup(
@@ -637,7 +680,7 @@ System.out.println("\n");
 																Alignment.BASELINE)
 														.addComponent(btnSave)
 														.addComponent(btnCansel))
-										.addContainerGap(97, Short.MAX_VALUE)));
+										.addContainerGap(111, Short.MAX_VALUE)));
 		this.setLayout(groupLayout);
 	}
 }

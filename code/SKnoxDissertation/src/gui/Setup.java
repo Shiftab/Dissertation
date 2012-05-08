@@ -4,6 +4,7 @@ import agent.Knowledge.Personality;
 
 import control.Control;
 
+import javax.swing.ImageIcon;
 import javax.swing.JSlider;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -11,7 +12,12 @@ import javax.swing.JPanel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
+
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Image;
+
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -21,6 +27,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +35,7 @@ import java.util.Scanner;
 
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
+import javax.swing.UIManager;
 
 public class Setup extends JPanel {
 
@@ -41,17 +49,21 @@ public class Setup extends JPanel {
 	JSlider slTime;
 	JSlider slPupils;
 	JLabel spatialD;
-	JLabel name1, name2, name3, name4, name5, name6;
-	JButton btnChange1, btnChange2, btnChange3, btnChange4, btnChange5,
-			btnChange6;
-	JButton btnLoad1, btnLoad2, btnLoad3, btnLoad4, btnLoad5, btnLoad6;
-	JButton btnSave1, btnSave2, btnSave3, btnSave4, btnSave5, btnSave6;
+	JLabel name1, name2, name3, name4, name5;
+	JButton btnChange1, btnChange2, btnChange3, btnChange4, btnChange5;
+	JButton btnLoad1, btnLoad2, btnLoad3, btnLoad4, btnLoad5;
+	JButton btnSave1, btnSave2, btnSave3, btnSave4, btnSave5;
 	private JButton btnStart;
 
 	/**
 	 * Create the application.
 	 */
-	public Setup(Control parent, Map<String, Personality> pupils) {
+	public Setup(Control parent, Map<String, Personality> pupils, Dimension size) {
+		setPreferredSize(size);
+        setMinimumSize(size);
+        setMaximumSize(size);
+        setSize(size);
+		setBorder(null);
 		this.parent = parent;
 		this.pupils = pupils;
 		for (String s : pupils.keySet())
@@ -162,17 +174,6 @@ public class Setup extends JPanel {
 			}
 		});
 
-		name6 = new JLabel(pupilList.get(5));
-
-		btnChange6 = new JButton("View/Change");
-		btnChange6.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				setVisible(false);
-				parent.pupilEddit(name6.getText(), pupils.get(name6.getText()));
-			}
-		});
-
 		btnLoad2 = new JButton("Load");
 		btnLoad2.addActionListener(new ActionListener() {
 			@Override
@@ -210,14 +211,6 @@ public class Setup extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				loadPupil(name5.getText());
-			}
-		});
-
-		btnLoad6 = new JButton("Load");
-		btnLoad6.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				loadPupil(name6.getText());
 			}
 		});
 
@@ -278,14 +271,6 @@ public class Setup extends JPanel {
 			}
 		});
 
-		btnSave6 = new JButton("Save");
-		btnSave6.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				savePupil(name6.getText());
-			}
-		});
-
 		slTime = new JSlider();
 		slTime.addChangeListener(new ChangeListener() {
 			@Override
@@ -297,7 +282,7 @@ public class Setup extends JPanel {
 		slTime.setMinimum(1);
 		slTime.setMaximum(10);
 		slTime.setValue(5);
-
+		
 		slPupils = new JSlider();
 		slPupils.addChangeListener(new ChangeListener() {
 			@Override
@@ -309,6 +294,16 @@ public class Setup extends JPanel {
 					btnChange3.setVisible(false);
 					btnLoad3.setVisible(false);
 					btnSave3.setVisible(false);
+
+					name4.setVisible(false);
+					btnChange4.setVisible(false);
+					btnLoad4.setVisible(false);
+					btnSave4.setVisible(false);
+					
+					name5.setVisible(false);
+					btnChange5.setVisible(false);
+					btnLoad5.setVisible(false);
+					btnSave5.setVisible(false);
 					break;
 				case 3:
 					name3.setVisible(true);
@@ -320,12 +315,22 @@ public class Setup extends JPanel {
 					btnChange4.setVisible(false);
 					btnLoad4.setVisible(false);
 					btnSave4.setVisible(false);
+					
+					name5.setVisible(false);
+					btnChange5.setVisible(false);
+					btnLoad5.setVisible(false);
+					btnSave5.setVisible(false);
 					break;
 				case 4:
 					name4.setVisible(true);
 					btnChange4.setVisible(true);
 					btnLoad4.setVisible(true);
 					btnSave4.setVisible(true);
+					
+					name3.setVisible(true);
+					btnChange3.setVisible(true);
+					btnLoad3.setVisible(true);
+					btnSave3.setVisible(true);
 
 					name5.setVisible(false);
 					btnChange5.setVisible(false);
@@ -333,44 +338,29 @@ public class Setup extends JPanel {
 					btnSave5.setVisible(false);
 					break;
 				case 5:
+
+					name4.setVisible(true);
+					btnChange4.setVisible(true);
+					btnLoad4.setVisible(true);
+					btnSave4.setVisible(true);
+					
+					name3.setVisible(true);
+					btnChange3.setVisible(true);
+					btnLoad3.setVisible(true);
+					btnSave3.setVisible(true);
+					
 					name5.setVisible(true);
 					btnChange5.setVisible(true);
 					btnLoad5.setVisible(true);
 					btnSave5.setVisible(true);
-
-					name6.setVisible(false);
-					btnChange6.setVisible(false);
-					btnLoad6.setVisible(false);
-					btnSave6.setVisible(false);
-					break;
-				case 6:
-					name6.setVisible(true);
-					btnChange6.setVisible(true);
-					btnLoad6.setVisible(true);
-					btnSave6.setVisible(true);
-					break;
 				}
+				repaint();
 			}
 		});
 
-		name4.setVisible(false);
-		btnChange4.setVisible(false);
-		btnLoad4.setVisible(false);
-		btnSave4.setVisible(false);
-
-		name5.setVisible(false);
-		btnChange5.setVisible(false);
-		btnLoad5.setVisible(false);
-		btnSave5.setVisible(false);
-
-		name6.setVisible(false);
-		btnChange6.setVisible(false);
-		btnLoad6.setVisible(false);
-		btnSave6.setVisible(false);
-
 		slPupils.setValue(3);
 		slPupils.setMinimum(2);
-		slPupils.setMaximum(6);
+		slPupils.setMaximum(5);
 		slPupils.setMajorTickSpacing(1);
 
 		JLabel lblProblem = new JLabel("Problem");
@@ -391,61 +381,56 @@ public class Setup extends JPanel {
 		labelList.add(name3);
 		labelList.add(name4);
 		labelList.add(name5);
-		labelList.add(name6);
 
 		GroupLayout groupLayout = new GroupLayout(this);
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
+				.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+					.addGap(316)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+							.addComponent(lblDisabilities, GroupLayout.PREFERRED_SIZE, 99, GroupLayout.PREFERRED_SIZE)
+							.addGroup(groupLayout.createSequentialGroup()
+								.addComponent(lblNewLabel)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(slTime, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addGap(18)
+								.addComponent(btnStart, GroupLayout.PREFERRED_SIZE, 116, GroupLayout.PREFERRED_SIZE))
+							.addGroup(groupLayout.createSequentialGroup()
+								.addComponent(lblProblem)
+								.addGap(54)
+								.addComponent(btnViewchange))
+							.addGroup(groupLayout.createSequentialGroup()
+								.addComponent(lblSpatialTemporal)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(slPupils, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addGroup(groupLayout.createSequentialGroup()
+								.addGap(263)
+								.addComponent(spatialD))
+							.addGroup(groupLayout.createSequentialGroup()
+								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+									.addComponent(name1, GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
+									.addComponent(name2, GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
+									.addComponent(name3, GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
+									.addComponent(name4, GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
+									.addComponent(name5, GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE))
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+									.addComponent(btnChange2, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
+									.addComponent(btnChange3, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
+									.addComponent(btnChange4, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
+									.addComponent(btnChange5, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
+									.addComponent(btnChange1))
+								.addGap(18)
+								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+									.addComponent(btnLoad2, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
+									.addComponent(btnLoad3, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
+									.addComponent(btnLoad4, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
+									.addComponent(btnLoad5, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
+									.addComponent(btnLoad1, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)))
+							.addComponent(lblPupils))
 						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(319)
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(lblDisabilities, GroupLayout.PREFERRED_SIZE, 99, GroupLayout.PREFERRED_SIZE)
-								.addGroup(groupLayout.createSequentialGroup()
-									.addComponent(lblNewLabel)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(slTime, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-									.addGap(18)
-									.addComponent(btnStart, GroupLayout.PREFERRED_SIZE, 116, GroupLayout.PREFERRED_SIZE))
-								.addGroup(groupLayout.createSequentialGroup()
-									.addComponent(lblProblem)
-									.addGap(54)
-									.addComponent(btnViewchange))
-								.addGroup(groupLayout.createSequentialGroup()
-									.addComponent(lblSpatialTemporal)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(slPupils, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-								.addGroup(groupLayout.createSequentialGroup()
-									.addGap(263)
-									.addComponent(spatialD))
-								.addGroup(groupLayout.createSequentialGroup()
-									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-										.addComponent(name1, GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
-										.addComponent(name2, GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE)
-										.addComponent(name3, GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
-										.addComponent(name4, GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
-										.addComponent(name5, GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
-										.addComponent(name6, GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE))
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-										.addComponent(btnChange2, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
-										.addComponent(btnChange3, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
-										.addComponent(btnChange4, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
-										.addComponent(btnChange5, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
-										.addComponent(btnChange1)
-										.addComponent(btnChange6, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE))
-									.addGap(18)
-									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-										.addComponent(btnLoad2, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
-										.addComponent(btnLoad3, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
-										.addComponent(btnLoad4, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
-										.addComponent(btnLoad5, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
-										.addComponent(btnLoad6, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
-										.addComponent(btnLoad1, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)))
-								.addComponent(lblPupils)))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(457)
+							.addGap(138)
 							.addComponent(operationalD)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(lblNewLabel_1)))
@@ -455,14 +440,13 @@ public class Setup extends JPanel {
 						.addComponent(btnSave2, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
 						.addComponent(btnSave3, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
 						.addComponent(btnSave4, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnSave5, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnSave6, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE))
-					.addGap(162))
+						.addComponent(btnSave5, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE))
+					.addGap(165))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(9)
+					.addGap(31)
 					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(lblDisabilities, GroupLayout.PREFERRED_SIZE, 34, GroupLayout.PREFERRED_SIZE)
@@ -529,11 +513,8 @@ public class Setup extends JPanel {
 								.addComponent(btnLoad5)
 								.addComponent(btnSave5))
 							.addGap(18)
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(btnLoad6)
-								.addComponent(btnChange6)
-								.addComponent(btnSave6)
-								.addComponent(name6)))))
+							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE))))
+					.addContainerGap(39, Short.MAX_VALUE))
 		);
 		this.setLayout(groupLayout);
 	}

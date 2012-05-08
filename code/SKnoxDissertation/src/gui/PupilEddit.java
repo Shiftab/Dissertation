@@ -1,10 +1,15 @@
 package gui;
 
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
@@ -32,7 +37,7 @@ public class PupilEddit extends JPanel {
 			AB_POS = " can work well with abstract problems",
 			AB_NEG = " struggles with more theoretical concepts",
 
-			AVG = " is a compatent student but could use time better.";
+			AVG = " is a compatent student but could use time better";
 	
 	private final String O_POS =" is open to new ideas and experiances", 
 			O_NEG=" dislikes change", 
@@ -47,21 +52,24 @@ public class PupilEddit extends JPanel {
 			A_NEG = " is very opinionated", 
 			
 			N_POS = " can be argumentitive", 
-			N_NEG = " is easy going";
-
+			N_NEG = " is easy going",
+	
+			AVG_P = " is a well manered individual";
+	
 	private final String LNK_POS = ", and", LNK_NEG = ", but";
 
 	private JTextField txtName;
 	JTextPane txtpnAbility;
 	JTextPane txtpnPersonal;
 	private Control parent;
-	private String name;
+	private String name; 
 
 	/**
 	 * Create the application.
 	 */
 	public PupilEddit(Control parent) {
 		this.parent = parent;
+		setOpaque(false);
 		initialize();
 	}
 
@@ -92,8 +100,9 @@ public class PupilEddit extends JPanel {
 			}
 
 		boolean pos=false;
+		boolean avg = false;
 		String disc = "";
-		if (ability[big] > 0.5) {
+		if (ability[big] > 0.55) {
 			// pos
 			pos=true;
 			switch (big) {
@@ -110,7 +119,7 @@ public class PupilEddit extends JPanel {
 				disc += AB_POS;
 				break;
 			}
-		} else {
+		} else if (ability[big] < 0.45) {
 			pos=false;
 			// neg
 			switch (big) {
@@ -127,8 +136,11 @@ public class PupilEddit extends JPanel {
 				disc += AB_NEG;
 				break;
 			}
+		}else{
+			disc+=AVG;
+			avg = true;
 		}
-		
+		if(!avg)
 		if(ability[little]>0.5){
 			if(pos)
 				disc+=LNK_POS;
@@ -194,8 +206,9 @@ public class PupilEddit extends JPanel {
 			}
 
 		boolean pos=false;
+		boolean avg=false;
 		String disc = "";
-		if (ocean[big] > 0) {
+		if (ocean[big] > 0.1) {
 			// pos
 			pos=true;
 			switch (big) {
@@ -215,7 +228,7 @@ public class PupilEddit extends JPanel {
 				disc += N_POS;
 				break;
 			}
-		} else {
+		} else if (ocean[big] < -0.1){
 			pos=false;
 			// neg
 			switch (big) {
@@ -235,8 +248,12 @@ public class PupilEddit extends JPanel {
 				disc += N_NEG;
 				break;
 			}
+		}else{
+			disc+=AVG_P;
+			avg = true;
 		}
 		
+		if(!avg)
 		if(ocean[little]>0){
 			if(pos)
 				disc+=LNK_POS;

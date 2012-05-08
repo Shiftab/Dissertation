@@ -1,5 +1,6 @@
 package gui;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -10,10 +11,14 @@ import javax.swing.JSeparator;
 import javax.swing.JPanel;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.URL;
 import java.util.Scanner;
 
 import javax.swing.SwingConstants;
@@ -106,12 +111,12 @@ public class ProblemEddit extends JPanel {
 			}
 		parent.newProblem(prob);
 	}
-	
+
 	/**
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-
+		setOpaque(false);
 		JLabel lblProblemEddit = new JLabel("Problem Eddit");
 
 		JLabel lblDefault = new JLabel("File:");

@@ -2,6 +2,9 @@ package gui;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Stroke;
 import java.awt.image.BufferedImage;
 
@@ -32,6 +35,7 @@ import control.Control;
 import extras.Stats;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +52,7 @@ public class PupilStats extends JPanel {
 
 	public PupilStats(Control p) {
 		parent = p;
+		setOpaque(false);
 		init();
 	}
 
@@ -68,6 +73,9 @@ public class PupilStats extends JPanel {
 	
 	private String formatTime(long l){
 		String ans = "";
+		if(l==0||l<1){
+			return String.valueOf(0);
+		}
 		String what = String.valueOf(l/6000.0);
 		String split[] = what.split("\\.");
 		ans+=split[0]+":";
@@ -75,11 +83,11 @@ public class PupilStats extends JPanel {
 		ans+=String.valueOf(Integer.valueOf(split[1])*60).substring(2);
 		}catch(NumberFormatException nf){ //can start with 0
 
-			ans+=String.valueOf(Integer.valueOf(split[1].substring(1, split[1].length()+1))*60).substring(2);
+			ans+=String.valueOf(Integer.valueOf(split[1].substring(1, split[1].length()))*60).substring(2);
 		}
 		return ans;
 	}
-
+	
 	private void createGraph(XYSeries graph, Stats stats) {
 		XYSeriesCollection dataset = new XYSeriesCollection();
 		dataset.addSeries(graph);
@@ -192,30 +200,31 @@ public class PupilStats extends JPanel {
 		});
 		GroupLayout groupLayout = new GroupLayout(this);
 		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
+			groupLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
+					.addComponent(separator, GroupLayout.PREFERRED_SIZE, 1, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(1005, Short.MAX_VALUE))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap(469, Short.MAX_VALUE)
+					.addComponent(btnBack)
+					.addGap(468))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap(367, Short.MAX_VALUE)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(separator, GroupLayout.PREFERRED_SIZE, 1, GroupLayout.PREFERRED_SIZE)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(label_3, GroupLayout.PREFERRED_SIZE, 133, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(answers, GroupLayout.PREFERRED_SIZE, 44, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED, 189, Short.MAX_VALUE))
+							.addComponent(answers, GroupLayout.PREFERRED_SIZE, 44, GroupLayout.PREFERRED_SIZE))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(label_1, GroupLayout.PREFERRED_SIZE, 115, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(asked, GroupLayout.PREFERRED_SIZE, 73, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED, 178, Short.MAX_VALUE))
+							.addComponent(asked, GroupLayout.PREFERRED_SIZE, 73, GroupLayout.PREFERRED_SIZE))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(label_9, GroupLayout.PREFERRED_SIZE, 210, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(distractTime, GroupLayout.PREFERRED_SIZE, 63, GroupLayout.PREFERRED_SIZE)
-							.addGap(18)
-							.addComponent(btnBack)
-							.addGap(0, 0, Short.MAX_VALUE))
+							.addComponent(distractTime, GroupLayout.PREFERRED_SIZE, 63, GroupLayout.PREFERRED_SIZE))
 						.addComponent(name, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblGraph)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
 								.addGroup(groupLayout.createSequentialGroup()
@@ -224,18 +233,21 @@ public class PupilStats extends JPanel {
 									.addComponent(input, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 								.addComponent(label_7, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 182, GroupLayout.PREFERRED_SIZE))
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(shyTime, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED, 162, Short.MAX_VALUE)))
-					.addGap(72))
+							.addComponent(shyTime, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE)))
+					.addGap(366))
+				.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
+					.addGap(257)
+					.addComponent(lblGraph, GroupLayout.PREFERRED_SIZE, 498, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(257, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
 					.addComponent(separator, GroupLayout.PREFERRED_SIZE, 1, GroupLayout.PREFERRED_SIZE)
+					.addGap(61)
+					.addComponent(lblGraph, GroupLayout.PREFERRED_SIZE, 301, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(lblGraph)
-					.addGap(68)
 					.addComponent(name)
 					.addGap(18)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
@@ -260,9 +272,10 @@ public class PupilStats extends JPanel {
 					.addGap(18)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(label_9)
-						.addComponent(distractTime)
-						.addComponent(btnBack))
-					.addGap(20))
+						.addComponent(distractTime))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnBack)
+					.addGap(121))
 		);
 		setLayout(groupLayout);
 		setVisible(true);

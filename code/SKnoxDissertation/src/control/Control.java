@@ -2,8 +2,13 @@ package control;
 
 import java.awt.CardLayout;
 import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -40,7 +46,7 @@ public class Control extends Agent {
 	public static final int MAIN = 1, PARAM = 2, PROB = 3, PUPIL = 4, SUM = 5;
 
 	private List<String> names = new ArrayList<String>(Arrays.asList("Bob",
-			"Steve", "Alica", "Sky", "Erik", "Freya"));
+			"Steve", "Alica", "Sky", "Freya"));
 
 	private Setup main;
 	private JFrame frame = new JFrame();
@@ -71,10 +77,28 @@ public class Control extends Agent {
 
 	@Override
 	protected void setup() {
-		frame.setBounds(100, 100, 1024, 640);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		URL url = getClass().getResource("/image.png");
+		
+        ImageIcon imh = new ImageIcon(url);
+		frame.setSize(imh.getIconWidth(), imh.getIconHeight());
+        frame.setResizable(false);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
-
+		frame.setContentPane(new JPanel() {
+	        public void paintComponent(Graphics g) {
+	            super.paintComponent(g);
+	            URL url = getClass().getResource("/image.png");
+	    		Image img = new ImageIcon(url).getImage();
+	    		Dimension size = new Dimension(img.getWidth(null), img.getHeight(null));
+	    		setPreferredSize(size);
+	    		setMinimumSize(size);
+	    		setMaximumSize(size);
+	    		setSize(size);
+	    		setLayout(null);
+	    		g.drawImage(img, 0, 0, null);
+	        }
+	    });
+		
 		cards.add(stats, PUPILSUM_S);
 		cards.add(paramEddit, PARAM_S);
 		cards.add(probEddit, PROB_S);
@@ -88,8 +112,14 @@ public class Control extends Agent {
 			pupils.put(s, new Personality(0));
 		}
 		loadDefault();
-		main = new Setup(this, pupils);
+		main = new Setup(this, pupils, frame.getSize());
 		cards.add(main, MAIN_S);
+		cards.setSize(frame.getSize());
+		cards.setPreferredSize(frame.getSize());
+		cards.setMaximumSize(frame.getSize());
+		cards.setMinimumSize(frame.getSize());
+		cards.setOpaque(false);
+		main.setOpaque(false);
 		frame.add(cards);
 		cl.show(cards, MAIN_S);
 		

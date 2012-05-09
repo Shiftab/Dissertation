@@ -24,7 +24,7 @@ public class Stats {
 	long shyMissed;
 	long shyStart;
 	long distractions;
-	long distractStart;
+	long distractStart = -1;
 	List<Long> distractTimes = new ArrayList<Long>();
 	List<Long> chatter = new ArrayList<Long>();
 	List<Long> shyTimes = new ArrayList<Long>();
@@ -38,9 +38,9 @@ public class Stats {
 	 * @param parent
 	 */
 	public Stats(AID parent, double[] ocean, List<String> peers) {
-		for(String s: peers){
+		for (String s : peers) {
 			focusTimes.put(s, new ArrayList<Long>());
-			distracted.put(s,  new ArrayList<Long>());
+			distracted.put(s, new ArrayList<Long>());
 		}
 		this.parent = parent;
 		OCEAN = ocean;
@@ -107,31 +107,31 @@ public class Stats {
 	 * @param shyMissed
 	 *            the shyMissed to set
 	 */
-	public void setStartShy(){
+	public void setStartShy() {
 		shyStart = System.currentTimeMillis();
 		shyTimes.add(System.currentTimeMillis());
 	}
-	
-	public void stopShy(){
-		shyMissed += System.currentTimeMillis()-shyStart;
+
+	public void stopShy() {
+		shyMissed += System.currentTimeMillis() - shyStart;
 		shyTimes.add(System.currentTimeMillis());
 	}
-	
-	public void chatter(){
+
+	public void chatter() {
 		chatter.add(System.currentTimeMillis());
 	}
-	
-	public List<Long> getShyTimes(){
+
+	public List<Long> getShyTimes() {
 		return shyTimes;
 	}
-	
-	public void focus(String name){
+
+	public void focus(String name) {
 		List<Long> times = focusTimes.get(name);
 		times.add(System.currentTimeMillis());
 		focusTimes.put(name, times);
 	}
-	
-	public Map<String, List<Long>> getFocus(){
+
+	public Map<String, List<Long>> getFocus() {
 		return focusTimes;
 	}
 
@@ -147,28 +147,32 @@ public class Stats {
 	 *            the distractions to set
 	 */
 	public void setStartDistractions() {
+		if (distractStart != -1)
+			distractions += System.currentTimeMillis() - distractStart;
 		distractStart = System.currentTimeMillis();
 	}
-	
-	public void stopDistract(){
-		distractions += System.currentTimeMillis()-distractStart;
+
+	public void stopDistract() {
+		if (distractStart != -1)
+			distractions += System.currentTimeMillis() - distractStart;
+		distractStart = -1;
 	}
-	
-	public void addDistract(){
+
+	public void addDistract() {
 		distractTimes.add(System.currentTimeMillis());
 	}
-	
-	public Map<String, List<Long>> getDistractedTimes(){
+
+	public Map<String, List<Long>> getDistractedTimes() {
 		return distracted;
 	}
-	
-	public void addDistracted(String name){
+
+	public void addDistracted(String name) {
 		List<Long> times = distracted.get(name);
 		times.add(System.currentTimeMillis());
 		distracted.put(name, times);
 	}
-	
-	public List<Long> getDistractTimes(){
+
+	public List<Long> getDistractTimes() {
 		return distractTimes;
 	}
 
@@ -240,4 +244,3 @@ public class Stats {
 				+ " distractions:" + distractions);
 	}
 }
-

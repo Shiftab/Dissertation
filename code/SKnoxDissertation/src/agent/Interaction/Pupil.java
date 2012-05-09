@@ -20,6 +20,7 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 
+@SuppressWarnings("serial")
 public class Pupil extends Agent {
 
 	public static final int ARGUING = 3;
@@ -27,9 +28,9 @@ public class Pupil extends Agent {
 	public static final int DISTRACTED = 5;
 	public static final int SHY = 6;
 
-	private final boolean testingDisability = true;
+	// private final boolean testingDisability = true;
 
-	private final int DYSCAL = 1, DYSLEX = 2, NORM = 3;
+	// private final int DYSCAL = 1, DYSLEX = 2, NORM = 3;
 
 	private long startTime;
 	private int timeLimit;
@@ -48,15 +49,15 @@ public class Pupil extends Agent {
 	private int state = WORKING;
 	private long waitTime = 0;
 
-	
-	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jade.core.Agent#doActivate()
 	 */
 	@Override
 	public void doActivate() {
 		// TODO Auto-generated method stub
-		currentFocus=null;
+		currentFocus = null;
 		asking = null;
 		timeLimit = 0;
 		startTime = 0;
@@ -76,7 +77,7 @@ public class Pupil extends Agent {
 
 	@Override
 	protected void setup() {
-		currentFocus=null;
+		currentFocus = null;
 		asking = null;
 		timeLimit = 0;
 		startTime = 0;
@@ -95,7 +96,8 @@ public class Pupil extends Agent {
 		Object[] args = getArguments(); // get arguments from startup
 
 		List<AID> peers = new ArrayList<AID>();
-		List<String> temp = (List<String>) args[1];
+		@SuppressWarnings("unchecked")
+		List<String> temp = ((List<String>) args[1]);
 		List<String> peersStr = new ArrayList<String>();
 		for (String s : temp) {
 			if (!s.equals(this.getLocalName())) {
@@ -147,7 +149,7 @@ public class Pupil extends Agent {
 		}
 		switch (this.state) {
 		case Pupil.SHY:
-			if (state != Pupil.SHY && state != Pupil.DISTRACTED) {
+			if (state != Pupil.SHY) {
 				stats.stopShy();
 				System.out
 						.println(this.getLocalName()
@@ -167,12 +169,13 @@ public class Pupil extends Agent {
 	public int getActionState() {
 		return state;
 	}
-	
-	public void setDistract(){
+
+	public void setDistract() {
+		stats.setStartDistractions();
 		stats.addDistract();
 	}
-	
-	public void setDistracted(String name){
+
+	public void setDistracted(String name) {
 		stats.addDistracted(name);
 	}
 
@@ -229,12 +232,12 @@ public class Pupil extends Agent {
 
 	// ------------Answers/Questions---------------
 
-	public void pauseAction(Behaviour b){
+	public void pauseAction(Behaviour b) {
 		checkDone();
 		doWait(personality.getSpeed());
 		b.block(personality.getSpeed());
 	}
-	
+
 	public boolean checkAnswer(Coordinate coordinate, Behaviour b) {
 		System.out.println(this.getLocalName() + ":" + personality.getSpeed());
 		doWait(personality.getSpeed());
@@ -347,16 +350,17 @@ public class Pupil extends Agent {
 	public void setWaitTime() {
 		waitTime = System.currentTimeMillis();
 	}
-	
-	public void checkDone(){
-		if (brain.done()||((startTime + (timeLimit * 6000)) - System
-				.currentTimeMillis())<0) {
+
+	public void checkDone() {
+		if (brain.done()
+				|| ((startTime + (timeLimit * 6000)) - System
+						.currentTimeMillis()) < 0) {
 			System.out.println(this.getLocalName() + ": done");
 			stats.print();
 			parent.stopPupil(this.getLocalName(), stats, this);
 			// endStats();
-			while(true)
-			doWait();
+			while (true)
+				doWait();
 		}
 	}
 
@@ -412,9 +416,10 @@ public class Pupil extends Agent {
 
 	public void incQuestions() {
 		others.incQuestion();
+		stats.incQuestions();
 	}
-	
-	public void updateGraph(){
+
+	public void updateGraph() {
 		parent.updateGraph(this.getAID().getLocalName(), stats);
 	}
 
@@ -461,11 +466,6 @@ public class Pupil extends Agent {
 	public void stop() {
 		parent.stopPupil(this.getLocalName(), stats, this);
 		this.doWait();
-	}
-
-	@Override
-	public void takeDown() {
-		Agent a = new Agent();
 	}
 
 	public boolean timeUp() {

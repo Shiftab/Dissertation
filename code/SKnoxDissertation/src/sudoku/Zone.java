@@ -81,8 +81,8 @@ public class Zone {
 	public void eddit(Coordinate coordinate) {
 		Coordinate blank = new Coordinate(coordinate.getX(), coordinate.getY(),
 				0);
-		for(Coordinate c: zone)
-			if(c.equals(blank)){
+		for (Coordinate c : zone)
+			if (c.equals(blank)) {
 				zone.set(zone.indexOf(c), coordinate);
 				break;
 			}

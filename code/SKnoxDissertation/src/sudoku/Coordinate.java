@@ -60,7 +60,8 @@ public class Coordinate {
 
 	@Override
 	public String toString() {
-		return "("+String.valueOf(xPos)+","+String.valueOf(yPos)+"):"+String.valueOf(value);
+		return "(" + String.valueOf(xPos) + "," + String.valueOf(yPos) + "):"
+				+ String.valueOf(value);
 	}
 
 	@Override

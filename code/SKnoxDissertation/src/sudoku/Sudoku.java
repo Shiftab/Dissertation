@@ -65,9 +65,10 @@ public class Sudoku {
 	 * method to print out this view of the problem
 	 */
 	public void print() {
-		/*System.out.println('\n');
-		for (Zone z : rowList)
-			System.out.println(z);*/
+		/*
+		 * System.out.println('\n'); for (Zone z : rowList)
+		 * System.out.println(z);
+		 */
 	}
 
 	/**
@@ -77,20 +78,7 @@ public class Sudoku {
 	 * @return problem
 	 */
 	public int[][] solveSudoku(int[][] problem) {
-
-		long time = System.currentTimeMillis();
-		/*
-		 * for (Zone z : rowList) System.out.println(z);
-		 * 
-		 * System.out.println("\n\n");
-		 */
 		solve(problem);
-		/*
-		 * for (Zone z : rowList) System.out.println(z);
-		 * 
-		 * System.out.println("\n" + (System.currentTimeMillis() - time) /
-		 * 1000.0 + " Seconds");
-		 */
 		for (int y = 0; y < problem.length; y++)
 			for (int x = 0; x < problem.length; x++)
 				problem[x][y] = rowList.get(y).get(x);
@@ -275,6 +263,7 @@ public class Sudoku {
 	 * @param problem
 	 * @return problem
 	 */
+	@SuppressWarnings("unused")
 	private int[][] workOutGrid(int[][] problem) {
 		int pos = 0;
 		for (Zone z : gridList) { // for every grid zone
@@ -551,6 +540,7 @@ public class Sudoku {
 	 * @param problem
 	 * @return problem
 	 */
+	@SuppressWarnings("unused")
 	private int[][] workOutRows(int[][] problem) {
 		boolean changed = false;
 		for (Zone z : rowList) {
@@ -573,6 +563,7 @@ public class Sudoku {
 	 * @param problem
 	 * @return problem
 	 */
+	@SuppressWarnings("unused")
 	private int[][] workOutColums(int[][] problem) {
 		boolean changed = false;
 		for (Zone z : columList) {

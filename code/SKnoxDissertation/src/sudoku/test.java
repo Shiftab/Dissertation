@@ -10,7 +10,7 @@ public class test {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-new BasicStart();
+		new BasicStart();
 		int[][] problem = { { 6, 0, 0, 1, 0, 0, 0, 0, 0 },
 				{ 0, 9, 5, 6, 0, 3, 7, 0, 0 }, { 4, 1, 0, 0, 0, 0, 0, 6, 3 },
 				{ 0, 0, 9, 4, 7, 0, 5, 8, 0 }, { 0, 7, 0, 0, 9, 0, 0, 1, 0 },
@@ -18,7 +18,6 @@ new BasicStart();
 				{ 0, 0, 2, 9, 0, 6, 4, 5, 0 }, { 0, 0, 0, 0, 0, 2, 0, 0, 0 } };
 
 		// Sudoku.solveSudoku(problem);
-		Coordinate ans = null;
 		Sudoku s = new Sudoku(problem);
 		s.solveSudoku(problem);
 

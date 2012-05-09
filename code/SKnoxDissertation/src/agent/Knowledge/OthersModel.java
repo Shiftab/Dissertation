@@ -32,7 +32,7 @@ public class OthersModel {
 	public OthersModel(List<AID> peers) {
 		this.peers = peers;
 		for (AID a : peers) {
-			answers.put(a, 1);
+			answers.put(a, 0);
 			Agents.put(a, Pupil.WORKING);
 		}
 	}
@@ -57,10 +57,10 @@ public class OthersModel {
 
 		for (AID a : peers) {
 
-			double bayes = (answers.get(a) / (questionsAsked * 1.0) * (1 / (1+peers
-					.size() * 1.0)))
-					/ ((1) / (1+peers.size() * 1.0));
-			System.out.println("bayes: " + bayes+"\nAsk:"+Agents.get(a)+"\nQs:"+questionsAsked);
+			double bayes = (answers.get(a) / (questionsAsked * 1.0) * (1 / (1 + peers
+					.size() * 1.0))) / ((1) / (1 + peers.size() * 1.0));
+			System.out.println("bayes: " + bayes + "\nAsk:" + Agents.get(a)
+					+ "\nQs:" + questionsAsked);
 			if (bayes >= BAYES_TRHESHOLD) {
 				return a;
 			}
@@ -121,7 +121,7 @@ public class OthersModel {
 			return shy;
 		else if (distracted != null)
 			return distracted;
-		else{
+		else {
 			double max = Double.MAX_VALUE;
 			AID ans = null;
 			for (AID a : peers) {
@@ -130,15 +130,18 @@ public class OthersModel {
 						.size() * 1.0)))
 						/ ((peers.size() - 1) / (peers.size() * 1.0));
 
-				if(bayes<max){
-					max=bayes;
+				if (bayes < max) {
+					max = bayes;
 					ans = a;
 				}
+			}
+			if (ans == null) {
+				ans = peers.get((int) (Math.random() * peers.size()));
 			}
 			return ans;
 		}
 	}
-	
+
 	public AID getPartner() {
 		AID shy = getShyPerson();
 		AID distracted = getDistracted();
@@ -146,17 +149,16 @@ public class OthersModel {
 			return shy;
 		else if (distracted != null)
 			return distracted;
-		else{
+		else {
 			double min = Double.MIN_VALUE;
 			AID ans = null;
 			for (AID a : peers) {
 
-				double bayes = (answers.get(a) / (questionsAsked * 1.0) * (1 / (peers
-						.size() * 1.0)))
-						/ ((peers.size() - 1) / (peers.size() * 1.0));
+				double bayes = (answers.get(a) / (questionsAsked * 1.0) * (1 / (1 + peers
+						.size() * 1.0))) / ((1) / (1 + peers.size() * 1.0));
 
-				if(bayes>min){
-					min=bayes;
+				if (bayes > min) {
+					min = bayes;
 					ans = a;
 				}
 			}

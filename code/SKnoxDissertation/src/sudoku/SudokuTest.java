@@ -87,11 +87,9 @@ public class SudokuTest {
 	 */
 	@Test
 	public void testDone() {
-		int[][] ans;
 		assertArrayEquals("start test", problem, sudoku.getProblem());
 		assertFalse("non-compleat check", sudoku.done());
-		assertArrayEquals("solve test", answer,
-				ans = sudoku.solveSudoku(problem));
+		assertArrayEquals("solve test", answer, sudoku.solveSudoku(problem));
 		assertTrue("answer check", sudoku.done());
 	}
 

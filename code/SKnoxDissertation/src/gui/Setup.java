@@ -4,7 +4,6 @@ import agent.Knowledge.Personality;
 
 import control.Control;
 
-import javax.swing.ImageIcon;
 import javax.swing.JSlider;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -15,8 +14,6 @@ import javax.swing.JLabel;
 
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Image;
 
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JButton;
@@ -27,7 +24,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,8 +31,8 @@ import java.util.Scanner;
 
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
-import javax.swing.UIManager;
 
+@SuppressWarnings("serial")
 public class Setup extends JPanel {
 
 	private Map<String, Personality> pupils;

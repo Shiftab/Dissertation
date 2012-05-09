@@ -1,13 +1,9 @@
 package gui;
 
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -20,7 +16,7 @@ import agent.Knowledge.Personality;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.URL;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +24,7 @@ import control.Control;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 
+@SuppressWarnings("serial")
 public class ParamiterEddit extends JPanel {
 
 	// JFrame frame;
@@ -79,7 +76,6 @@ public class ParamiterEddit extends JPanel {
 	JSlider sl1, sl2, sl3, sl4, sl5, sl6;
 	JLabel lbDisc1, lbDisc2, lbDisc3, lbDisc4, lbDisc5, lbDisc6;
 
-	private List<JLabel> nameList = new ArrayList<JLabel>();
 	private List<JSlider> sliderList = new ArrayList<JSlider>();
 	private List<JLabel> discList = new ArrayList<JLabel>();
 	private boolean ability = false;

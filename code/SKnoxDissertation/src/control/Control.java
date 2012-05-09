@@ -2,19 +2,15 @@ package control;
 
 import java.awt.CardLayout;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -78,27 +74,28 @@ public class Control extends Agent {
 	@Override
 	protected void setup() {
 		URL url = getClass().getResource("/image.png");
-		
-        ImageIcon imh = new ImageIcon(url);
+
+		ImageIcon imh = new ImageIcon(url);
 		frame.setSize(imh.getIconWidth(), imh.getIconHeight());
-        frame.setResizable(false);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setResizable(false);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		frame.setContentPane(new JPanel() {
-	        public void paintComponent(Graphics g) {
-	            super.paintComponent(g);
-	            URL url = getClass().getResource("/image.png");
-	    		Image img = new ImageIcon(url).getImage();
-	    		Dimension size = new Dimension(img.getWidth(null), img.getHeight(null));
-	    		setPreferredSize(size);
-	    		setMinimumSize(size);
-	    		setMaximumSize(size);
-	    		setSize(size);
-	    		setLayout(null);
-	    		g.drawImage(img, 0, 0, null);
-	        }
-	    });
-		
+			public void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				URL url = getClass().getResource("/image.png");
+				Image img = new ImageIcon(url).getImage();
+				Dimension size = new Dimension(img.getWidth(null), img
+						.getHeight(null));
+				setPreferredSize(size);
+				setMinimumSize(size);
+				setMaximumSize(size);
+				setSize(size);
+				setLayout(null);
+				g.drawImage(img, 0, 0, null);
+			}
+		});
+
 		cards.add(stats, PUPILSUM_S);
 		cards.add(paramEddit, PARAM_S);
 		cards.add(probEddit, PROB_S);
@@ -122,7 +119,7 @@ public class Control extends Agent {
 		main.setOpaque(false);
 		frame.add(cards);
 		cl.show(cards, MAIN_S);
-		
+
 		/*
 		 * List<String> agents = new ArrayList<String>(); agents.add("Bob");
 		 * agents.add("Steve"); agents.add("Alicia"); agents.add("test");
@@ -257,10 +254,11 @@ public class Control extends Agent {
 	}
 
 	public void updateGraph(String name, Stats stats) {
-		loading.updateGraph(name, 100-((((startTime + (timeLimit * 6000)) - System
-				.currentTimeMillis()) / 6000.0) / timeLimit) * 100,
+		loading.updateGraph(name,
+				100 - ((((startTime + (timeLimit * 6000)) - System
+						.currentTimeMillis()) / 6000.0) / timeLimit) * 100,
 				(((stats.getAsked() + stats.getAnswered()) / ((stats
-						.getQuestions() + stats.getAsked()) * 2.0)) * 100.0));
+						.getQuestions()) * 2.0)) * 100.0));
 	}
 
 	public void resetProblem() {
@@ -287,11 +285,12 @@ public class Control extends Agent {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		summary.display(endStats, Problem.amountDone(), endTime - startTime, loading.getGraphData());
+		summary.display(endStats, Problem.amountDone(), endTime - startTime,
+				loading.getGraphData());
 		cl.show(cards, SUM_S);
 	}
-	
-	public void pupilSummery(String name, Stats pupilStats, XYSeries series){
+
+	public void pupilSummery(String name, Stats pupilStats, XYSeries series) {
 		stats.setUp(name, pupilStats, series, startTime, timeLimit);
 		cl.show(cards, PUPILSUM_S);
 	}

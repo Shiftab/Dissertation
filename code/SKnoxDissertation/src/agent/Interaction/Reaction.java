@@ -8,6 +8,7 @@ import control.Message;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 
+@SuppressWarnings("serial")
 public class Reaction extends CyclicBehaviour {
 
 	private final int YES = 1, NO = 2, CHANGE = 3;
@@ -153,20 +154,23 @@ public class Reaction extends CyclicBehaviour {
 
 	private void distract(Message res) {
 		parent.setPeerActionState(res.getSender(), Pupil.DISTRACTED);
-		if (parent.getActionState() == Pupil.DISTRACTED) {
-			parent.setDistracted(res.getSender().getLocalName());
-			parent.setWaitTime();
-			parent.pauseAction(this);
-			Messages.wasteTime(parent.getPeers(), res.getSender(), parent);
-		} else if (parent.isChatty()) {// , prior)){
-			parent.setDistracted(res.getSender().getLocalName());
-			parent.setActionState(Pupil.DISTRACTED);
-			parent.pauseAction(this);
-			Messages.wasteTime(parent.getPeers(), res.getSender(), parent);
-		} else {
-			// parent.lowerFocus(res.getSender());
-			parent.setActionState(Pupil.WORKING);
-		}
+		if (res.getFocus().equals(parent.getAID()))
+			if (parent.getActionState() == Pupil.DISTRACTED
+					|| parent.getActionState() == Pupil.SHY) {
+				parent.setDistracted(res.getSender().getLocalName());
+				parent.setActionState(Pupil.DISTRACTED);
+				parent.setWaitTime();
+				parent.pauseAction(this);
+				Messages.wasteTime(parent.getPeers(), res.getSender(), parent);
+			} else if (parent.isChatty()) {// , prior)){
+				parent.setDistracted(res.getSender().getLocalName());
+				parent.setActionState(Pupil.DISTRACTED);
+				parent.pauseAction(this);
+				Messages.wasteTime(parent.getPeers(), res.getSender(), parent);
+			} else {
+				// parent.lowerFocus(res.getSender());
+				parent.setActionState(Pupil.WORKING);
+			}
 	}
 
 	private void inform(Message res) {
@@ -187,30 +191,31 @@ public class Reaction extends CyclicBehaviour {
 			break;
 		case NO:
 			if (parent.getAsking() != null)
-				try{
-				if (res.getCoordinate().equals(parent.getAsking())) { 
-					parent.refreshWorld();
-					if (parent.checkAnswer(res.getCoordinate(), this)) {
-						Messages.acknowledge(res.getCoordinate(),
-								parent.getPeers(), parent, res.getSender());
-						parent.decSelfEsteam();
-						parent.setActionState(Pupil.WORKING);
-					} else {
-						if (false) {// parent.decide(Personality.ARGUE, 0)){
-							Messages.argue(res.getCoordinate(),
+				try {
+					if (res.getCoordinate().equals(parent.getAsking())) {
+						parent.refreshWorld();
+						if (parent.checkAnswer(res.getCoordinate(), this)) {
+							Messages.acknowledge(res.getCoordinate(),
 									parent.getPeers(), parent, res.getSender());
-							// parent.lowerFocus(res.getSender());
-							parent.setActionState(Pupil.ARGUING);
+							parent.decSelfEsteam();
+							parent.setActionState(Pupil.WORKING);
 						} else {
+							/*
+							 * if (false) {// parent.decide(Personality.ARGUE,
+							 * 0)){ Messages.argue(res.getCoordinate(),
+							 * parent.getPeers(), parent, res.getSender()); //
+							 * parent.lowerFocus(res.getSender());
+							 * parent.setActionState(Pupil.ARGUING); } else {
+							 */
 							parent.setAnswered(res.getCoordinate());
 							parent.decSelfEsteam();
 							parent.setActionState(Pupil.WORKING);
+							// }
 						}
 					}
-				}
-				}catch(NullPointerException np){
+				} catch (NullPointerException np) {
 					np.printStackTrace();
-					System.out.println("*********"+res.getContent());
+					System.out.println("*********" + res.getContent());
 				}
 			break;
 		case CHANGE:

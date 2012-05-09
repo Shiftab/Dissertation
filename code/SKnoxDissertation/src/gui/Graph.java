@@ -1,9 +1,5 @@
 package gui;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Paint;
-import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,24 +10,14 @@ import javax.swing.JPanel;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.annotations.XYLineAnnotation;
-import org.jfree.chart.annotations.XYShapeAnnotation;
-import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.plot.ValueMarker;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
-import org.jfree.chart.renderer.xy.XYItemRenderer;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.ui.RectangleAnchor;
-import org.jfree.ui.TextAnchor;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 
+@SuppressWarnings("serial")
 public class Graph extends JPanel {
 
 	XYSeries series1 = new XYSeries("aberage size1");
@@ -44,7 +30,7 @@ public class Graph extends JPanel {
 	volatile XYSeriesCollection dataset = new XYSeriesCollection();
 	JFreeChart chart;
 	JLabel lblGraph = new JLabel(" ");
-	List<String> names = new ArrayList<String>();
+	volatile List<String> names = new ArrayList<String>();
 
 	/**
 	 * Create the panel.
@@ -66,34 +52,64 @@ public class Graph extends JPanel {
 		setLayout(groupLayout);
 	}
 
-	public void setNames(List<String> names) {
-		this.names = names;
+	public synchronized void setNames(List<String> nam) {
+		this.names = nam;
 		int count = 0;
-		for (String n : names) {
+		for (String n : nam) {
 			switch (count) {
 			case 0:
-				series1.setKey(n);
-				series1.add(0, 0);
+				try {
+					series1.setKey(n);
+				} catch (Exception ex) {
+					System.out.println("Error: " + series2.getKey());
+				}
+				try {
+					series1.add(0.1, 0.1);
+				} catch (Exception ex) {
+					System.out.println("Error: " + series1.getKey());
+					// series1.clear();
+					series1.add(0, 0);
+				}
 				break;
 			case 1:
-				series2.setKey(n);
-				series2.add(0, 0);
+				try {
+					series2.setKey(n);
+				} catch (Exception ex) {
+					System.out.println("Error: " + series2.getKey());
+				}
+				series2.add(0.1, 0.1);
 				break;
 			case 2:
-				series3.setKey(n);
-				series3.add(0, 0);
+				try {
+					series3.setKey(n);
+				} catch (Exception ex) {
+					System.out.println("Error: " + series2.getKey());
+				}
+				series3.add(0.1, 0.1);
 				break;
 			case 3:
-				series4.setKey(n);
-				series4.add(0, 0);
+				try {
+					series4.setKey(n);
+				} catch (Exception ex) {
+					System.out.println("Error: " + series2.getKey());
+				}
+				series4.add(0.1, 0.1);
 				break;
 			case 4:
-				series5.setKey(n);
-				series5.add(0, 0);
+				try {
+					series5.setKey(n);
+				} catch (Exception ex) {
+					System.out.println("Error: " + series2.getKey());
+				}
+				series5.add(0.1, 0.1);
 				break;
 			case 5:
-				series6.setKey(n);
-				series6.add(0, 0);
+				try {
+					series6.setKey(n);
+				} catch (Exception ex) {
+					System.out.println("Error: " + series2.getKey());
+				}
+				series6.add(0.1, 0.1);
 				break;
 			}
 			count++;
@@ -101,29 +117,76 @@ public class Graph extends JPanel {
 
 	}
 
-	public synchronized void updateSeries(String name, double time, double input) {
-		if (name.equals(names.get(0))) {
-			series1.add(time, input);
-		} else if (name.equals(names.get(1))) {
-			series2.add(time, input);
-		} else if (name.equals(names.get(2))) {
-			series3.add(time, input);
-		} else if (name.equals(names.get(3))) {
-			series4.add(time, input);
-		} else if (name.equals(names.get(4))) {
-			series5.add(time, input);
-		} else if (name.equals(names.get(5))) {
-			series6.add(time, input);
+	public synchronized void updateSeries(String nam, double time, double input) {
+		if (!names.isEmpty()) {
+			if (nam.equals(names.get(0))) {
+				series1.add(time, input);
+				return;
+			}
+		}
+		if (names.size() >= 2) {
+			if (nam.equals(names.get(1))) {
+				series2.add(time, input);
+				return;
+			}
+		}
+		if (names.size() >= 3) {
+			if (nam.equals(names.get(2))) {
+				series3.add(time, input);
+				return;
+			}
+		}
+		if (names.size() >= 4) {
+			if (nam.equals(names.get(3))) {
+				series4.add(time, input);
+				return;
+			}
+		}
+		if (names.size() >= 5) {
+			if (nam.equals(names.get(4))) {
+				series5.add(time, input);
+				return;
+			}
+		}
+		if (names.size() >= 6) {
+			if (nam.equals(names.get(5))) {
+				series6.add(time, input);
+				return;
+			}
 		}
 	}
 
-	public void clearSeries() {
-		series1.clear();
-		series2.clear();
-		series3.clear();
-		series4.clear();
-		series5.clear();
-		series6.clear();
+	public synchronized void clearSeries() {
+		try {
+			series1.clear();
+		} catch (Exception ex) {
+			System.out.println("Error: " + series1.getKey());
+		}
+		try {
+			series2.clear();
+		} catch (Exception ex) {
+			System.out.println("Error: " + series2.getKey());
+		}
+		try {
+			series3.clear();
+		} catch (Exception ex) {
+			System.out.println("Error: " + series3.getKey());
+		}
+		try {
+			series4.clear();
+		} catch (Exception ex) {
+			System.out.println("Error: " + series4.getKey());
+		}
+		try {
+			series5.clear();
+		} catch (Exception ex) {
+			System.out.println("Error: " + series5.getKey());
+		}
+		try {
+			series6.clear();
+		} catch (Exception ex) {
+			System.out.println("Error: " + series6);
+		}
 	}
 
 	public synchronized void updateChart() {
@@ -154,55 +217,55 @@ public class Graph extends JPanel {
 				System.out.println("Happend again");
 			}
 		}
-		chart = ChartFactory.createXYLineChart("Group Activity", "Time", "Input", dataset,
-				PlotOrientation.VERTICAL, true, true, false);
+		chart = ChartFactory.createXYLineChart("Group Activity", "Time",
+				"Input", dataset, PlotOrientation.VERTICAL, true, true, false);
 		display();
 	}
 
-	public List<XYSeries> getSeries(){
+	public List<XYSeries> getSeries() {
 		List<XYSeries> series = new ArrayList<XYSeries>();
-		if(!series1.isEmpty())
+		if (!series1.isEmpty())
 			series.add(series1);
-		
-		if(!series2.isEmpty())
+
+		if (!series2.isEmpty())
 			series.add(series2);
-		
-		if(!series3.isEmpty())
+
+		if (!series3.isEmpty())
 			series.add(series3);
-		
-		if(!series4.isEmpty())
+
+		if (!series4.isEmpty())
 			series.add(series4);
-		
-		if(!series5.isEmpty())
+
+		if (!series5.isEmpty())
 			series.add(series5);
-		
-		if(!series6.isEmpty())
+
+		if (!series6.isEmpty())
 			series.add(series6);
-		
+
 		return series;
 	}
-	
-	public XYSeries getSeries(String name){
+
+	public XYSeries getSeries(String name) {
 		XYSeries ans = null;
-		
-		if(series1.getKey().equals(name))
+
+		if (series1.getKey().equals(name))
 			ans = series1;
-		else if(series2.getKey().equals(name))
+		else if (series2.getKey().equals(name))
 			ans = series2;
-		else if(series3.getKey().equals(name))
+		else if (series3.getKey().equals(name))
 			ans = series3;
-		else if(series4.getKey().equals(name))
+		else if (series4.getKey().equals(name))
 			ans = series4;
-		else if(series5.getKey().equals(name))
+		else if (series5.getKey().equals(name))
 			ans = series5;
-		else if(series6.getKey().equals(name))
+		else if (series6.getKey().equals(name))
 			ans = series6;
-		
+
 		return ans;
 	}
-	
+
 	public synchronized void display() {
-		 
+
 		BufferedImage image = chart.createBufferedImage(500, 300);
 		lblGraph.setIcon(new ImageIcon(image));
 		setVisible(true);

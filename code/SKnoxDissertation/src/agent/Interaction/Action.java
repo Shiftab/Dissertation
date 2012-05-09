@@ -7,6 +7,7 @@ import sudoku.Coordinate;
 import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
 
+@SuppressWarnings("serial")
 public class Action extends CyclicBehaviour {
 	private Pupil parent;
 	private int waitCount = 0;
@@ -20,7 +21,7 @@ public class Action extends CyclicBehaviour {
 	public void action() {
 		parent.checkDone();
 		parent.updateGraph();
-		if(parent.timeUp()){
+		if (parent.timeUp()) {
 			parent.stop();
 		}
 		int working = 0, arguing = 0, distracted = 0, shy = 0;
@@ -66,11 +67,12 @@ public class Action extends CyclicBehaviour {
 				parent.setActionState(Pupil.WORKING);
 			break;
 		case Pupil.SHY:
-			if(parent.distract()&&parent.getWaitTime()>2000){
+			if (parent.distract() && parent.getWaitTime() > 2000) {
 				parent.setActionState(Pupil.DISTRACTED);
 				parent.setDistract();
 				parent.setWaitTime();
-				Messages.distract(parent.getPeers(), parent.getDistractable(), parent);
+				Messages.distract(parent.getPeers(), parent.getDistractable(),
+						parent);
 			}
 			break;
 		}

@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jade.core.Agent;
-import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
 
 /**
  * basic init class for starting agents
  * 
  * @author shiftab
- *
+ * 
  */
 @SuppressWarnings("serial")
 public class BasicStart extends Agent {
@@ -19,7 +18,7 @@ public class BasicStart extends Agent {
 	/**
 	 * standard method for seting up an agent
 	 */
-	@Override 
+	@Override
 	protected void setup() {
 		Object[] args = new Object[3];
 
@@ -35,12 +34,12 @@ public class BasicStart extends Agent {
 		agents.add("Alicia");
 		agents.add("test");
 		Problem.setProblem(problem);
-		
+
 		args[0] = problem;
 		args[1] = agents;
 		args[2] = 5;
 		try {
-			for (String a : agents){
+			for (String a : agents) {
 				getContainerController().createNewAgent(a,
 						"agent.Interaction.Pupil", args).start();
 			}

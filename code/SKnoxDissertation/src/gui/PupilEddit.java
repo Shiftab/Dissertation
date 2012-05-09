@@ -1,15 +1,10 @@
 package gui;
 
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.URL;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
@@ -19,7 +14,9 @@ import agent.Knowledge.Personality;
 
 import control.Control;
 import javax.swing.JTextField;
+import java.awt.Font;
 
+@SuppressWarnings("serial")
 public class PupilEddit extends JPanel {
 
 	// JFrame frame; //needs to be here for the design edditor to work, can't be
@@ -38,31 +35,30 @@ public class PupilEddit extends JPanel {
 			AB_NEG = " struggles with more theoretical concepts",
 
 			AVG = " is a compatent student but could use time better";
-	
-	private final String O_POS =" is open to new ideas and experiances", 
-			O_NEG=" dislikes change", 
-			
+
+	private final String O_POS = " is open to new ideas and experiances",
+			O_NEG = " dislikes change",
+
 			C_POS = " is a hard worker with a strong focus",
-			C_NEG = " is easly distracted", 
-			
-			E_POS = " is very outgoing and works well with others", 
-			E_NEG = " can be quite shy", 
-			
-			A_POS = " is very helpull and quick to please", 
-			A_NEG = " is very opinionated", 
-			
-			N_POS = " can be argumentitive", 
-			N_NEG = " is easy going",
-	
+			C_NEG = " is easly distracted",
+
+			E_POS = " is very outgoing and works well with others",
+			E_NEG = " can be quite shy",
+
+			A_POS = " is very helpull and quick to please",
+			A_NEG = " is very opinionated",
+
+			N_POS = " can be argumentitive", N_NEG = " is easy going",
+
 			AVG_P = " is a well manered individual";
-	
+
 	private final String LNK_POS = ", and", LNK_NEG = ", but";
 
 	private JTextField txtName;
 	JTextPane txtpnAbility;
 	JTextPane txtpnPersonal;
 	private Control parent;
-	private String name; 
+	private String name;
 
 	/**
 	 * Create the application.
@@ -90,21 +86,22 @@ public class PupilEddit extends JPanel {
 			// get the most promanent values
 			if (Math.abs(ability[x] - 0.5) > Math.abs(val - 0.5)) {
 				little = x;
-				if(Math.abs(ability[big]-0.5)<Math.abs(ability[little]-0.5)){
+				if (Math.abs(ability[big] - 0.5) < Math
+						.abs(ability[little] - 0.5)) {
 					int temp = big;
 					big = little;
 					little = temp;
 				}
-				if(x>0)
-				val = ability[little];
+				if (x > 0)
+					val = ability[little];
 			}
 
-		boolean pos=false;
+		boolean pos = false;
 		boolean avg = false;
 		String disc = "";
 		if (ability[big] > 0.55) {
 			// pos
-			pos=true;
+			pos = true;
 			switch (big) {
 			case 0:
 				disc += OP_POS;
@@ -120,7 +117,7 @@ public class PupilEddit extends JPanel {
 				break;
 			}
 		} else if (ability[big] < 0.45) {
-			pos=false;
+			pos = false;
 			// neg
 			switch (big) {
 			case 0:
@@ -136,54 +133,54 @@ public class PupilEddit extends JPanel {
 				disc += AB_NEG;
 				break;
 			}
-		}else{
-			disc+=AVG;
+		} else {
+			disc += AVG;
 			avg = true;
 		}
-		if(!avg)
-		if(ability[little]>0.5){
-			if(pos)
-				disc+=LNK_POS;
-			else
-				disc+=LNK_NEG;
-			
-			switch (little) {
-			case 0:
-				disc += OP_POS;
-				break;
-			case 1:
-				disc += NCN_POS;
-				break;
-			case 2:
-				disc += NCM_POS;
-				break;
-			case 3:
-				disc += AB_POS;
-				break;
-			}
-		}else{
-			if(pos)
-				disc+=LNK_NEG;
-			else
-				disc+=LNK_POS;
-			
-			switch (little) {
-			case 0:
-				disc += OP_NEG;
-				break;
-			case 1:
-				disc += NCN_NEG;
-				break;
-			case 2:
-				disc += NCM_NEG;
-				break;
-			case 3:
-				disc += AB_NEG;
-				break;
-			}
-		}
+		if (!avg)
+			if (ability[little] > 0.5) {
+				if (pos)
+					disc += LNK_POS;
+				else
+					disc += LNK_NEG;
 
-		txtpnAbility.setText(name+disc+".");
+				switch (little) {
+				case 0:
+					disc += OP_POS;
+					break;
+				case 1:
+					disc += NCN_POS;
+					break;
+				case 2:
+					disc += NCM_POS;
+					break;
+				case 3:
+					disc += AB_POS;
+					break;
+				}
+			} else {
+				if (pos)
+					disc += LNK_NEG;
+				else
+					disc += LNK_POS;
+
+				switch (little) {
+				case 0:
+					disc += OP_NEG;
+					break;
+				case 1:
+					disc += NCN_NEG;
+					break;
+				case 2:
+					disc += NCM_NEG;
+					break;
+				case 3:
+					disc += AB_NEG;
+					break;
+				}
+			}
+
+		txtpnAbility.setText(name + disc + ".");
 	}
 
 	private void setPersonalityText(Personality personality) {
@@ -196,21 +193,21 @@ public class PupilEddit extends JPanel {
 			// get the most promanent values
 			if (Math.abs(ocean[x]) > Math.abs(val)) {
 				little = x;
-				if(Math.abs(ocean[big])<Math.abs(ocean[little])){
+				if (Math.abs(ocean[big]) < Math.abs(ocean[little])) {
 					int temp = big;
 					big = little;
 					little = temp;
 				}
-				if(x>0)
-				val = ocean[little];
+				if (x > 0)
+					val = ocean[little];
 			}
 
-		boolean pos=false;
-		boolean avg=false;
+		boolean pos = false;
+		boolean avg = false;
 		String disc = "";
 		if (ocean[big] > 0.1) {
 			// pos
-			pos=true;
+			pos = true;
 			switch (big) {
 			case 0:
 				disc += O_POS;
@@ -228,8 +225,8 @@ public class PupilEddit extends JPanel {
 				disc += N_POS;
 				break;
 			}
-		} else if (ocean[big] < -0.1){
-			pos=false;
+		} else if (ocean[big] < -0.1) {
+			pos = false;
 			// neg
 			switch (big) {
 			case 0:
@@ -248,62 +245,61 @@ public class PupilEddit extends JPanel {
 				disc += N_NEG;
 				break;
 			}
-		}else{
-			disc+=AVG_P;
+		} else {
+			disc += AVG_P;
 			avg = true;
 		}
-		
-		if(!avg)
-		if(ocean[little]>0){
-			if(pos)
-				disc+=LNK_POS;
-			else
-				disc+=LNK_NEG;
-			
-			switch (little) {
-			case 0:
-				disc += O_POS;
-				break;
-			case 1:
-				disc += C_POS;
-				break;
-			case 2:
-				disc += E_POS;
-				break;
-			case 3:
-				disc += A_POS;
-				break;
-			case 4:
-				disc += N_POS;
-				break;
-			}
-		}else{
-			if(pos)
-				disc+=LNK_NEG;
-			else
-				disc+=LNK_POS;
-			
 
-			switch (little) {
-			case 0:
-				disc += O_NEG;
-				break;
-			case 1:
-				disc += C_NEG;
-				break;
-			case 2:
-				disc += E_NEG;
-				break;
-			case 3:
-				disc += A_NEG;
-				break;
-			case 4:
-				disc += N_NEG;
-				break;
-			}
-		}
+		if (!avg)
+			if (ocean[little] > 0) {
+				if (pos)
+					disc += LNK_POS;
+				else
+					disc += LNK_NEG;
 
-		txtpnPersonal.setText(name+disc+".");
+				switch (little) {
+				case 0:
+					disc += O_POS;
+					break;
+				case 1:
+					disc += C_POS;
+					break;
+				case 2:
+					disc += E_POS;
+					break;
+				case 3:
+					disc += A_POS;
+					break;
+				case 4:
+					disc += N_POS;
+					break;
+				}
+			} else {
+				if (pos)
+					disc += LNK_NEG;
+				else
+					disc += LNK_POS;
+
+				switch (little) {
+				case 0:
+					disc += O_NEG;
+					break;
+				case 1:
+					disc += C_NEG;
+					break;
+				case 2:
+					disc += E_NEG;
+					break;
+				case 3:
+					disc += A_NEG;
+					break;
+				case 4:
+					disc += N_NEG;
+					break;
+				}
+			}
+
+		txtpnPersonal.setText(name + disc + ".");
 	}
 
 	/**
@@ -312,6 +308,7 @@ public class PupilEddit extends JPanel {
 	private void initialize() {
 
 		JLabel lblPupilView = new JLabel("Pupil View");
+		lblPupilView.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
 
 		JLabel lblAbility = new JLabel("Ability:");
 

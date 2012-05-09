@@ -1,6 +1,5 @@
 package gui;
 
-import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -11,25 +10,22 @@ import javax.swing.JSeparator;
 import javax.swing.JPanel;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.net.URL;
 import java.util.Scanner;
 
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 
 import control.Control;
+import java.awt.Font;
 
+@SuppressWarnings("serial")
 public class ProblemEddit extends JPanel {
 
-	//JFrame frame;
-	private String file;
+	// JFrame frame;
 	private String[][] problem = new String[9][9];
 	private Control parent;
 
@@ -88,6 +84,8 @@ public class ProblemEddit extends JPanel {
 			{ g70, g71, g72, g73, g74, g75, g76, g77, g78 },
 			{ g80, g81, g82, g83, g84, g85, g86, g87, g88 } };
 
+	JLabel fileName = new JLabel("Default");
+
 	/**
 	 * Create the application.
 	 */
@@ -96,14 +94,14 @@ public class ProblemEddit extends JPanel {
 		initialize();
 	}
 
-	public void loadProblem(int[][] problem){
+	public void loadProblem(int[][] problem) {
 		for (int y = 0; y < problem.length; y++)
 			for (int x = 0; x < problem.length; x++) {
 				valueList[x][y].setText(String.valueOf(problem[x][y]));
 			}
 	}
-	
-	public void saveProblem(){
+
+	public void saveProblem() {
 		int[][] prob = new int[9][9];
 		for (int y = 0; y < problem.length; y++)
 			for (int x = 0; x < problem.length; x++) {
@@ -118,10 +116,9 @@ public class ProblemEddit extends JPanel {
 	private void initialize() {
 		setOpaque(false);
 		JLabel lblProblemEddit = new JLabel("Problem Eddit");
+		lblProblemEddit.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
 
 		JLabel lblDefault = new JLabel("File:");
-
-		JLabel lblDefault_1 = new JLabel("Default");
 
 		JButton btnLoadNew = new JButton("Load New");
 		btnLoadNew.addActionListener(new ActionListener() {
@@ -134,10 +131,8 @@ public class ProblemEddit extends JPanel {
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 
 					File prob = fc.getSelectedFile();
-					file = prob.getPath();
 
 					Scanner scan = null;
-					String[] list = new String[9];
 					try {
 						scan = new Scanner(prob);
 					} catch (FileNotFoundException e) {
@@ -146,26 +141,30 @@ public class ProblemEddit extends JPanel {
 					}
 					int count = 0;
 					while (scan.hasNextLine()) {
-						try{
-						problem[count] = scan.nextLine().split(",");
-						}catch(ArrayIndexOutOfBoundsException b){
-							  JOptionPane.showMessageDialog(parent.getFrame(),"Error, the file was not in the correct format");
-							  return;
+						try {
+							problem[count] = scan.nextLine().split(",");
+						} catch (ArrayIndexOutOfBoundsException b) {
+							JOptionPane.showMessageDialog(parent.getFrame(),
+									"Error, the file was not in the correct format");
+							return;
 						}
 						count++;
 					}
-					
+
 					for (int y = 0; y < problem.length; y++)
 						for (int x = 0; x < problem.length; x++) {
-							try{
-							Integer.parseInt(problem[x][y].trim());
-							}catch(Exception ex){
-								  JOptionPane.showMessageDialog(parent.getFrame(),"Error, some values were not numbers");
-								  return;
+							try {
+								Integer.parseInt(problem[x][y].trim());
+							} catch (Exception ex) {
+								JOptionPane.showMessageDialog(
+										parent.getFrame(),
+										"Error, some values were not numbers");
+								return;
 							}
 							valueList[x][y].setText(problem[x][y].trim());
 						}
 
+					fileName.setText(prob.getName());
 					repaint();
 				}
 			}
@@ -193,43 +192,78 @@ public class ProblemEddit extends JPanel {
 		});
 
 		GroupLayout groupLayout = new GroupLayout(this);
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(69)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(lblDefault)
-							.addGap(37)
-							.addComponent(lblDefault_1)
-							.addGap(18)
-							.addComponent(btnLoadNew))
-						.addComponent(lblProblemEddit)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(btnSave)
-							.addPreferredGap(ComponentPlacement.RELATED, 136, Short.MAX_VALUE)
-							.addComponent(btnCancel))
-						.addComponent(panel, GroupLayout.PREFERRED_SIZE, 286, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap(658, GroupLayout.PREFERRED_SIZE))
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.TRAILING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(95)
-					.addComponent(lblProblemEddit)
-					.addGap(18)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblDefault)
-						.addComponent(lblDefault_1)
-						.addComponent(btnLoadNew))
-					.addGap(18)
-					.addComponent(panel, GroupLayout.PREFERRED_SIZE, 386, GroupLayout.PREFERRED_SIZE)
-					.addGap(18)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnSave)
-						.addComponent(btnCancel))
-					.addContainerGap(279, Short.MAX_VALUE))
-		);
+		groupLayout
+				.setHorizontalGroup(groupLayout
+						.createParallelGroup(Alignment.LEADING)
+						.addGroup(
+								groupLayout
+										.createSequentialGroup()
+										.addGap(122)
+										.addGroup(
+												groupLayout
+														.createParallelGroup(
+																Alignment.LEADING)
+														.addGroup(
+																groupLayout
+																		.createSequentialGroup()
+																		.addComponent(
+																				lblDefault)
+																		.addGap(37)
+																		.addComponent(
+																				fileName))
+														.addGroup(
+																groupLayout
+																		.createSequentialGroup()
+																		.addComponent(
+																				lblProblemEddit)
+																		.addGap(18)
+																		.addComponent(
+																				btnLoadNew))
+														.addGroup(
+																groupLayout
+																		.createSequentialGroup()
+																		.addComponent(
+																				btnSave)
+																		.addGap(18)
+																		.addComponent(
+																				btnCancel))
+														.addComponent(
+																panel,
+																GroupLayout.PREFERRED_SIZE,
+																286,
+																GroupLayout.PREFERRED_SIZE))
+										.addContainerGap(536, Short.MAX_VALUE)));
+		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(
+				Alignment.LEADING)
+				.addGroup(
+						groupLayout
+								.createSequentialGroup()
+								.addGap(48)
+								.addGroup(
+										groupLayout
+												.createParallelGroup(
+														Alignment.BASELINE)
+												.addComponent(lblProblemEddit)
+												.addComponent(btnLoadNew))
+								.addGap(19)
+								.addGroup(
+										groupLayout
+												.createParallelGroup(
+														Alignment.BASELINE)
+												.addComponent(lblDefault)
+												.addComponent(fileName))
+								.addGap(18)
+								.addComponent(panel,
+										GroupLayout.PREFERRED_SIZE, 386,
+										GroupLayout.PREFERRED_SIZE)
+								.addGap(18)
+								.addGroup(
+										groupLayout
+												.createParallelGroup(
+														Alignment.BASELINE)
+												.addComponent(btnSave)
+												.addComponent(btnCancel))
+								.addContainerGap(62, Short.MAX_VALUE)));
 
 		JSeparator separator = new JSeparator();
 		separator.setForeground(Color.BLACK);

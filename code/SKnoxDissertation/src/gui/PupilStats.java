@@ -2,10 +2,6 @@ package gui;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Stroke;
 import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
@@ -20,7 +16,6 @@ import javax.swing.JButton;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.Marker;
-import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
@@ -28,17 +23,16 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
-import org.jfree.util.StrokeList;
 
 import control.Control;
 
 import extras.Stats;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("serial")
 public class PupilStats extends JPanel {
 
 	JLabel name = new JLabel("pupil"), asked = new JLabel("asked"),
@@ -64,8 +58,7 @@ public class PupilStats extends JPanel {
 
 		asked.setText(String.valueOf(stats.getAsked()));
 		answers.setText(String.valueOf(stats.getAnswered()));
-		input.setText(String.valueOf(((stats.getAsked() + stats.getAnswered()) / ((stats
-				.getQuestions() + stats.getAsked()) * 2.0)) * 100.0));
+		input.setText(String.valueOf((int)(((stats.getAsked() + stats.getAnswered()) / ((stats.getQuestions()) * 2.0)) * 100.0)));
 		shyTime.setText(String.valueOf(formatTime(stats.getShyMissed())));
 		distractTime.setText(formatTime(stats.getDistractions()/6000));
 		createGraph(graph, stats);
@@ -73,17 +66,15 @@ public class PupilStats extends JPanel {
 	
 	private String formatTime(long l){
 		String ans = "";
-		if(l==0||l<1){
-			return String.valueOf(0);
-		}
 		String what = String.valueOf(l/6000.0);
 		String split[] = what.split("\\.");
 		ans+=split[0]+":";
 		try{
-		ans+=String.valueOf(Integer.valueOf(split[1])*60).substring(2);
-		}catch(NumberFormatException nf){ //can start with 0
-
-			ans+=String.valueOf(Integer.valueOf(split[1].substring(1, split[1].length()))*60).substring(2);
+		String sec = String.valueOf((int) (Double.valueOf("0."+split[1])*60));
+		if(sec.length()<2)
+			sec+="0";
+		ans+=sec;
+		}catch(NumberFormatException nf){
 		}
 		return ans;
 	}
@@ -200,7 +191,7 @@ public class PupilStats extends JPanel {
 		});
 		GroupLayout groupLayout = new GroupLayout(this);
 		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.TRAILING)
+			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
 					.addComponent(separator, GroupLayout.PREFERRED_SIZE, 1, GroupLayout.PREFERRED_SIZE)
@@ -210,7 +201,7 @@ public class PupilStats extends JPanel {
 					.addComponent(btnBack)
 					.addGap(468))
 				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap(367, Short.MAX_VALUE)
+					.addGap(367)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(label_3, GroupLayout.PREFERRED_SIZE, 133, GroupLayout.PREFERRED_SIZE)
@@ -233,9 +224,10 @@ public class PupilStats extends JPanel {
 									.addComponent(input, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 								.addComponent(label_7, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 182, GroupLayout.PREFERRED_SIZE))
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(shyTime, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE)))
+							.addComponent(shyTime, GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+							.addGap(61)))
 					.addGap(366))
-				.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
+				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(257)
 					.addComponent(lblGraph, GroupLayout.PREFERRED_SIZE, 498, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap(257, Short.MAX_VALUE))

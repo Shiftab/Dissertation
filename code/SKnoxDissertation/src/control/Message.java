@@ -5,21 +5,14 @@ import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 
 /**
- * class for extending ACLMessage to add some new message types 
- * and parameters
+ * class for extending ACLMessage to add some new message types and parameters
  * 
- * Message types:
- * ARGUE
- * DISTRACT
- * REPRISAL
- * FOCUS
- * ERROR
+ * Message types: ARGUE DISTRACT REPRISAL FOCUS ERROR
  * 
- * Parameters:
- * Coordinate
- * focus
+ * Parameters: Coordinate focus
+ * 
  * @author shiftab
- *
+ * 
  */
 @SuppressWarnings("serial")
 public class Message extends ACLMessage {
@@ -30,48 +23,50 @@ public class Message extends ACLMessage {
 	public static final int FOCUS = -5;
 	public static final int ERROR = -6;
 	public static final int ENCORAGE = -7;
-	
-	private Coordinate coordinate=null;
+
+	private Coordinate coordinate = null;
 	private AID focus = null;
-	
-	public Message(int preform){
+
+	public Message(int preform) {
 		super(preform);
 	}
-	
+
 	/**
 	 * set coordinate refered to in message
 	 * 
 	 * @param coordinate
 	 */
-	public void setCoordinate(Coordinate coordinate){
+	public void setCoordinate(Coordinate coordinate) {
 		this.coordinate = coordinate;
 	}
-	
+
 	/**
 	 * get coordinate refered to in message
 	 * 
 	 * @return
 	 * @throws NullPointerException
 	 */
-	public Coordinate getCoordinate() throws NullPointerException{
+	public Coordinate getCoordinate() throws NullPointerException {
 		return coordinate;
 	}
 
 	/**
 	 * get AID Focus of the message
+	 * 
 	 * @return
 	 * @throws NullPointerException
 	 */
-	public AID getFocus() throws NullPointerException{
+	public AID getFocus() throws NullPointerException {
 		return focus;
 	}
 
 	/**
 	 * set AID focus of the message
+	 * 
 	 * @param focus
 	 */
 	public void setFocus(AID focus) {
 		this.focus = focus;
 	}
-	
+
 }

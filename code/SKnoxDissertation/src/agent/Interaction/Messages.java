@@ -158,11 +158,12 @@ public class Messages {
 	 * @param send
 	 * @param sender
 	 */
-	public static void argue(Coordinate coordinate, Set<AID> send, Agent sender, AID focus) {
+	public static void argue(Coordinate coordinate, Set<AID> send,
+			Agent sender, AID focus) {
 		Message msg = new Message(Message.ARGUE);
-		for(AID s: send)
+		for (AID s : send)
 			msg.addReceiver(s);
-				
+
 		msg.setFocus(focus);
 		msg.setContent("Well I think " + coordinate.getVal() + " would be at ("
 				+ coordinate.getX() + "," + coordinate.getY() + ")!");
@@ -179,7 +180,8 @@ public class Messages {
 	 * @param send
 	 * @param sender
 	 */
-	public static void acknowledge(Coordinate coordinate, Set<AID> send, Agent sender, AID focus) {
+	public static void acknowledge(Coordinate coordinate, Set<AID> send,
+			Agent sender, AID focus) {
 		Message msg = new Message(ACLMessage.INFORM);
 		for (AID a : send) {
 			msg.addReceiver(a);
@@ -204,7 +206,7 @@ public class Messages {
 		for (AID a : send) {
 			msg.addReceiver(a);
 		}
-		msg.addReplyTo(focus);
+		msg.setFocus(focus);
 		msg.setContent("CONFUSION!!! *waves arms*.");
 		System.out.println(sender.getAID().getLocalName() + ": "
 				+ msg.getContent());
@@ -223,7 +225,7 @@ public class Messages {
 		for (AID a : send) {
 			msg.addReceiver(a);
 		}
-		msg.addReplyTo(focus);
+		msg.setFocus(focus);
 		msg.setContent("CONFUSION is SUPER EFFECTIVE!.");
 		System.out.println(sender.getAID().getLocalName() + ": "
 				+ msg.getContent());
@@ -247,8 +249,8 @@ public class Messages {
 				+ msg.getContent());
 		sender.send(msg);
 	}
-	
-	public static void focused(Set<AID> send, Agent sender){
+
+	public static void focused(Set<AID> send, Agent sender) {
 
 		Message msg = new Message(ACLMessage.INFORM);
 		for (AID a : send) {

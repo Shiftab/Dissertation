@@ -10,7 +10,7 @@ import java.util.Random;
  */
 public class Personality {
 
-	private static final int WAIT_TIME = 200;
+	private static final int WAIT_TIME = 100;
 
 	// Multiplier grid
 	private static final double[] SHY_PROB = { 0, -0.1, -0.3, -0.1, 0.1 };
@@ -187,8 +187,9 @@ public class Personality {
 	 * @return
 	 */
 	public int getSpeed() {
-		double multiplyer = 4-(operational + numberComparative + numberConceptual + abstractSymbolic);
-		return (int) ((WAIT_TIME*multiplyer)) + r.nextInt(WAIT_TIME);
+		double multiplyer = 4 - (operational + numberComparative
+				+ numberConceptual + abstractSymbolic);
+		return (int) ((WAIT_TIME * multiplyer)) + r.nextInt(WAIT_TIME);
 	}
 
 	public double getSelfEsteam() {
@@ -218,8 +219,6 @@ public class Personality {
 	 * @param ocean
 	 * @return
 	 */
-	@SuppressWarnings("null")
-	// remove when reimplementing personalitys
 	public boolean decide(int decision, double prior) {
 		double SE = 0;
 		double[] question = null;
@@ -275,7 +274,7 @@ public class Personality {
 	}
 
 	public void resetSelfEsteam() {
-		selfEsteam =0.5;// (1 + (extraversion + (-neuroticism))) / 2;
+		selfEsteam = 0.5;// (1 + (extraversion + (-neuroticism))) / 2;
 	}
 
 	public boolean isShy(String name) {
@@ -284,7 +283,7 @@ public class Personality {
 		double[] question = SHY_PROB;
 		for (int x = 0; x < ocean.length; x++)
 			personality += (ocean[x] * question[x]);
-		double personality2 = 1-((personality - (-0.4)) / 2);
+		double personality2 = 1 - ((personality - (-0.4)) / 2);
 		double SE = (1 + selfEsteam) / 2;
 		if (((personality2 / 2) + (SE / 2)) <= 0.5) {
 			return true;

@@ -7,6 +7,12 @@ import javax.swing.JProgressBar;
 import javax.swing.JLabel;
 import javax.swing.SpringLayout;
 
+/**
+ * class to handel the running screen for the simulation
+ * 
+ * @author Steven Knox
+ * 
+ */
 @SuppressWarnings("serial")
 public class Loading extends JPanel {
 
@@ -57,10 +63,22 @@ public class Loading extends JPanel {
 		this.setVisible(true);
 	}
 
+	/**
+	 * method to set the names of pupils for the graph
+	 * 
+	 * @param names
+	 */
 	public void setNames(List<String> names) {
 		panel.setNames(names);
 	}
 
+	/**
+	 * method to update the graph on the loading screen
+	 * 
+	 * @param name
+	 * @param time
+	 * @param input
+	 */
 	public void updateGraph(String name, double time, double input) {
 		panel.updateChart();
 		panel.updateSeries(name, time, input);
@@ -68,18 +86,37 @@ public class Loading extends JPanel {
 		this.repaint();
 	}
 
+	/**
+	 * method to return the graph
+	 * 
+	 * @return
+	 */
 	public Graph getGraphData() {
 		return panel;
 	}
 
+	/**
+	 * method to update the time value on the loading screen
+	 * 
+	 * @param time
+	 */
 	public void updateTime(double time) {
 		pbTime.setValue((int) time);
 		lbTimeD.setText(String.valueOf(((int) time)) + "%");
 	}
 
+	/**
+	 * method to update the percentage done value on the loading screen
+	 * 
+	 * @param problem
+	 * @deprecated
+	 */
 	public void updateProb(double problem) {
 	}
 
+	/**
+	 * method to clear the graphs
+	 */
 	public void clearGraphs() {
 		panel.clearSeries();
 	}

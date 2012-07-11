@@ -5,7 +5,7 @@ import sudoku.Coordinate;
 /**
  * paper version of the problem shared by all participants
  * 
- * @author shiftab
+ * @author Steven Knox
  * 
  */
 public final class Problem {
@@ -65,6 +65,11 @@ public final class Problem {
 		}
 	}
 
+	/**
+	 * method to return how much of the problem has been compleated
+	 * 
+	 * @return
+	 */
 	public static double amountDone() {
 
 		double finished = 0;

@@ -11,7 +11,7 @@ import agent.Interaction.Pupil;
 /**
  * the agents opinon of it's peers
  * 
- * @author shiftab
+ * @author Steven Knox
  * 
  */
 public class OthersModel {
@@ -78,6 +78,12 @@ public class OthersModel {
 		return Agents;
 	}
 
+	/**
+	 * method to return an introverted peer
+	 * 
+	 * @return
+	 * @throws NullPointerException
+	 */
 	public AID getShyPerson() throws NullPointerException {
 		for (AID a : Agents.keySet())
 			if (Agents.get(a) == Pupil.SHY)
@@ -86,6 +92,12 @@ public class OthersModel {
 		return null;
 	}
 
+	/**
+	 * method to return a distracted peer
+	 * 
+	 * @return
+	 * @throws NullPointerException
+	 */
 	public AID getDistracted() throws NullPointerException {
 		for (AID a : Agents.keySet())
 			if (Agents.get(a) == Pupil.DISTRACTED)
@@ -94,6 +106,13 @@ public class OthersModel {
 		return null;
 	}
 
+	/**
+	 * method to return an arguing peer
+	 * 
+	 * @return
+	 * @throws NullPointerException
+	 * @deprecated
+	 */
 	public AID getArguing() throws NullPointerException {
 		for (AID a : Agents.keySet())
 			if (Agents.get(a) == Pupil.ARGUING)
@@ -102,18 +121,41 @@ public class OthersModel {
 		return null;
 	}
 
+	/**
+	 * method to set the visible state of a peer
+	 * 
+	 * @param sender
+	 * @param state
+	 */
 	public void setVisState(AID sender, int state) {
 		Agents.put(sender, state);
 	}
 
+	/**
+	 * method to reduced the answers from a peer, was used when focus was used
+	 * like self esteem
+	 * 
+	 * @param sender
+	 * @deprecated
+	 */
 	public void lowerFocus(AID sender) {
 		answers.put(sender, answers.get(sender) - 1);
 	}
 
+	/**
+	 * method to add an answer by a user
+	 * 
+	 * @param sender
+	 */
 	public void incFocus(AID sender) {
 		answers.put(sender, answers.get(sender) + 1);
 	}
 
+	/**
+	 * method to return a posible pupil for distracting
+	 * 
+	 * @return
+	 */
 	public AID getDistractable() {
 		AID shy = getShyPerson();
 		AID distracted = getDistracted();
@@ -137,30 +179,6 @@ public class OthersModel {
 			}
 			if (ans == null) {
 				ans = peers.get((int) (Math.random() * peers.size()));
-			}
-			return ans;
-		}
-	}
-
-	public AID getPartner() {
-		AID shy = getShyPerson();
-		AID distracted = getDistracted();
-		if (shy != null)
-			return shy;
-		else if (distracted != null)
-			return distracted;
-		else {
-			double min = Double.MIN_VALUE;
-			AID ans = null;
-			for (AID a : peers) {
-
-				double bayes = (answers.get(a) / (questionsAsked * 1.0) * (1 / (1 + peers
-						.size() * 1.0))) / ((1) / (1 + peers.size() * 1.0));
-
-				if (bayes > min) {
-					min = bayes;
-					ans = a;
-				}
 			}
 			return ans;
 		}

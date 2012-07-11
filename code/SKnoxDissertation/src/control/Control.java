@@ -36,16 +36,29 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
 
+/**
+ * class for the controler agent for the system
+ * 
+ * @author Steven Knox
+ * 
+ */
 @SuppressWarnings("serial")
 public class Control extends Agent {
 
+	// pannels
 	public static final int MAIN = 1, PARAM = 2, PROB = 3, PUPIL = 4, SUM = 5;
+	private final String PARAM_S = "Parameter Eddit", PROB_S = "Problem Eddit",
+			PUPIL_S = "Pupil Eddit", SUM_S = "Summary", LOAD_S = "Loading",
+			MAIN_S = "Main", PUPILSUM_S = "Pupil Summary";
 
+	// default pupils
 	private List<String> names = new ArrayList<String>(Arrays.asList("Bob",
 			"Steve", "Alica", "Sky", "Freya"));
 
-	private Setup main;
 	private JFrame frame = new JFrame();
+
+	// Pannels
+	private Setup main;
 	private ParamiterEddit paramEddit = new ParamiterEddit(this);
 	private ProblemEddit probEddit = new ProblemEddit(this);
 	private PupilEddit pupilEddit = new PupilEddit(this);
@@ -62,10 +75,6 @@ public class Control extends Agent {
 	private long startTime = 0;
 	private int timeLimit = 0;
 
-	private final String PARAM_S = "Parameter Eddit", PROB_S = "Problem Eddit",
-			PUPIL_S = "Pupil Eddit", SUM_S = "Summary", LOAD_S = "Loading",
-			MAIN_S = "Main", PUPILSUM_S = "Pupil Summary";
-
 	private JPanel cards = new JPanel(new CardLayout());
 	private CardLayout cl = (CardLayout) cards.getLayout();
 
@@ -73,14 +82,19 @@ public class Control extends Agent {
 
 	@Override
 	protected void setup() {
-		URL url = getClass().getResource("/image.png");
 
+		// frame setup
+		URL url = getClass().getResource("/image.png");
 		ImageIcon imh = new ImageIcon(url);
 		frame.setSize(imh.getIconWidth(), imh.getIconHeight());
 		frame.setResizable(false);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		frame.setContentPane(new JPanel() {
+
+			/**
+			 * extended paint method to paint the background for the system
+			 */
 			public void paintComponent(Graphics g) {
 				super.paintComponent(g);
 				URL url = getClass().getResource("/image.png");
@@ -94,8 +108,10 @@ public class Control extends Agent {
 				setLayout(null);
 				g.drawImage(img, 0, 0, null);
 			}
+
 		});
 
+		// add the pannels
 		cards.add(stats, PUPILSUM_S);
 		cards.add(paramEddit, PARAM_S);
 		cards.add(probEddit, PROB_S);
@@ -108,6 +124,7 @@ public class Control extends Agent {
 		for (String s : names) {
 			pupils.put(s, new Personality(0));
 		}
+
 		loadDefault();
 		main = new Setup(this, pupils, frame.getSize());
 		cards.add(main, MAIN_S);
@@ -135,6 +152,9 @@ public class Control extends Agent {
 		 */
 	}
 
+	/**
+	 * load the default problem for the system
+	 */
 	private void loadDefault() {
 		int[][] problem = { { 6, 0, 0, 1, 0, 0, 0, 0, 0 },
 				{ 0, 9, 5, 6, 0, 3, 7, 0, 0 }, { 4, 1, 0, 0, 0, 0, 0, 6, 3 },
@@ -144,37 +164,77 @@ public class Control extends Agent {
 		this.problem = problem;
 	}
 
+	/**
+	 * method to return the pupils in the simulation
+	 * 
+	 * @return
+	 */
 	public Map<String, Personality> getPupils() {
 		return pupils;
 	}
 
+	/**
+	 * method to switch to the pupil eddit screen
+	 * 
+	 * @param name
+	 * @param pers
+	 */
 	public void pupilEddit(String name, Personality pers) {
 		pupilEddit.setUp(name, pers);
 		cl.show(cards, PUPIL_S);
 		frame.repaint();
 	}
 
+	/**
+	 * method to switch to the change ability screen
+	 * 
+	 * @param name
+	 */
 	public void changeAbility(String name) {
 		paramEddit.setUpAbility(pupils.get(name), name);
 		cl.show(cards, PARAM_S);
 		frame.repaint();
 	}
 
+	/**
+	 * method to change to the pupil sumary page
+	 * 
+	 * @param name
+	 */
 	public void changePersonality(String name) {
 		paramEddit.setUpPersonal(pupils.get(name), name);
 		cl.show(cards, PARAM_S);
 		frame.repaint();
 	}
 
+	/**
+	 * method to set a pupils personality
+	 * 
+	 * @param name
+	 * @param pers
+	 */
 	public void setPersonality(String name, Personality pers) {
 		pupils.put(name, pers);
 	}
 
+	/**
+	 * method to add a new pupil
+	 * 
+	 * @param oldName
+	 * @param name
+	 * @param pers
+	 */
 	public void replasePersonality(String oldName, String name, Personality pers) {
 		pupils.remove(oldName);
 		pupils.put(name, pers);
 	}
 
+	/**
+	 * method to change the name of a pupil
+	 * 
+	 * @param oldName
+	 * @param newName
+	 */
 	public void newName(String oldName, String newName) {
 		if (oldName.equals(newName))
 			return;
@@ -182,10 +242,20 @@ public class Control extends Agent {
 		pupils.remove(oldName);
 	}
 
+	/**
+	 * method to change the problem
+	 * 
+	 * @param problem
+	 */
 	public void newProblem(int[][] problem) {
 		this.problem = problem;
 	}
 
+	/**
+	 * method to change screen
+	 * 
+	 * @param page
+	 */
 	public void changeView(int page) {
 		switch (page) {
 		case MAIN:
@@ -208,7 +278,15 @@ public class Control extends Agent {
 		}
 	}
 
+	/**
+	 * method to start the simulation
+	 * 
+	 * @param time
+	 * @param names
+	 */
 	public void start(int time, List<String> names) {
+		ac.clear();
+		System.gc();
 		pupilList = names;
 		Problem.setProblem(problem);
 		timeLimit = time;
@@ -239,7 +317,7 @@ public class Control extends Agent {
 			long lastTime = startTime;
 
 			@Override
-			public void action() {
+			public void action() { // update the times on the running screen
 				if (System.currentTimeMillis() - lastTime > 1000) {
 					lastTime = System.currentTimeMillis();
 					loading.updateTime(((((startTime + (timeLimit * 6000)) - System
@@ -249,10 +327,21 @@ public class Control extends Agent {
 		});
 	}
 
+	/**
+	 * method to update the times on the running screen
+	 * 
+	 * @param time
+	 */
 	public void updateLoadingTime(double time) {
 		loading.updateTime(time);
 	}
 
+	/**
+	 * method to update the graph on the loading screen
+	 * 
+	 * @param name
+	 * @param stats
+	 */
 	public void updateGraph(String name, Stats stats) {
 		loading.updateGraph(name,
 				100 - ((((startTime + (timeLimit * 6000)) - System
@@ -261,22 +350,43 @@ public class Control extends Agent {
 						.getQuestions()) * 2.0)) * 100.0));
 	}
 
+	/**
+	 * method to reset the problem to the default one
+	 */
 	public void resetProblem() {
 		loadDefault();
 	}
 
+	/**
+	 * method to update the amount of the problem compleated on teh loading
+	 * screen
+	 * @deprecated
+	 */
 	public void updateLoadingProb() {
 		loading.updateProb(Problem.amountDone());
 	}
 
+	/**
+	 * method to stop a pupil
+	 * 
+	 * @param name
+	 * @param stats
+	 * @param pupil
+	 */
 	public void stopPupil(String name, Stats stats, Pupil pupil) {
 		agents.add(pupil);
 		endStats.put(name, stats);
+		// when all the pupils have stoped stop the simulation
 		if (endStats.size() == pupilList.size()) {
 			stop(System.currentTimeMillis());
 		}
 	}
 
+	/**
+	 * method for stoping the simulation and setting the summary page
+	 * 
+	 * @param endTime
+	 */
 	public void stop(long endTime) {
 		for (AgentController a : ac)
 			try {
@@ -290,11 +400,23 @@ public class Control extends Agent {
 		cl.show(cards, SUM_S);
 	}
 
+	/**
+	 * method to show the final pupil summary screen
+	 * 
+	 * @param name
+	 * @param pupilStats
+	 * @param series
+	 */
 	public void pupilSummery(String name, Stats pupilStats, XYSeries series) {
 		stats.setUp(name, pupilStats, series, startTime, timeLimit);
 		cl.show(cards, PUPILSUM_S);
 	}
 
+	/**
+	 * method to return the window used by the simulation
+	 * 
+	 * @return
+	 */
 	public Component getFrame() {
 		return frame;
 	}

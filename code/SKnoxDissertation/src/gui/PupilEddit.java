@@ -16,12 +16,16 @@ import control.Control;
 import javax.swing.JTextField;
 import java.awt.Font;
 
+/**
+ * class to handel the pupil view screen at setup
+ * 
+ * @author Steven Knox
+ * 
+ */
 @SuppressWarnings("serial")
 public class PupilEddit extends JPanel {
 
-	// JFrame frame; //needs to be here for the design edditor to work, can't be
-	// there when running
-
+	// Ability strings
 	private final String OP_POS = " likes complex problems",
 			OP_NEG = " struggles with using math operations",
 
@@ -36,6 +40,7 @@ public class PupilEddit extends JPanel {
 
 			AVG = " is a compatent student but could use time better";
 
+	// personality strings
 	private final String O_POS = " is open to new ideas and experiances",
 			O_NEG = " dislikes change",
 
@@ -52,6 +57,7 @@ public class PupilEddit extends JPanel {
 
 			AVG_P = " is a well manered individual";
 
+	// linking words
 	private final String LNK_POS = ", and", LNK_NEG = ", but";
 
 	private JTextField txtName;
@@ -69,6 +75,12 @@ public class PupilEddit extends JPanel {
 		initialize();
 	}
 
+	/**
+	 * method to setup the values in the screen
+	 * 
+	 * @param name
+	 * @param personality
+	 */
 	public void setUp(String name, Personality personality) {
 		txtName.setText(name);
 		this.name = name;
@@ -76,6 +88,11 @@ public class PupilEddit extends JPanel {
 		setPersonalityText(personality);
 	}
 
+	/**
+	 * method to generate the ability discriptions
+	 * 
+	 * @param personality
+	 */
 	private void setAbilityText(Personality personality) {
 		double[] ability = personality.getAbility();
 		// temporary TODO: implement nlg
@@ -183,6 +200,11 @@ public class PupilEddit extends JPanel {
 		txtpnAbility.setText(name + disc + ".");
 	}
 
+	/**
+	 * method to generate the personality discriptions
+	 * 
+	 * @param personality
+	 */
 	private void setPersonalityText(Personality personality) {
 		double[] ocean = personality.getOCEAN();
 		// temporary TODO: implement nlg

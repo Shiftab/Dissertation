@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * @author shiftab
+ * @author Steven Knox
  * 
  */
 public class SudokuTest {

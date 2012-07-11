@@ -17,6 +17,12 @@ import org.jfree.data.xy.XYSeriesCollection;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 
+/**
+ * class to handel the graph on the loading screen
+ * 
+ * @author Steven Knox
+ * 
+ */
 @SuppressWarnings("serial")
 public class Graph extends JPanel {
 
@@ -52,6 +58,11 @@ public class Graph extends JPanel {
 		setLayout(groupLayout);
 	}
 
+	/**
+	 * method to set the names on the graph
+	 * 
+	 * @param nam
+	 */
 	public synchronized void setNames(List<String> nam) {
 		this.names = nam;
 		int count = 0;
@@ -117,6 +128,13 @@ public class Graph extends JPanel {
 
 	}
 
+	/**
+	 * method to update the xy coordinates for a pupil
+	 * 
+	 * @param nam
+	 * @param time
+	 * @param input
+	 */
 	public synchronized void updateSeries(String nam, double time, double input) {
 		if (!names.isEmpty()) {
 			if (nam.equals(names.get(0))) {
@@ -156,6 +174,9 @@ public class Graph extends JPanel {
 		}
 	}
 
+	/**
+	 * method to clear the xy coordinate values for the graphs
+	 */
 	public synchronized void clearSeries() {
 		try {
 			series1.clear();
@@ -189,6 +210,9 @@ public class Graph extends JPanel {
 		}
 	}
 
+	/**
+	 * method to reset a charts series values
+	 */
 	public synchronized void updateChart() {
 		dataset.removeAllSeries();
 		for (int count = 0; count < names.size(); count++) {
@@ -222,6 +246,11 @@ public class Graph extends JPanel {
 		display();
 	}
 
+	/**
+	 * method ot get all of the xy serise valuse from the graph
+	 * 
+	 * @return
+	 */
 	public List<XYSeries> getSeries() {
 		List<XYSeries> series = new ArrayList<XYSeries>();
 		if (!series1.isEmpty())
@@ -245,6 +274,12 @@ public class Graph extends JPanel {
 		return series;
 	}
 
+	/**
+	 * method to get the xy series for a particular pupil
+	 * 
+	 * @param name
+	 * @return
+	 */
 	public XYSeries getSeries(String name) {
 		XYSeries ans = null;
 
@@ -264,6 +299,9 @@ public class Graph extends JPanel {
 		return ans;
 	}
 
+	/**
+	 * method to display the graph on the pannel
+	 */
 	public synchronized void display() {
 
 		BufferedImage image = chart.createBufferedImage(500, 300);

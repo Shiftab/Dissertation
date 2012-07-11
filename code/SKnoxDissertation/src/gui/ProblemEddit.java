@@ -22,6 +22,12 @@ import javax.swing.border.LineBorder;
 import control.Control;
 import java.awt.Font;
 
+/**
+ * class to handel the problem eddit screen
+ * 
+ * @author Steven Knox
+ * 
+ */
 @SuppressWarnings("serial")
 public class ProblemEddit extends JPanel {
 
@@ -29,6 +35,7 @@ public class ProblemEddit extends JPanel {
 	private String[][] problem = new String[9][9];
 	private Control parent;
 
+	// sudoku grid
 	JLabel g00 = new JLabel("0"), g01 = new JLabel("0"), g02 = new JLabel("0"),
 			g03 = new JLabel("0"), g04 = new JLabel("0"),
 			g05 = new JLabel("0"), g06 = new JLabel("0"),
@@ -73,6 +80,7 @@ public class ProblemEddit extends JPanel {
 			g85 = new JLabel("0"), g86 = new JLabel("0"),
 			g87 = new JLabel("0"), g88 = new JLabel("0");
 
+	// list for grid
 	private JLabel[][] valueList = {
 			{ g00, g01, g02, g03, g04, g05, g06, g07, g08 },
 			{ g10, g11, g12, g13, g14, g15, g16, g17, g18 },
@@ -94,6 +102,11 @@ public class ProblemEddit extends JPanel {
 		initialize();
 	}
 
+	/**
+	 * method to display a new problem on the screen
+	 * 
+	 * @param problem
+	 */
 	public void loadProblem(int[][] problem) {
 		for (int y = 0; y < problem.length; y++)
 			for (int x = 0; x < problem.length; x++) {
@@ -101,6 +114,10 @@ public class ProblemEddit extends JPanel {
 			}
 	}
 
+	/**
+	 * method to take a problem from the sceen and pass it to the controler
+	 * agent
+	 */
 	public void saveProblem() {
 		int[][] prob = new int[9][9];
 		for (int y = 0; y < problem.length; y++)
@@ -121,6 +138,10 @@ public class ProblemEddit extends JPanel {
 		JLabel lblDefault = new JLabel("File:");
 
 		JButton btnLoadNew = new JButton("Load New");
+
+		/**
+		 * load a new problem
+		 */
 		btnLoadNew.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -154,7 +175,7 @@ public class ProblemEddit extends JPanel {
 					for (int y = 0; y < problem.length; y++)
 						for (int x = 0; x < problem.length; x++) {
 							try {
-								Integer.parseInt(problem[x][y].trim());
+								Integer.parseInt(problem[y][x].trim());
 							} catch (Exception ex) {
 								JOptionPane.showMessageDialog(
 										parent.getFrame(),

@@ -8,10 +8,9 @@ import java.util.Map;
 import jade.core.AID;
 
 /**
- * class for handeling the data pertraning to a particular agents view of his
- * world
+ * class for handeling the data for the pupils
  * 
- * @author shiftab
+ * @author Steven Knox
  * 
  */
 public class Stats {
@@ -52,21 +51,26 @@ public class Stats {
 	}
 
 	/**
-	 * @return the oCEAN
+	 * method to return the personality traits of a pupil
+	 * 
+	 * @return the OCEAN
 	 */
 	public double[] getOCEAN() {
 		return OCEAN;
 	}
 
 	/**
-	 * @param oCEAN
-	 *            the oCEAN to set
+	 * method to set the personality traits of a pupil
+	 * 
+	 * @param OCEAN
 	 */
 	public void setOCEAN(double[] oCEAN) {
 		OCEAN = oCEAN;
 	}
 
 	/**
+	 * method to return the AID of the pupil who owns this stats class
+	 * 
 	 * @return the parent
 	 */
 	public AID getParent() {
@@ -74,14 +78,18 @@ public class Stats {
 	}
 
 	/**
+	 * method to set the owner AID
+	 * 
 	 * @param parent
-	 *            the parent to set
 	 */
 	public void setParent(AID parent) {
 		this.parent = parent;
 	}
 
 	/**
+	 * method to get the number of questions that there have been in this
+	 * simulation
+	 * 
 	 * @return the questions
 	 */
 	public int getQuestions() {
@@ -89,14 +97,18 @@ public class Stats {
 	}
 
 	/**
+	 * method to set the number of questions that have been asked in this
+	 * simulation
+	 * 
 	 * @param questions
-	 *            the questions to set
 	 */
 	public void setQuestions(int questions) {
 		this.questions = questions;
 	}
 
 	/**
+	 * method to return the time wasted due to introversion
+	 * 
 	 * @return the shyMissed
 	 */
 	public long getShyMissed() {
@@ -104,38 +116,62 @@ public class Stats {
 	}
 
 	/**
+	 * method to start an introversion time
+	 * 
 	 * @param shyMissed
-	 *            the shyMissed to set
 	 */
 	public void setStartShy() {
 		shyStart = System.currentTimeMillis();
 		shyTimes.add(System.currentTimeMillis());
 	}
 
+	/**
+	 * method to stop an introversion time
+	 */
 	public void stopShy() {
 		shyMissed += System.currentTimeMillis() - shyStart;
 		shyTimes.add(System.currentTimeMillis());
 	}
 
+	/**
+	 * method to start a discussion time
+	 */
 	public void chatter() {
 		chatter.add(System.currentTimeMillis());
 	}
 
+	/**
+	 * method to return the times of introversion events
+	 * 
+	 * @return
+	 */
 	public List<Long> getShyTimes() {
 		return shyTimes;
 	}
 
+	/**
+	 * method to return the times of focus events with a particual peer
+	 * 
+	 * @param name
+	 */
 	public void focus(String name) {
 		List<Long> times = focusTimes.get(name);
 		times.add(System.currentTimeMillis());
 		focusTimes.put(name, times);
 	}
 
+	/**
+	 * method to return all focus times
+	 * 
+	 * @return
+	 */
 	public Map<String, List<Long>> getFocus() {
 		return focusTimes;
 	}
 
 	/**
+	 * method to return the time spent distracted
+	 * 
 	 * @return the distractions
 	 */
 	public long getDistractions() {
@@ -143,8 +179,9 @@ public class Stats {
 	}
 
 	/**
+	 * method to start a distraction timer
+	 * 
 	 * @param distractions
-	 *            the distractions to set
 	 */
 	public void setStartDistractions() {
 		if (distractStart != -1)
@@ -152,26 +189,47 @@ public class Stats {
 		distractStart = System.currentTimeMillis();
 	}
 
+	/**
+	 * method to stop a distraction timer
+	 */
 	public void stopDistract() {
 		if (distractStart != -1)
 			distractions += System.currentTimeMillis() - distractStart;
 		distractStart = -1;
 	}
 
+	/**
+	 * method to add a distraction time
+	 */
 	public void addDistract() {
 		distractTimes.add(System.currentTimeMillis());
 	}
 
+	/**
+	 * method to return the distraction times for each peer
+	 * 
+	 * @return
+	 */
 	public Map<String, List<Long>> getDistractedTimes() {
 		return distracted;
 	}
 
+	/**
+	 * method to create a distraction disccusion time with a particual peer
+	 * 
+	 * @param name
+	 */
 	public void addDistracted(String name) {
 		List<Long> times = distracted.get(name);
 		times.add(System.currentTimeMillis());
 		distracted.put(name, times);
 	}
 
+	/**
+	 * method to return the time spend distracted
+	 * 
+	 * @return
+	 */
 	public List<Long> getDistractTimes() {
 		return distractTimes;
 	}
@@ -226,21 +284,51 @@ public class Stats {
 		answered++;
 	}
 
+	/**
+	 * incromerter for questions in the simulation
+	 */
 	public void incQuestions() {
 		questions++;
 	}
 
+	/**
+	 * incromenter for questions missed due to introversion
+	 */
 	public void incShyMissed() {
 		shyMissed++;
 	}
 
+	/**
+	 * incromenter for questions missed due to distraction
+	 */
 	public void incDistractions() {
 		distractions++;
 	}
 
+	/**
+	 * method to printout stat details to system out
+	 */
 	public void print() {
 		System.out.println(parent.getLocalName() + ": asked:" + asked
 				+ " answered:" + answered + " Shy:" + shyMissed
 				+ " distractions:" + distractions);
+	}
+
+	/**
+	 * method to clear the lists and values from stats
+	 */
+	public void clear() {
+		asked = 0;
+		answered = 0;
+		questions = 0;
+		shyMissed = 0;
+		shyStart = 0;
+		distractions = 0;
+		distractStart = -1;
+		distractTimes.clear();
+		chatter.clear();
+		shyTimes.clear();
+		focusTimes.clear();
+		distracted.clear();
 	}
 }

@@ -9,8 +9,8 @@ import jade.wrapper.StaleProxyException;
 /**
  * basic init class for starting agents
  * 
- * @author shiftab
- * 
+ * @author Steven Knox
+ * @deprecated
  */
 @SuppressWarnings("serial")
 public class BasicStart extends Agent {

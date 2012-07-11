@@ -24,6 +24,12 @@ import control.Control;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 
+/**
+ * class for handeling the paramiter eddit pages
+ * 
+ * @author Steven Knox
+ * 
+ */
 @SuppressWarnings("serial")
 public class ParamiterEddit extends JPanel {
 
@@ -32,6 +38,7 @@ public class ParamiterEddit extends JPanel {
 	private String name;
 	private Control parent;
 
+	// discriptions
 	private final String[][] DISC_ABILITY = {
 			{ "Proficiant", "Adequit", "Struggles" },
 			{ "Proficiant", "Adequit", "Struggles" },
@@ -60,6 +67,7 @@ public class ParamiterEddit extends JPanel {
 	 * "Struggles with concepts such as left and right" } };
 	 */
 
+	// discriptions
 	private final String[][] DISC_PERS = {
 			{ "Interested in new concepts", "Open to new ideas",
 					"Dislikes change" },
@@ -89,6 +97,12 @@ public class ParamiterEddit extends JPanel {
 		initialize();
 	}
 
+	/**
+	 * method to setup the ability version of the eddit screen
+	 * 
+	 * @param personality
+	 * @param name
+	 */
 	public void setUpAbility(Personality personality, String name) {
 		sliderList.clear();
 		discList.clear();
@@ -136,6 +150,12 @@ public class ParamiterEddit extends JPanel {
 		}
 	}
 
+	/**
+	 * method to setup the personality version of the edit screen
+	 * 
+	 * @param personality
+	 * @param name
+	 */
 	public void setUpPersonal(Personality personality, String name) {
 		sliderList.clear();
 		discList.clear();
@@ -182,6 +202,13 @@ public class ParamiterEddit extends JPanel {
 		}
 	}
 
+	/**
+	 * method to setup the discriptions of the values
+	 * 
+	 * @param jl
+	 * @param count
+	 * @param value
+	 */
 	private void setDiscLable(JLabel jl, int count, int value) {
 		String[][] disc;
 		int uperCut = 5;

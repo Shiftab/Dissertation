@@ -11,7 +11,7 @@ import jade.lang.acl.ACLMessage;
  * 
  * Parameters: Coordinate focus
  * 
- * @author shiftab
+ * @author Steven Knox
  * 
  */
 @SuppressWarnings("serial")

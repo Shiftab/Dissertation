@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * class for search zones in a sudoku problem
  * 
- * @author shiftab
+ * @author Steven Knox
  * 
  */
 public class Zone {

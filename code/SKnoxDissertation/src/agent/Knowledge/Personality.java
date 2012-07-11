@@ -5,7 +5,7 @@ import java.util.Random;
 /**
  * the agents particular personality
  * 
- * @author shiftab
+ * @author Steven Knox
  * 
  */
 public class Personality {
@@ -158,6 +158,11 @@ public class Personality {
 		return ocean;
 	}
 
+	/**
+	 * method to set the personality values of a pupil
+	 * 
+	 * @param ocean
+	 */
 	public void setOCEAN(double[] ocean) {
 		openness = ocean[0];
 		conscientiousness = ocean[1];
@@ -166,12 +171,22 @@ public class Personality {
 		neuroticism = ocean[4];
 	}
 
+	/**
+	 * method to return the ability triats of a pupil
+	 * 
+	 * @return
+	 */
 	public double[] getAbility() {
 		double[] ability = { operational, numberConceptual, numberComparative,
 				abstractSymbolic, graphical, spatialTemporal };
 		return ability;
 	}
 
+	/**
+	 * method to set the ability traits of a pupil
+	 * 
+	 * @param test
+	 */
 	public void setAbility(double[] test) {
 		operational = test[0];
 		numberConceptual = test[1];
@@ -192,20 +207,37 @@ public class Personality {
 		return (int) ((WAIT_TIME * multiplyer)) + r.nextInt(WAIT_TIME);
 	}
 
+	/**
+	 * method to return the self esteam of a pupil
+	 * 
+	 * @return
+	 */
 	public double getSelfEsteam() {
 		return selfEsteam;
 	}
 
+	/**
+	 * method to increase the self esteem of a pupil
+	 */
 	public void incSelfEsteam() {
 		if (this.selfEsteam < 1)
 			this.selfEsteam += 0.3;
 	}
 
+	/**
+	 * method to decrease the self esteem of a pupil
+	 */
 	public void decSelfEsteam() {
 		if (this.selfEsteam > -1)
 			this.selfEsteam -= 0.25;
 	}
 
+	/**
+	 * method to return the shyness of a pupil
+	 * 
+	 * @return
+	 * @deprecated
+	 */
 	public double getShyness() {
 		return shyness;
 	}
@@ -218,6 +250,7 @@ public class Personality {
 	 * @param prior
 	 * @param ocean
 	 * @return
+	 * @deprecated used to be used when there was more diceisions possible
 	 */
 	public boolean decide(int decision, double prior) {
 		double SE = 0;
@@ -273,10 +306,19 @@ public class Personality {
 			return false;
 	}
 
+	/**
+	 * method to reset the self esteem of a pupil
+	 */
 	public void resetSelfEsteam() {
 		selfEsteam = 0.5;// (1 + (extraversion + (-neuroticism))) / 2;
 	}
 
+	/**
+	 * method to return if a pupil should introvert
+	 * 
+	 * @param name
+	 * @return
+	 */
 	public boolean isShy(String name) {
 		double personality = 0;
 		double[] ocean = getOCEAN();
@@ -291,6 +333,11 @@ public class Personality {
 			return false;
 	}
 
+	/**
+	 * method to return if a pupil should attempt distraction
+	 * 
+	 * @return
+	 */
 	public boolean distract() {
 		double personality = 0;
 		double[] ocean = getOCEAN();
@@ -302,6 +349,11 @@ public class Personality {
 		return ((personality / 2) + (shyness / 2)) < r.nextDouble();
 	}
 
+	/**
+	 * method to return if a pupil should get distracted
+	 * 
+	 * @return
+	 */
 	public boolean isChatty() {
 
 		double personality = 0;

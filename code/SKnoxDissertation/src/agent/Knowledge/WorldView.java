@@ -12,7 +12,7 @@ import sudoku.Coordinate;
 /**
  * how the agent sees the problem
  * 
- * @author shiftab
+ * @author Steven Knox
  * 
  */
 public class WorldView {
@@ -55,7 +55,6 @@ public class WorldView {
 						this.problem[x][y] = swopNum(problem[x][y]);
 						System.out.println("err:" + x + "," + y + ":"
 								+ problem[x][y]);
-						// TODO: implement actual focus system
 					} else
 						this.problem[x][y] = problem[x][y];
 				else if (r.nextDouble() <= NORM_READ) {
@@ -71,7 +70,9 @@ public class WorldView {
 	 * 
 	 * @param number
 	 * @return
+	 * @deprecated
 	 */
+	@SuppressWarnings("unused")
 	private int writeErr(int number) {
 		if (dyslexic) {
 			if (r.nextDouble() <= DYSLEX_WRITE) {
@@ -91,6 +92,7 @@ public class WorldView {
 	 * 
 	 * @param number
 	 * @return
+	 * @deprecated
 	 */
 	private int swopNum(int number) {
 		switch (number) {
@@ -166,7 +168,7 @@ public class WorldView {
 	 * @param coordinate
 	 */
 	public void edditProblem(Coordinate coordinate) {
-		int ans = writeErr(coordinate.getVal());
+		int ans = coordinate.getVal(); //writeErr(coordinate.getVal());
 		problem[coordinate.getX()][coordinate.getY()] = ans;
 		// TODO: fix the writen errors
 		// not how it's done atm because it's used to check if somthings already

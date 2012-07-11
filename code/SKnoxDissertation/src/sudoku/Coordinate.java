@@ -3,7 +3,7 @@ package sudoku;
 /**
  * class for coordinates of points in a sudoku problem
  * 
- * @author shiftab
+ * @author Steven Knox
  * 
  */
 public class Coordinate {

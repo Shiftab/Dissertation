@@ -29,16 +29,24 @@ import javax.swing.ImageIcon;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import java.awt.Font;
 
+/**
+ * JPanel extention for the final summary screen
+ * 
+ * @author Steven Knox
+ * 
+ */
 @SuppressWarnings("serial")
 public class FinalScreen extends JPanel {
 
 	private Control parent;
 	DecimalFormat format = new DecimalFormat("#.##");
+
 	JLabel lbTimeTaken = new JLabel("time"), lbPercentageCompleat = new JLabel(
 			"percent");
 
-	private final JLabel lbFormat = new JLabel(" "), graphDisplay = new JLabel(
+	private final JLabel lbFormat = new JLabel(""), graphDisplay = new JLabel(
 			"");
+
 	private final JButton btnRestart = new JButton("Re-Start");
 	private final JButton btnDetails1 = new JButton("Details");
 	private final JButton btnDetails2 = new JButton("Details");
@@ -46,6 +54,7 @@ public class FinalScreen extends JPanel {
 	private final JButton btnDetails4 = new JButton("Details");
 	private final JButton btnDetails5 = new JButton("Details");
 	private final JButton btnDetails6 = new JButton("Details");
+
 	private JLabel lblName1 = new JLabel("name1"), lblName2 = new JLabel(
 			"name1"), lblName3 = new JLabel("name1"), lblName4 = new JLabel(
 			"name1"), lblName5 = new JLabel("name1"), lblName6 = new JLabel(
@@ -53,9 +62,11 @@ public class FinalScreen extends JPanel {
 
 	private List<JLabel> names = new ArrayList<JLabel>(Arrays.asList(lblName1,
 			lblName2, lblName3, lblName4, lblName5, lblName6));
+
 	private List<JButton> buttons = new ArrayList<JButton>(Arrays.asList(
 			btnDetails1, btnDetails2, btnDetails3, btnDetails4, btnDetails5,
 			btnDetails6));
+
 	private Graph graph = new Graph();
 	long startTime, timeLimit;
 	Map<String, Stats> pupils;
@@ -69,10 +80,19 @@ public class FinalScreen extends JPanel {
 		initialize();
 	}
 
+	/**
+	 * method to display the summary screen
+	 * 
+	 * @param pupil
+	 * @param percentCompleat
+	 * @param timeTaken
+	 * @param graphData
+	 */
 	public void display(Map<String, Stats> pupil, double percentCompleat,
 			long timeTaken, Graph graphData) {
 		this.pupils = pupil;
 		int count = 0;
+
 		for (String s : pupil.keySet()) {
 			names.get(count).setText(s);
 			names.get(count).setVisible(true);
@@ -106,6 +126,13 @@ public class FinalScreen extends JPanel {
 
 	}
 
+	/**
+	 * method to format the long values for times into simulation minuets and
+	 * seconds
+	 * 
+	 * @param l
+	 * @return
+	 */
 	private String formatTime(long l) {
 		String ans = "";
 		String what = String.valueOf(l / 6000.0);
@@ -186,7 +213,11 @@ public class FinalScreen extends JPanel {
 		btnRestart.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				pupils.clear();
+			//	for(String s: pupils.keySet())
+			//		pupils.get(s).clear();
+				graph = null;
+				pupils = null;
+				System.gc();
 				setVisible(false);
 				parent.changeView(Control.MAIN);
 				parent.resetProblem();

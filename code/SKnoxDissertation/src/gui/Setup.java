@@ -32,6 +32,12 @@ import java.util.Scanner;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 
+/**
+ * class for the inital setup screen for the system
+ * 
+ * @author Steven Knox
+ * 
+ */
 @SuppressWarnings("serial")
 public class Setup extends JPanel {
 
@@ -56,9 +62,9 @@ public class Setup extends JPanel {
 	 */
 	public Setup(Control parent, Map<String, Personality> pupils, Dimension size) {
 		setPreferredSize(size);
-        setMinimumSize(size);
-        setMaximumSize(size);
-        setSize(size);
+		setMinimumSize(size);
+		setMaximumSize(size);
+		setSize(size);
 		setBorder(null);
 		this.parent = parent;
 		this.pupils = pupils;
@@ -67,10 +73,11 @@ public class Setup extends JPanel {
 		initialize();
 	}
 
-	public void toggleVisible() {
-		this.setVisible(!this.isVisible());
-	}
-
+	/**
+	 * method for re-doing the pupil lists
+	 * 
+	 * @param pupils
+	 */
 	public void refresh(Map<String, Personality> pupils) {
 		this.pupils = pupils;
 		int pos = 0;
@@ -94,6 +101,92 @@ public class Setup extends JPanel {
 		for (String s : pupilList) {
 			labelList.get(count).setText(s);
 			count++;
+		}
+	}
+
+	/**
+	 * method to load a new
+	 * 
+	 * @param oldName
+	 */
+	private void loadPupil(String oldName) {
+		String name;
+		double[] ability = new double[6], ocean = new double[5];
+		JFileChooser fc = new JFileChooser();
+
+		int returnVal = fc.showOpenDialog(parent.getFrame());
+
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+
+			File prob = fc.getSelectedFile();
+
+			Scanner scan = null;
+			try {
+				scan = new Scanner(prob);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			int count = 0;
+			try {
+				name = scan.nextLine();
+				count = 0;
+				for (String s : scan.nextLine().split(",")) {
+					ability[count] = Double.valueOf(s.trim());
+					count++;
+				}
+				count = 0;
+				for (String s : scan.nextLine().split(",")) {
+					ocean[count] = Double.valueOf(s.trim());
+					count++;
+				}
+			} catch (ArrayIndexOutOfBoundsException b) {
+				JOptionPane.showMessageDialog(parent.getFrame(),
+						"Error, the file was not in the correct format");
+				return;
+			}
+
+			Personality pers = new Personality(0);
+			pers.setAbility(ability);
+			pers.setOCEAN(ocean);
+
+			parent.replasePersonality(oldName, name, pers);
+			this.refresh(parent.getPupils());
+			repaint();
+		}
+	}
+
+	/**
+	 * method to save a pupils personality to a file
+	 * 
+	 * @param name
+	 */
+	private void savePupil(String name) {
+		JFileChooser fc = new JFileChooser();
+		int returnVal = fc.showSaveDialog(null);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			BufferedWriter out;
+			try {
+				out = new BufferedWriter(new FileWriter(fc.getSelectedFile()));
+				out.write(name);
+				out.newLine();
+				String output = "";
+				for (double d : pupils.get(name).getAbility())
+					output += d + ",";
+				out.write(output.substring(0, output.length() - 1));
+				out.newLine();
+
+				output = "";
+				for (double d : pupils.get(name).getOCEAN())
+					output += d + ",";
+				out.write(output.substring(0, output.length() - 1));
+				out.newLine();
+
+				out.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -278,7 +371,7 @@ public class Setup extends JPanel {
 		slTime.setMinimum(1);
 		slTime.setMaximum(10);
 		slTime.setValue(5);
-		
+
 		slPupils = new JSlider();
 		slPupils.addChangeListener(new ChangeListener() {
 			@Override
@@ -295,7 +388,7 @@ public class Setup extends JPanel {
 					btnChange4.setVisible(false);
 					btnLoad4.setVisible(false);
 					btnSave4.setVisible(false);
-					
+
 					name5.setVisible(false);
 					btnChange5.setVisible(false);
 					btnLoad5.setVisible(false);
@@ -311,7 +404,7 @@ public class Setup extends JPanel {
 					btnChange4.setVisible(false);
 					btnLoad4.setVisible(false);
 					btnSave4.setVisible(false);
-					
+
 					name5.setVisible(false);
 					btnChange5.setVisible(false);
 					btnLoad5.setVisible(false);
@@ -322,7 +415,7 @@ public class Setup extends JPanel {
 					btnChange4.setVisible(true);
 					btnLoad4.setVisible(true);
 					btnSave4.setVisible(true);
-					
+
 					name3.setVisible(true);
 					btnChange3.setVisible(true);
 					btnLoad3.setVisible(true);
@@ -339,12 +432,12 @@ public class Setup extends JPanel {
 					btnChange4.setVisible(true);
 					btnLoad4.setVisible(true);
 					btnSave4.setVisible(true);
-					
+
 					name3.setVisible(true);
 					btnChange3.setVisible(true);
 					btnLoad3.setVisible(true);
 					btnSave3.setVisible(true);
-					
+
 					name5.setVisible(true);
 					btnChange5.setVisible(true);
 					btnLoad5.setVisible(true);
@@ -379,215 +472,377 @@ public class Setup extends JPanel {
 		labelList.add(name5);
 
 		GroupLayout groupLayout = new GroupLayout(this);
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
-					.addGap(316)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-							.addComponent(lblDisabilities, GroupLayout.PREFERRED_SIZE, 99, GroupLayout.PREFERRED_SIZE)
-							.addGroup(groupLayout.createSequentialGroup()
-								.addComponent(lblNewLabel)
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(slTime, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addGap(18)
-								.addComponent(btnStart, GroupLayout.PREFERRED_SIZE, 116, GroupLayout.PREFERRED_SIZE))
-							.addGroup(groupLayout.createSequentialGroup()
-								.addComponent(lblProblem)
-								.addGap(54)
-								.addComponent(btnViewchange))
-							.addGroup(groupLayout.createSequentialGroup()
-								.addComponent(lblSpatialTemporal)
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(slPupils, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addGroup(groupLayout.createSequentialGroup()
-								.addGap(263)
-								.addComponent(spatialD))
-							.addGroup(groupLayout.createSequentialGroup()
-								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-									.addComponent(name1, GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
-									.addComponent(name2, GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
-									.addComponent(name3, GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
-									.addComponent(name4, GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
-									.addComponent(name5, GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE))
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-									.addComponent(btnChange2, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
-									.addComponent(btnChange3, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
-									.addComponent(btnChange4, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
-									.addComponent(btnChange5, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
-									.addComponent(btnChange1))
-								.addGap(18)
-								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-									.addComponent(btnLoad2, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
-									.addComponent(btnLoad3, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
-									.addComponent(btnLoad4, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
-									.addComponent(btnLoad5, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
-									.addComponent(btnLoad1, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)))
-							.addComponent(lblPupils))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(138)
-							.addComponent(operationalD)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(lblNewLabel_1)))
-					.addGap(18)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(btnSave1, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnSave2, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnSave3, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnSave4, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnSave5, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE))
-					.addGap(165))
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(31)
-					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(lblDisabilities, GroupLayout.PREFERRED_SIZE, 34, GroupLayout.PREFERRED_SIZE)
-							.addGap(21)
-							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-								.addComponent(lblNewLabel)
-								.addComponent(slTime, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-						.addComponent(btnStart, GroupLayout.PREFERRED_SIZE, 47, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(operationalD)
-						.addComponent(lblNewLabel_1))
-					.addGap(43)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblProblem)
-						.addComponent(btnViewchange))
-					.addGap(50)
-					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-						.addComponent(lblSpatialTemporal)
-						.addComponent(slPupils, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(spatialD)
-					.addGap(19)
-					.addComponent(lblPupils)
-					.addGap(17)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-							.addComponent(btnChange1)
-							.addComponent(btnLoad1)
-							.addComponent(btnSave1)
-							.addComponent(name1))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(47)
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(btnChange2)
-								.addComponent(name2))
-							.addGap(18)
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(btnChange3)
-								.addComponent(name3))
-							.addGap(18)
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(btnChange4)
-								.addComponent(name4))
-							.addGap(18)
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(btnChange5)
-								.addComponent(name5)))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(47)
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(btnLoad2)
-								.addComponent(btnSave2))
-							.addGap(18)
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(btnLoad3)
-								.addComponent(btnSave3))
-							.addGap(18)
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(btnLoad4)
-								.addComponent(btnSave4))
-							.addGap(18)
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(btnLoad5)
-								.addComponent(btnSave5))
-							.addGap(18)
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE))))
-					.addContainerGap(39, Short.MAX_VALUE))
-		);
+		groupLayout
+				.setHorizontalGroup(groupLayout
+						.createParallelGroup(Alignment.LEADING)
+						.addGroup(
+								Alignment.TRAILING,
+								groupLayout
+										.createSequentialGroup()
+										.addGap(316)
+										.addGroup(
+												groupLayout
+														.createParallelGroup(
+																Alignment.LEADING)
+														.addGroup(
+																groupLayout
+																		.createParallelGroup(
+																				Alignment.LEADING)
+																		.addComponent(
+																				lblDisabilities,
+																				GroupLayout.PREFERRED_SIZE,
+																				99,
+																				GroupLayout.PREFERRED_SIZE)
+																		.addGroup(
+																				groupLayout
+																						.createSequentialGroup()
+																						.addComponent(
+																								lblNewLabel)
+																						.addPreferredGap(
+																								ComponentPlacement.RELATED)
+																						.addComponent(
+																								slTime,
+																								GroupLayout.PREFERRED_SIZE,
+																								GroupLayout.DEFAULT_SIZE,
+																								GroupLayout.PREFERRED_SIZE)
+																						.addGap(18)
+																						.addComponent(
+																								btnStart,
+																								GroupLayout.PREFERRED_SIZE,
+																								116,
+																								GroupLayout.PREFERRED_SIZE))
+																		.addGroup(
+																				groupLayout
+																						.createSequentialGroup()
+																						.addComponent(
+																								lblProblem)
+																						.addGap(54)
+																						.addComponent(
+																								btnViewchange))
+																		.addGroup(
+																				groupLayout
+																						.createSequentialGroup()
+																						.addComponent(
+																								lblSpatialTemporal)
+																						.addPreferredGap(
+																								ComponentPlacement.RELATED)
+																						.addComponent(
+																								slPupils,
+																								GroupLayout.PREFERRED_SIZE,
+																								GroupLayout.DEFAULT_SIZE,
+																								GroupLayout.PREFERRED_SIZE))
+																		.addGroup(
+																				groupLayout
+																						.createSequentialGroup()
+																						.addGap(263)
+																						.addComponent(
+																								spatialD))
+																		.addGroup(
+																				groupLayout
+																						.createSequentialGroup()
+																						.addGroup(
+																								groupLayout
+																										.createParallelGroup(
+																												Alignment.LEADING)
+																										.addComponent(
+																												name1,
+																												GroupLayout.DEFAULT_SIZE,
+																												119,
+																												Short.MAX_VALUE)
+																										.addComponent(
+																												name2,
+																												GroupLayout.DEFAULT_SIZE,
+																												119,
+																												Short.MAX_VALUE)
+																										.addComponent(
+																												name3,
+																												GroupLayout.DEFAULT_SIZE,
+																												119,
+																												Short.MAX_VALUE)
+																										.addComponent(
+																												name4,
+																												GroupLayout.DEFAULT_SIZE,
+																												119,
+																												Short.MAX_VALUE)
+																										.addComponent(
+																												name5,
+																												GroupLayout.DEFAULT_SIZE,
+																												119,
+																												Short.MAX_VALUE))
+																						.addPreferredGap(
+																								ComponentPlacement.RELATED)
+																						.addGroup(
+																								groupLayout
+																										.createParallelGroup(
+																												Alignment.TRAILING)
+																										.addComponent(
+																												btnChange2,
+																												GroupLayout.PREFERRED_SIZE,
+																												127,
+																												GroupLayout.PREFERRED_SIZE)
+																										.addComponent(
+																												btnChange3,
+																												GroupLayout.PREFERRED_SIZE,
+																												127,
+																												GroupLayout.PREFERRED_SIZE)
+																										.addComponent(
+																												btnChange4,
+																												GroupLayout.PREFERRED_SIZE,
+																												127,
+																												GroupLayout.PREFERRED_SIZE)
+																										.addComponent(
+																												btnChange5,
+																												GroupLayout.PREFERRED_SIZE,
+																												127,
+																												GroupLayout.PREFERRED_SIZE)
+																										.addComponent(
+																												btnChange1))
+																						.addGap(18)
+																						.addGroup(
+																								groupLayout
+																										.createParallelGroup(
+																												Alignment.LEADING)
+																										.addComponent(
+																												btnLoad2,
+																												GroupLayout.PREFERRED_SIZE,
+																												127,
+																												GroupLayout.PREFERRED_SIZE)
+																										.addComponent(
+																												btnLoad3,
+																												GroupLayout.PREFERRED_SIZE,
+																												127,
+																												GroupLayout.PREFERRED_SIZE)
+																										.addComponent(
+																												btnLoad4,
+																												GroupLayout.PREFERRED_SIZE,
+																												127,
+																												GroupLayout.PREFERRED_SIZE)
+																										.addComponent(
+																												btnLoad5,
+																												GroupLayout.PREFERRED_SIZE,
+																												127,
+																												GroupLayout.PREFERRED_SIZE)
+																										.addComponent(
+																												btnLoad1,
+																												GroupLayout.PREFERRED_SIZE,
+																												127,
+																												GroupLayout.PREFERRED_SIZE)))
+																		.addComponent(
+																				lblPupils))
+														.addGroup(
+																groupLayout
+																		.createSequentialGroup()
+																		.addGap(138)
+																		.addComponent(
+																				operationalD)
+																		.addPreferredGap(
+																				ComponentPlacement.RELATED)
+																		.addComponent(
+																				lblNewLabel_1)))
+										.addGap(18)
+										.addGroup(
+												groupLayout
+														.createParallelGroup(
+																Alignment.LEADING)
+														.addComponent(
+																btnSave1,
+																GroupLayout.PREFERRED_SIZE,
+																127,
+																GroupLayout.PREFERRED_SIZE)
+														.addComponent(
+																btnSave2,
+																GroupLayout.PREFERRED_SIZE,
+																127,
+																GroupLayout.PREFERRED_SIZE)
+														.addComponent(
+																btnSave3,
+																GroupLayout.PREFERRED_SIZE,
+																127,
+																GroupLayout.PREFERRED_SIZE)
+														.addComponent(
+																btnSave4,
+																GroupLayout.PREFERRED_SIZE,
+																127,
+																GroupLayout.PREFERRED_SIZE)
+														.addComponent(
+																btnSave5,
+																GroupLayout.PREFERRED_SIZE,
+																127,
+																GroupLayout.PREFERRED_SIZE))
+										.addGap(165)));
+		groupLayout
+				.setVerticalGroup(groupLayout
+						.createParallelGroup(Alignment.LEADING)
+						.addGroup(
+								groupLayout
+										.createSequentialGroup()
+										.addGap(31)
+										.addGroup(
+												groupLayout
+														.createParallelGroup(
+																Alignment.TRAILING)
+														.addGroup(
+																groupLayout
+																		.createSequentialGroup()
+																		.addComponent(
+																				lblDisabilities,
+																				GroupLayout.PREFERRED_SIZE,
+																				34,
+																				GroupLayout.PREFERRED_SIZE)
+																		.addGap(21)
+																		.addGroup(
+																				groupLayout
+																						.createParallelGroup(
+																								Alignment.TRAILING)
+																						.addComponent(
+																								lblNewLabel)
+																						.addComponent(
+																								slTime,
+																								GroupLayout.PREFERRED_SIZE,
+																								GroupLayout.DEFAULT_SIZE,
+																								GroupLayout.PREFERRED_SIZE)))
+														.addComponent(
+																btnStart,
+																GroupLayout.PREFERRED_SIZE,
+																47,
+																GroupLayout.PREFERRED_SIZE))
+										.addPreferredGap(
+												ComponentPlacement.RELATED)
+										.addGroup(
+												groupLayout
+														.createParallelGroup(
+																Alignment.BASELINE)
+														.addComponent(
+																operationalD)
+														.addComponent(
+																lblNewLabel_1))
+										.addGap(43)
+										.addGroup(
+												groupLayout
+														.createParallelGroup(
+																Alignment.BASELINE)
+														.addComponent(
+																lblProblem)
+														.addComponent(
+																btnViewchange))
+										.addGap(50)
+										.addGroup(
+												groupLayout
+														.createParallelGroup(
+																Alignment.TRAILING)
+														.addComponent(
+																lblSpatialTemporal)
+														.addComponent(
+																slPupils,
+																GroupLayout.PREFERRED_SIZE,
+																GroupLayout.DEFAULT_SIZE,
+																GroupLayout.PREFERRED_SIZE))
+										.addPreferredGap(
+												ComponentPlacement.RELATED)
+										.addComponent(spatialD)
+										.addGap(19)
+										.addComponent(lblPupils)
+										.addGap(17)
+										.addGroup(
+												groupLayout
+														.createParallelGroup(
+																Alignment.LEADING)
+														.addGroup(
+																groupLayout
+																		.createParallelGroup(
+																				Alignment.BASELINE)
+																		.addComponent(
+																				btnChange1)
+																		.addComponent(
+																				btnLoad1)
+																		.addComponent(
+																				btnSave1)
+																		.addComponent(
+																				name1))
+														.addGroup(
+																groupLayout
+																		.createSequentialGroup()
+																		.addGap(47)
+																		.addGroup(
+																				groupLayout
+																						.createParallelGroup(
+																								Alignment.BASELINE)
+																						.addComponent(
+																								btnChange2)
+																						.addComponent(
+																								name2))
+																		.addGap(18)
+																		.addGroup(
+																				groupLayout
+																						.createParallelGroup(
+																								Alignment.BASELINE)
+																						.addComponent(
+																								btnChange3)
+																						.addComponent(
+																								name3))
+																		.addGap(18)
+																		.addGroup(
+																				groupLayout
+																						.createParallelGroup(
+																								Alignment.BASELINE)
+																						.addComponent(
+																								btnChange4)
+																						.addComponent(
+																								name4))
+																		.addGap(18)
+																		.addGroup(
+																				groupLayout
+																						.createParallelGroup(
+																								Alignment.BASELINE)
+																						.addComponent(
+																								btnChange5)
+																						.addComponent(
+																								name5)))
+														.addGroup(
+																groupLayout
+																		.createSequentialGroup()
+																		.addGap(47)
+																		.addGroup(
+																				groupLayout
+																						.createParallelGroup(
+																								Alignment.BASELINE)
+																						.addComponent(
+																								btnLoad2)
+																						.addComponent(
+																								btnSave2))
+																		.addGap(18)
+																		.addGroup(
+																				groupLayout
+																						.createParallelGroup(
+																								Alignment.BASELINE)
+																						.addComponent(
+																								btnLoad3)
+																						.addComponent(
+																								btnSave3))
+																		.addGap(18)
+																		.addGroup(
+																				groupLayout
+																						.createParallelGroup(
+																								Alignment.BASELINE)
+																						.addComponent(
+																								btnLoad4)
+																						.addComponent(
+																								btnSave4))
+																		.addGap(18)
+																		.addGroup(
+																				groupLayout
+																						.createParallelGroup(
+																								Alignment.BASELINE)
+																						.addComponent(
+																								btnLoad5)
+																						.addComponent(
+																								btnSave5))
+																		.addGap(18)
+																		.addGroup(
+																				groupLayout
+																						.createParallelGroup(Alignment.BASELINE))))
+										.addContainerGap(39, Short.MAX_VALUE)));
 		this.setLayout(groupLayout);
 	}
 
-	private void loadPupil(String oldName) {
-		String name;
-		double[] ability = new double[6], ocean = new double[5];
-		JFileChooser fc = new JFileChooser();
-
-		int returnVal = fc.showOpenDialog(parent.getFrame());
-
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-
-			File prob = fc.getSelectedFile();
-
-			Scanner scan = null;
-			try {
-				scan = new Scanner(prob);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			int count = 0;
-			try {
-				name = scan.nextLine();
-				count = 0;
-				for (String s : scan.nextLine().split(",")) {
-					ability[count] = Double.valueOf(s.trim());
-					count++;
-				}
-				count = 0;
-				for (String s : scan.nextLine().split(",")) {
-					ocean[count] = Double.valueOf(s.trim());
-					count++;
-				}
-			} catch (ArrayIndexOutOfBoundsException b) {
-				JOptionPane.showMessageDialog(parent.getFrame(),
-						"Error, the file was not in the correct format");
-				return;
-			}
-
-			Personality pers = new Personality(0);
-			pers.setAbility(ability);
-			pers.setOCEAN(ocean);
-
-			parent.replasePersonality(oldName, name, pers);
-			this.refresh(parent.getPupils());
-			repaint();
-		}
-	}
-
-	private void savePupil(String name) {
-		JFileChooser fc = new JFileChooser();
-		int returnVal = fc.showSaveDialog(null);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			BufferedWriter out;
-			try {
-				out = new BufferedWriter(new FileWriter(fc.getSelectedFile()));
-				out.write(name);
-				out.newLine();
-				String output = "";
-				for (double d : pupils.get(name).getAbility())
-					output += d + ",";
-				out.write(output.substring(0, output.length() - 1));
-				out.newLine();
-
-				output="";
-				for (double d : pupils.get(name).getOCEAN())
-					output += d + ",";
-				out.write(output.substring(0, output.length() - 1));
-				out.newLine();
-
-				out.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
 }

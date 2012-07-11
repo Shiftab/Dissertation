@@ -10,7 +10,7 @@ import java.util.Set;
 /**
  * Library class for solving sudoku
  * 
- * @author shiftab
+ * @author Steven Knox
  * 
  */
 public class Sudoku {
@@ -86,6 +86,12 @@ public class Sudoku {
 		return problem;
 	}
 
+	/**
+	 * method to return all of the correct answers for a problem
+	 * 
+	 * @param problem
+	 * @return
+	 */
 	public List<Coordinate> rightAnswers(int[][] problem) {
 		List<Coordinate> ans = new ArrayList<Coordinate>();
 		while (!done()) {
